@@ -1,0 +1,53 @@
+"use client";
+import React from "react";
+import { Button, Tooltip } from "antd";
+import { useTheme } from "../../Provider/ThemeProvider";
+
+// Tùy chỉnh màu nhanh ở đây
+const LIGHT_STYLES = [
+  "!bg-white",
+  "hover:!bg-gray-50",
+  "!text-gray-900",
+  "!border",
+  "!border-gray-300",
+  "!shadow-sm",
+  "dark:!bg-white",
+].join(" ");
+const DARK_STYLES = "!bg-[#374151] hover:!bg-[#4B5563] !text-white"; // xám đậm
+
+interface ThemeToggleButtonProps {
+  size?: "small" | "middle" | "large";
+  showText?: boolean;
+  square?: boolean; // nếu true -> bỏ bo tròn luôn
+}
+
+export const ThemeSwitch: React.FC<ThemeToggleButtonProps> = ({
+  size = "small",
+  showText = true,
+  square = false,
+}) => {
+  const { toggleSwitchTheme, isDarkMode, ref } = useTheme();
+
+  const label = isDarkMode ? "Dark" : "Light";
+
+  const tooltip = isDarkMode
+    ? "Chuyển sang Light mode"
+    : "Chuyển sang Dark mode";
+
+  return (
+    <Tooltip title={tooltip}>
+      <Button
+        ref={ref as React.Ref<HTMLButtonElement>}
+        size={size}
+        onClick={toggleSwitchTheme}
+        className={[
+          "transition-colors duration-200 !px-4 !py-1",
+          square ? "!rounded-none" : "!rounded-md",
+          isDarkMode ? DARK_STYLES : LIGHT_STYLES,
+        ].join(" ")}
+      >
+        {showText && label}
+      </Button>
+    </Tooltip>
+  );
+};

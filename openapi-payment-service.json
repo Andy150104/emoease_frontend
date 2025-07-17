@@ -1,0 +1,1228 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Payment API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/payment-service/"
+    }
+  ],
+  "paths": {
+    "/payments/vnpay/booking": {
+      "post": {
+        "tags": ["Booking Payments"],
+        "summary": "Create VnPay CallBack Url For Booking",
+        "description": "Create VnPay CallBack Url For Booking",
+        "operationId": "CreateVnPayCallBackUrlForBooking",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVnPayCallBackUrlForBookingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateVnPayCallBackUrlForBookingResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments": {
+      "get": {
+        "tags": ["Dashboard"],
+        "summary": "Get All Payments",
+        "description": "Get All Payments",
+        "operationId": "GetAllPayments",
+        "parameters": [
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "PatientProfileId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/PaymentStatus"
+            }
+          },
+          {
+            "name": "CreatedAt",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "PaymentType",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/PaymentType"
+            }
+          },
+          {
+            "name": "SortOrder",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "desc"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAllPaymentsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/daily-revenue": {
+      "get": {
+        "tags": ["Dashboard"],
+        "summary": "Get Daily Revenue",
+        "description": "Get Daily Revenue",
+        "operationId": "GetDailyRevenue",
+        "parameters": [
+          {
+            "name": "startTime",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDailyRevenueResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/revenue": {
+      "get": {
+        "tags": ["Dashboard"],
+        "summary": "Get Revenue",
+        "description": "Get Revenue",
+        "operationId": "GetRevenue",
+        "parameters": [
+          {
+            "name": "startTime",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetRevenueResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/callback": {
+      "get": {
+        "tags": ["Payments"],
+        "summary": "Handle VnPay Callback",
+        "description": "VnPay Callback Endpoint",
+        "operationId": "VnPayCallback",
+        "parameters": [
+          {
+            "name": "vnp_TransactionStatus",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vnp_TransactionNo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vnp_TxnRef",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vnp_ResponseCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vnp_OrderInfo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vnp_Amount",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VnPayCallbackResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/cancel": {
+      "post": {
+        "tags": ["PayOS Payments"],
+        "summary": "Cancel Payment Link",
+        "description": "Cancels a specific payment link with optional cancellation reason",
+        "operationId": "CancelPaymentLink",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelPaymentLinkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelPaymentLinkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/booking": {
+      "post": {
+        "tags": ["PayOS Payments"],
+        "summary": "Create PayOS CallBack Url For Booking",
+        "description": "Create PayOS CallBack Url For Booking",
+        "operationId": "CreatePayOSCallBackUrlForBooking",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePayOSCallBackUrlForBookingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePayOSCallBackUrlForBookingResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/subscription": {
+      "post": {
+        "tags": ["PayOS Payments"],
+        "summary": "Create PayOS CallBack Url For Subscription",
+        "description": "Create PayOS CallBack Url For Subscription",
+        "operationId": "CreatePayOSCallBackUrlForSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePayOSCallBackUrlForSubscriptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePayOSCallBackUrlForSubscriptionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/upgrade-subscription": {
+      "post": {
+        "tags": ["PayOS Payments"],
+        "summary": "Create PayOS CallBack Url For Upgrade Subscription",
+        "description": "Create PayOS CallBack Url For Upgrade Subscription",
+        "operationId": "CreatePayOSCallBackUrlForUpgradeSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePayOSCallBackUrlForUpgradeSubscriptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePayOSCallBackUrlForUpgradeSubscriptionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/link-information/{paymentCode}": {
+      "get": {
+        "tags": ["PayOS Payments"],
+        "summary": "Get Payment Link Information",
+        "description": "Retrieves information about a specific payment link",
+        "operationId": "GetPaymentLinkInformation",
+        "parameters": [
+          {
+            "name": "paymentCode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/confirm-webhook": {
+      "post": {
+        "tags": ["PayOS Payments"],
+        "summary": "Confirm PayOS Webhook URL",
+        "description": "Confirms the PayOS webhook URL for receiving payment notifications",
+        "operationId": "ConfirmPayOSWebhook",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/webhook": {
+      "post": {
+        "tags": ["PayOS Payments"],
+        "summary": "Process PayOS Webhook",
+        "description": "Processes incoming PayOS webhook notifications for payment status updates",
+        "operationId": "ProcessPayOSWebhook",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/vnpay/subscription": {
+      "post": {
+        "tags": ["Subscription Payments"],
+        "summary": "Create VnPay CallBack Url For Subscription",
+        "description": "Create VnPay CallBack Url For Subscription",
+        "operationId": "CreateVnPayCallBackUrlForSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVnPayCallBackUrlForSubscriptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateVnPayCallBackUrlForSubscriptionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/vnpay/subscription/upgrade": {
+      "post": {
+        "tags": ["Upgrade Subscription Payments"],
+        "summary": "Create VnPay CallBack Url For Upgrade Subscription",
+        "description": "Create VnPay CallBack Url For Upgrade Subscription",
+        "operationId": "CreateVnPayCallBackUrlForUpgradeSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVnPayCallBackUrlForUpgradeSubscriptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateVnPayCallBackUrlForUpgradeSubscriptionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BuyBookingDto": {
+        "type": "object",
+        "properties": {
+          "finalPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "patientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "paymentMethod": {
+            "$ref": "#/components/schemas/PaymentMethodName"
+          },
+          "bookingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "doctorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "patientEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "promoCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "giftCodeId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "bookingCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentType": {
+            "$ref": "#/components/schemas/PaymentType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BuySubscriptionDto": {
+        "type": "object",
+        "properties": {
+          "finalPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "patientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "paymentMethod": {
+            "$ref": "#/components/schemas/PaymentMethodName"
+          },
+          "subscriptionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "servicePackageId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "patientEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "promoCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "giftId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "durationDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "paymentType": {
+            "$ref": "#/components/schemas/PaymentType"
+          },
+          "servicePackageName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CancelPaymentLinkRequest": {
+        "type": "object",
+        "properties": {
+          "paymentCode": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cancellationReason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CancelPaymentLinkResponse": {
+        "type": "object",
+        "properties": {
+          "paymentInfo": {
+            "$ref": "#/components/schemas/PaymentLinkInformation"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreatePayOSCallBackUrlForBookingRequest": {
+        "type": "object",
+        "properties": {
+          "buyBooking": {
+            "$ref": "#/components/schemas/BuyBookingDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreatePayOSCallBackUrlForBookingResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreatePayOSCallBackUrlForSubscriptionRequest": {
+        "type": "object",
+        "properties": {
+          "buySubscription": {
+            "$ref": "#/components/schemas/BuySubscriptionDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreatePayOSCallBackUrlForSubscriptionResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreatePayOSCallBackUrlForUpgradeSubscriptionRequest": {
+        "type": "object",
+        "properties": {
+          "upgradeSubscription": {
+            "$ref": "#/components/schemas/UpgradeSubscriptionDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreatePayOSCallBackUrlForUpgradeSubscriptionResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateVnPayCallBackUrlForBookingRequest": {
+        "type": "object",
+        "properties": {
+          "buyBooking": {
+            "$ref": "#/components/schemas/BuyBookingDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateVnPayCallBackUrlForBookingResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateVnPayCallBackUrlForSubscriptionRequest": {
+        "type": "object",
+        "properties": {
+          "buySubscription": {
+            "$ref": "#/components/schemas/BuySubscriptionDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateVnPayCallBackUrlForSubscriptionResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateVnPayCallBackUrlForUpgradeSubscriptionRequest": {
+        "type": "object",
+        "properties": {
+          "upgradeSubscription": {
+            "$ref": "#/components/schemas/UpgradeSubscriptionDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateVnPayCallBackUrlForUpgradeSubscriptionResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "DailyRevenue": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "totalRevenue": {
+            "type": "number",
+            "format": "double"
+          },
+          "totalPayment": {
+            "type": "number",
+            "format": "float"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetAllPaymentsResponse": {
+        "type": "object",
+        "properties": {
+          "payments": {
+            "$ref": "#/components/schemas/PaymentDtoPaginatedResult"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetDailyRevenueResult": {
+        "type": "object",
+        "properties": {
+          "revenues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DailyRevenue"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetRevenueResult": {
+        "type": "object",
+        "properties": {
+          "totalRevenue": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PaymentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "patientProfileId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "totalAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "subscriptionId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "bookingId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/PaymentStatus"
+          },
+          "paymentType": {
+            "$ref": "#/components/schemas/PaymentType"
+          },
+          "paymentMethodId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "externalTransactionCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PaymentDtoPaginatedResult": {
+        "type": "object",
+        "properties": {
+          "pageIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentDto"
+            },
+            "nullable": true
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PaymentLinkInformation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "orderCode": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "amountPaid": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "amountRemaining": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Transaction"
+            },
+            "nullable": true
+          },
+          "canceledAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "cancellationReason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PaymentMethodName": {
+        "enum": ["VNPay", "PayOS"],
+        "type": "string"
+      },
+      "PaymentStatus": {
+        "enum": ["Pending", "Completed", "Failed", "Cancelled"],
+        "type": "string"
+      },
+      "PaymentType": {
+        "enum": ["BuySubscription", "Booking", "UpgradeSubscription"],
+        "type": "string"
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "accountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "transactionDateTime": {
+            "type": "string",
+            "nullable": true
+          },
+          "virtualAccountName": {
+            "type": "string",
+            "nullable": true
+          },
+          "virtualAccountNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "counterAccountBankId": {
+            "type": "string",
+            "nullable": true
+          },
+          "counterAccountBankName": {
+            "type": "string",
+            "nullable": true
+          },
+          "counterAccountName": {
+            "type": "string",
+            "nullable": true
+          },
+          "counterAccountNumber": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpgradeSubscriptionDto": {
+        "type": "object",
+        "properties": {
+          "finalPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "patientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "paymentMethod": {
+            "$ref": "#/components/schemas/PaymentMethodName"
+          },
+          "subscriptionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "servicePackageId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "patientEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "promoCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "giftId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "durationDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "paymentType": {
+            "$ref": "#/components/schemas/PaymentType"
+          },
+          "oldSubscriptionPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "servicePackageName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VnPayCallbackResult": {
+        "type": "object",
+        "properties": {
+          "payment": {
+            "$ref": "#/components/schemas/PaymentDto"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "JWT Authorization header using the Bearer scheme.\n\nEnter: **Bearer &lt;your token&gt;**",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ]
+}
