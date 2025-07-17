@@ -42,20 +42,20 @@ const DashboardRevenuePage: React.FC = () => {
   // Tính các số liệu tổng hợp
   const totalRevenue = revenues.reduce(
     (sum, r) => sum + (r.totalRevenue ?? 0),
-    0
+    0,
   );
   const totalPayment = revenues.reduce(
     (sum, r) => sum + (r.totalPayment ?? 0),
-    0
+    0,
   );
   const avgRevenue = revenues.length ? totalRevenue / revenues.length : 0;
   const maxRevenueDay = revenues.reduce(
     (max, r) => ((r.totalRevenue ?? 0) > (max.totalRevenue ?? 0) ? r : max),
-    revenues[0] || { date: "", totalRevenue: 0, totalPayment: 0 }
+    revenues[0] || { date: "", totalRevenue: 0, totalPayment: 0 },
   );
   const maxPaymentDay = revenues.reduce(
     (max, r) => ((r.totalPayment ?? 0) > (max.totalPayment ?? 0) ? r : max),
-    revenues[0] || { date: "", totalRevenue: 0, totalPayment: 0 }
+    revenues[0] || { date: "", totalRevenue: 0, totalPayment: 0 },
   );
 
   const stats = [

@@ -69,7 +69,7 @@ const ProfilesByMonthCards: React.FC<ProfilesByMonthCardsProps> = ({
 }) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState<GetCreatedPatientProfileDto | null>(
-    null
+    null,
   );
 
   const [startTimeSelected, setStartTimeSelected] = useState<string>("");
@@ -89,7 +89,7 @@ const ProfilesByMonthCards: React.FC<ProfilesByMonthCardsProps> = ({
         EndDate: endTimeSelected,
       });
     const datapointForMonth = res.data.datapoints?.find((dp) =>
-      moment(dp.date).isSame(startTimeSelected, "month")
+      moment(dp.date).isSame(startTimeSelected, "month"),
     );
     if (datapointForMonth) {
       setSelected(datapointForMonth);
@@ -114,117 +114,119 @@ const ProfilesByMonthCards: React.FC<ProfilesByMonthCardsProps> = ({
   return (
     <>
       <div className="min-h-screen">
-              <List
-        grid={{ column: 3, gutter: 16, xs: 1, sm: 2, lg: 3 }}
-        dataSource={datapoints}
-        renderItem={(point) => (
-          <List.Item>
-            <FadeInOnScrollSpring>
-              <Card
-                hoverable
-                onClick={() => showDetail(point)}
+        <List
+          grid={{ column: 3, gutter: 16, xs: 1, sm: 2, lg: 3 }}
+          dataSource={datapoints}
+          renderItem={(point) => (
+            <List.Item>
+              <FadeInOnScrollSpring>
+                <Card
+                  hoverable
+                  onClick={() => showDetail(point)}
+                  style={{
+                    width: "100%",
+                    borderRadius: 12,
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+                    transition: "all 0.3s",
+                    display: "flex",
+                    flexDirection: "column",
+                    minHeight: 180,
+                  }}
+                >
+                  <Space
+                    direction="vertical"
+                    size={10}
+                    style={{ width: "100%", flex: 1, overflowWrap: "anywhere" }}
+                  >
+                    <Title level={4} style={{ margin: 0 }}>
+                      <CalendarOutlined
+                        style={{ marginRight: 8, color: "#1d4ed8" }}
+                      />
+                      {moment(point.date).format("MMMM YYYY")}
+                    </Title>
+
+                    <Text style={{ fontSize: 16 }}>
+                      <ProfileOutlined
+                        style={{ marginRight: 6, color: "#10b981" }}
+                      />
+                      <strong>{point.profiles?.totalCount}</strong> Profiles
+                    </Text>
+
+                    <Text type="secondary">
+                      Total Pages: {point.profiles?.totalPages}
+                    </Text>
+
+                    <div style={{ marginTop: "auto" }}>
+                      <Button
+                        type="link"
+                        style={{ paddingLeft: 0 }}
+                        onClick={(e) => {
+                          e.stopPropagation(); // tránh trigger onClick card 2 lần
+                          showDetail(point);
+                        }}
+                      >
+                        View Details →
+                      </Button>
+                    </div>
+                  </Space>
+                </Card>
+              </FadeInOnScrollSpring>
+            </List.Item>
+          )}
+        />
+
+        <Drawer
+          width={1000}
+          title={
+            selected ? (
+              <div
                 style={{
-                  width: "100%",
-                  borderRadius: 12,
-                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-                  transition: "all 0.3s",
                   display: "flex",
-                  flexDirection: "column",
-                  minHeight: 180,
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                <Space
-                  direction="vertical"
-                  size={10}
-                  style={{ width: "100%", flex: 1, overflowWrap: "anywhere" }}
-                >
-                  <Title level={4} style={{ margin: 0 }}>
-                    <CalendarOutlined
-                      style={{ marginRight: 8, color: "#1d4ed8" }}
-                    />
-                    {moment(point.date).format("MMMM YYYY")}
-                  </Title>
-
-                  <Text style={{ fontSize: 16 }}>
-                    <ProfileOutlined
-                      style={{ marginRight: 6, color: "#10b981" }}
-                    />
-                    <strong>{point.profiles?.totalCount}</strong> Profiles
-                  </Text>
-
-                  <Text type="secondary">
-                    Total Pages: {point.profiles?.totalPages}
-                  </Text>
-
-                  <div style={{ marginTop: "auto" }}>
-                    <Button
-                      type="link"
-                      style={{ paddingLeft: 0 }}
-                      onClick={(e) => {
-                        e.stopPropagation(); // tránh trigger onClick card 2 lần
-                        showDetail(point);
-                      }}
-                    >
-                      View Details →
-                    </Button>
-                  </div>
-                </Space>
-              </Card>
-            </FadeInOnScrollSpring>
-          </List.Item>
-        )}
-      />
-
-      <Drawer
-        width={1000}
-        title={
-          selected ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Title level={4} style={{ margin: 0 }}>
-                <CalendarOutlined style={{ marginRight: 8 }} />
-                {moment(selected.date).format("MMMM YYYY")}
-              </Title>
-              <Tag color="blue">Profiles: {selected.profiles?.totalCount}</Tag>
-            </div>
-          ) : null
-        }
-        placement="right"
-        onClose={closeDrawer}
-        open={visible}
-      >
-        {selected && (
-          <>
-            <Divider orientation="left" style={{ fontWeight: "bold" }}>
-              Detailed Profiles
-            </Divider>
-            <Table<Profile>
-              columns={columns}
-              dataSource={(selected.profiles?.data ?? []).map((item) => ({
-                id: item.id ?? "",
-                fullName: item.fullName ?? "",
-                gender: item.gender ?? "",
-                birthDate: item.birthDate ?? "",
-                createdAt: item.createdAt ?? "",
-              }))}
-              rowKey="id"
-              bordered
-              pagination={{
-                current: selected.profiles?.pageIndex,
-                pageSize: selected.profiles?.pageSize,
-                total: selected.profiles?.totalCount,
-                showSizeChanger: false,
-              }}
-              onChange={handleTableChange}
-            />
-          </>
-        )}
-      </Drawer>
+                <Title level={4} style={{ margin: 0 }}>
+                  <CalendarOutlined style={{ marginRight: 8 }} />
+                  {moment(selected.date).format("MMMM YYYY")}
+                </Title>
+                <Tag color="blue">
+                  Profiles: {selected.profiles?.totalCount}
+                </Tag>
+              </div>
+            ) : null
+          }
+          placement="right"
+          onClose={closeDrawer}
+          open={visible}
+        >
+          {selected && (
+            <>
+              <Divider orientation="left" style={{ fontWeight: "bold" }}>
+                Detailed Profiles
+              </Divider>
+              <Table<Profile>
+                columns={columns}
+                dataSource={(selected.profiles?.data ?? []).map((item) => ({
+                  id: item.id ?? "",
+                  fullName: item.fullName ?? "",
+                  gender: item.gender ?? "",
+                  birthDate: item.birthDate ?? "",
+                  createdAt: item.createdAt ?? "",
+                }))}
+                rowKey="id"
+                bordered
+                pagination={{
+                  current: selected.profiles?.pageIndex,
+                  pageSize: selected.profiles?.pageSize,
+                  total: selected.profiles?.totalCount,
+                  showSizeChanger: false,
+                }}
+                onChange={handleTableChange}
+              />
+            </>
+          )}
+        </Drawer>
       </div>
     </>
   );

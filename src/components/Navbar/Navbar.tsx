@@ -1,5 +1,5 @@
 // components/Navbar.jsx
-"use client"
+"use client";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,7 +36,12 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <Image src="https://rubicmarketing.com/wp-content/uploads/2022/07/y-nghia-logo-fpt-lan-3.jpg" alt="Logo" width={28} height={28} />
+            <Image
+              src="https://rubicmarketing.com/wp-content/uploads/2022/07/y-nghia-logo-fpt-lan-3.jpg"
+              alt="Logo"
+              width={28}
+              height={28}
+            />
             <span className="text-lg font-semibold">FCareer</span>
           </div>
 
@@ -47,7 +52,9 @@ export default function Navbar() {
                 key={item.key}
                 href={item.href ?? ""}
                 className={`text-base font-medium tracking-wide hover:text-white transition ${
-                  item.key === "home" ? "text-white font-semibold" : "text-gray-300"
+                  item.key === "home"
+                    ? "text-white font-semibold"
+                    : "text-gray-300"
                 }`}
               >
                 {item.label}
@@ -86,9 +93,17 @@ export default function Navbar() {
                 strokeWidth={2}
               >
                 {isOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 )}
               </svg>
             </button>

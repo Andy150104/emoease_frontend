@@ -33,7 +33,7 @@ export default function LoginPage() {
   const onFinish = async (values: LoginFormValues) => {
     try {
       await login(values.email, values.password);
-      router.push("/Admin")
+      router.push("/Admin");
       messageApi.success("Đăng nhập thành công!");
     } catch (error: unknown) {
       let errorMessage =

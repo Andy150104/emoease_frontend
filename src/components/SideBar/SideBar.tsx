@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { CSSProperties, useEffect, useState } from "react";
 import Image from "next/image";
@@ -45,12 +45,24 @@ const getItem = (
   key: string,
   icon?: React.ReactNode,
   children?: NavMenuItem[],
-  path?: string
+  path?: string,
 ): NavMenuItem => ({ label, key, icon, children, path });
 
 const navItems: NavMenuItem[] = [
-  getItem("Dashboard Doanh Thu", "dashboard", <PieChartOutlined />, undefined, "/Admin"),
-  getItem("Dashboard Người dùng", "dashboard-user", <DesktopOutlined />, undefined, "/Admin/profiles"),
+  getItem(
+    "Dashboard Doanh Thu",
+    "dashboard",
+    <PieChartOutlined />,
+    undefined,
+    "/Admin",
+  ),
+  getItem(
+    "Dashboard Người dùng",
+    "dashboard-user",
+    <DesktopOutlined />,
+    undefined,
+    "/Admin/profiles",
+  ),
   getItem("Users", "users", <UserOutlined />, [
     getItem("Tom", "user-tom", undefined, undefined, "/users/tom"),
     getItem("Bill", "user-bill", undefined, undefined, "/users/bill"),
@@ -62,7 +74,7 @@ const navItems: NavMenuItem[] = [
   ]),
   getItem("Files", "files", <FileOutlined />, undefined, "/files"),
   getItem("Đăng xuất", "logout", <LogoutOutlined />),
-  getItem("", "", <ThemeSwitch />)
+  getItem("", "", <ThemeSwitch />),
 ];
 
 /* ---------- HELPERS ---------- */
@@ -77,7 +89,7 @@ const keyPathMap = flatten(navItems);
 
 const pathKeyMap = Object.entries(keyPathMap).reduce<Record<string, string>>(
   (m, [k, p]) => ((m[p] = k), m),
-  {}
+  {},
 );
 
 function getSelectedKeys(pathname: string): string[] {
@@ -106,7 +118,7 @@ const toAntdItems = (items: NavMenuItem[]): MenuItem[] =>
 interface AdminSidebarProps {
   collapsed: boolean;
   onCollapse: (collapsed: boolean) => void;
-  menuItems?: NavMenuItem[];           // cho phép override
+  menuItems?: NavMenuItem[]; // cho phép override
   defaultSelectedKeys?: string[];
 }
 
@@ -118,7 +130,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 }) => {
   const [mounted, setMounted] = useState(false);
   const { isDarkMode } = useTheme();
-  const { token: { colorPrimary } } = theme.useToken();
+  const {
+    token: { colorPrimary },
+  } = theme.useToken();
   const messageApi = useNotification();
   const pathname = usePathname();
   const router = useRouter();
@@ -135,16 +149,16 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const antItems = toAntdItems(menuItems);
   const selectedKeys = defaultSelectedKeys ?? getSelectedKeys(pathname);
 
-  const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
+  const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     if (key === "logout") {
-    useAuthStore.getState().logout()
-    useAuthStore.persist.clearStorage()
-    router.push("/Login")
-    messageApi.success("Đăng xuất thành công!")
-    return;
-  }
-  const path = keyPathMap[key];
-  if (path) router.push(path);
+      useAuthStore.getState().logout();
+      useAuthStore.persist.clearStorage();
+      router.push("/Login");
+      messageApi.success("Đăng xuất thành công!");
+      return;
+    }
+    const path = keyPathMap[key];
+    if (path) router.push(path);
   };
 
   return (

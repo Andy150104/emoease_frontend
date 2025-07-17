@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import 'antd/dist/reset.css'; /*mới*/
+@import "antd/dist/reset.css"; /*mới*/
 @custom-variant dark (&:where(.dark, .dark *));
 :root {
   --background: #ffffff;

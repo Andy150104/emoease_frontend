@@ -33,7 +33,7 @@ const BaseScreenAdmin: React.FC<BaseScreenAdminProps> = ({
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id)
+    return () => cancelAnimationFrame(id);
   }, []);
 
   const {
@@ -41,7 +41,7 @@ const BaseScreenAdmin: React.FC<BaseScreenAdminProps> = ({
   } = theme.useToken();
 
   if (invalid) {
-    return <NotFound />
+    return <NotFound />;
   }
 
   if (!mounted) {
@@ -121,7 +121,7 @@ const BaseScreenAdmin: React.FC<BaseScreenAdminProps> = ({
         </FadeInUp>
 
         <Footer style={{ textAlign: "center" }}>
-          EmoEasse ©{new Date().getFullYear()} Created by SOLTECH 
+          EmoEasse ©{new Date().getFullYear()} Created by SOLTECH
         </Footer>
       </Layout>
     </Layout>

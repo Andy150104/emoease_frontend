@@ -18,7 +18,7 @@ interface PaymentState {
     pageIndex: number,
     pageSize: number,
     createAt: string,
-    patientProfileId: string
+    patientProfileId: string,
   ) => Promise<GetAllPaymentsResponse>;
 }
 
@@ -48,7 +48,7 @@ export const usePaymentStore = create<PaymentState>((set) => ({
     pageIndex,
     pageSize,
     createAt,
-    patientProfileId
+    patientProfileId,
   ) => {
     try {
       useLoadingStore.getState().showLoading();

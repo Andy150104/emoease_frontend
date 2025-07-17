@@ -17,6 +17,7 @@
 ---
 
 ## 📋 Table of Contents
+
 - [About](#about)
 - [Demo](#demo)
 - [Features](#features)
@@ -30,11 +31,13 @@
 ---
 
 ## 📝 About
+
 EmoEase là nền tảng hỗ trợ người dùng quản lý cảm xúc, theo dõi hồ sơ cá nhân, và thực hiện thanh toán dịch vụ một cách dễ dàng. Ứng dụng phù hợp cho cá nhân, tổ chức giáo dục, hoặc các chuyên gia tâm lý muốn quản lý thông tin khách hàng.
 
 ---
 
 ## 🎬 Demo
+
 <p align="center">
   <img src="https://placehold.co/800x400?text=Demo+Screenshot" alt="Demo Screenshot"/>
 </p>
@@ -44,6 +47,7 @@ EmoEase là nền tảng hỗ trợ người dùng quản lý cảm xúc, theo d
 ---
 
 ## ✨ Features
+
 - Quản lý hồ sơ người dùng
 - Đăng nhập/Đăng xuất bảo mật
 - Thanh toán và đăng ký dịch vụ
@@ -55,6 +59,7 @@ EmoEase là nền tảng hỗ trợ người dùng quản lý cảm xúc, theo d
 ---
 
 ## 📁 Project Structure
+
 ```text
 src/
   api/           # API clients
@@ -72,6 +77,7 @@ src/
 ---
 
 ## ⚙️ Installation
+
 1. **Clone repo:**
    ```bash
    git clone https://github.com/your-username/emoease-frontend.git
@@ -92,18 +98,23 @@ src/
 ---
 
 ## ▶️ Usage
+
 Chạy server phát triển:
+
 ```bash
 npm run dev
 # hoặc
 yarn dev
 ```
+
 Sau đó mở [http://localhost:3000](http://localhost:3000) trên trình duyệt để xem kết quả.
 
 ---
 
 ## 🤝 Contributing
+
 Đóng góp ý kiến, tính năng mới hoặc sửa lỗi luôn được hoan nghênh!
+
 1. Fork repo
 2. Tạo nhánh mới (`git checkout -b feature/ten-tinh-nang`)
 3. Commit thay đổi (`git commit -m 'Add new feature'`)
@@ -113,11 +124,13 @@ Sau đó mở [http://localhost:3000](http://localhost:3000) trên trình duyệ
 ---
 
 ## 📜 License
+
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## 📬 Contact
+
 - **Nhóm phát triển:** [Tên nhóm hoặc cá nhân]
 - **Email:** your.email@example.com
 - **Facebook:** [Link Facebook]

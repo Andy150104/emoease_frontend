@@ -20,19 +20,19 @@ axiosInstance.interceptors.request.use((cfg) => {
 });
 
 axiosInstance.interceptors.response.use(
-  response => response,
-  error => {
+  (response) => response,
+  (error) => {
     const status = error.response?.status;
     if (status === 401 || status === 403 || status === 418) {
       // if (typeof window !== "undefined") {
       //   window.location.href = "/Login";
       // }
       useAuthStore.getState().logout();
-      useAuthStore.persist.clearStorage()
-      useValidateStore.getState().setInValid(true)
+      useAuthStore.persist.clearStorage();
+      useValidateStore.getState().setInValid(true);
     }
     return Promise.reject(error);
-  }
+  },
 );
 // 2) Adapter để Swagger-client gọi qua axios
 const axiosFetch: typeof fetch = async (input, init = {}) => {
