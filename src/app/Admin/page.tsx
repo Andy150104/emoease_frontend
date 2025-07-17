@@ -17,6 +17,7 @@ import type { DailyRevenue } from "EmoEase/api/api-payment-service";
 import { usePaymentStore } from "EmoEase/stores/Payment/PaymentStore";
 import dayjs, { Dayjs } from "dayjs";
 import BaseControlRangePicker from "EmoEase/components/BaseControl/BaseControlRangePicker";
+import Head from "next/head";
 
 const DashboardRevenuePage: React.FC = () => {
   const { revenues, isLoading, error, fetchDailyRevenue } = usePaymentStore();
@@ -39,15 +40,21 @@ const DashboardRevenuePage: React.FC = () => {
   };
 
   // Tính các số liệu tổng hợp
-  const totalRevenue = revenues.reduce((sum, r) => sum + (r.totalRevenue ?? 0), 0);
-  const totalPayment = revenues.reduce((sum, r) => sum + (r.totalPayment ?? 0), 0);
+  const totalRevenue = revenues.reduce(
+    (sum, r) => sum + (r.totalRevenue ?? 0),
+    0
+  );
+  const totalPayment = revenues.reduce(
+    (sum, r) => sum + (r.totalPayment ?? 0),
+    0
+  );
   const avgRevenue = revenues.length ? totalRevenue / revenues.length : 0;
   const maxRevenueDay = revenues.reduce(
-    (max, r) => (r.totalRevenue ?? 0) > (max.totalRevenue ?? 0) ? r : max,
+    (max, r) => ((r.totalRevenue ?? 0) > (max.totalRevenue ?? 0) ? r : max),
     revenues[0] || { date: "", totalRevenue: 0, totalPayment: 0 }
   );
   const maxPaymentDay = revenues.reduce(
-    (max, r) => (r.totalPayment ?? 0) > (max.totalPayment ?? 0) ? r : max,
+    (max, r) => ((r.totalPayment ?? 0) > (max.totalPayment ?? 0) ? r : max),
     revenues[0] || { date: "", totalRevenue: 0, totalPayment: 0 }
   );
 
@@ -105,12 +112,11 @@ const DashboardRevenuePage: React.FC = () => {
     yAxis: {
       title: { text: "Doanh thu (₫)" },
       label: {
-        formatter: (val: number | string) =>
-          `${Number(val).toLocaleString()}₫`,
+        formatter: (val: number | string) => `${Number(val).toLocaleString()}₫`,
         style: { fill: "red" },
       },
     },
-    point: { size: 4, shape: "circle", },
+    point: { size: 4, shape: "circle" },
     tooltip: {
       formatter: (d: DailyRevenue) => ({
         name: "Doanh thu",
@@ -121,7 +127,7 @@ const DashboardRevenuePage: React.FC = () => {
   };
 
   // Dữ liệu cho biểu đồ cột
-  const columnData = revenues.map(r => ({
+  const columnData = revenues.map((r) => ({
     date: dayjs(r.date).format("DD/MM"),
     totalPayment: r.totalPayment ?? 0,
   }));
@@ -146,131 +152,146 @@ const DashboardRevenuePage: React.FC = () => {
   };
 
   return (
-    <BaseScreenAdmin
-      defaultSelectedKeys={["dashboard"]}
-      breadcrumbItems={[{ title: "Doanh thu" }]}
-    >
-      <Row gutter={[32, 32]}>
-        {/* Cột trái: cards thống kê */}
-        <Col xs={24} md={8} lg={6}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            {stats.map((item, idx) => (
-              <Card
-                key={idx}
-                hoverable
-                style={{
-                  borderRadius: 16,
-                  background: token.colorBgContainer,
-                  boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
-                  textAlign: "left",
-                  padding: 16,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 16,
-                }}
-              >
-                <div
+    <>
+      <Head>
+        <title>EmoEase-Admin</title>
+      </Head>
+      <BaseScreenAdmin
+        defaultSelectedKeys={["dashboard"]}
+        breadcrumbItems={[{ title: "Doanh thu" }]}
+      >
+        <Row gutter={[32, 32]}>
+          {/* Cột trái: cards thống kê */}
+          <Col xs={24} md={8} lg={6}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+              {stats.map((item, idx) => (
+                <Card
+                  key={idx}
+                  hoverable
                   style={{
-                    background: item.color + "15",
-                    borderRadius: "50%",
-                    width: 48,
-                    height: 48,
+                    borderRadius: 16,
+                    background: token.colorBgContainer,
+                    boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
+                    textAlign: "left",
+                    padding: 16,
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 24,
-                    color: item.color,
+                    gap: 16,
                   }}
                 >
-                  {item.icon}
-                </div>
-                <div>
-                  <div style={{ color: token.colorTextDescription, fontSize: 15 }}>
-                    {item.title}
-                  </div>
                   <div
                     style={{
-                      color: item.color,
-                      fontWeight: 700,
-                      fontSize: "1.5rem",
-                      marginTop: 4,
-                    }}
-                  >
-                    {item.value.toLocaleString()} {item.suffix}
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </Col>
-
-        {/* Cột phải: hai biểu đồ */}
-        <Col xs={24} md={16} lg={18}>
-          <Row gutter={[32, 32]}>
-            {/* Biểu đồ đường */}
-            <Col xs={24}>
-              <Card
-                title={
-                  <div
-                    style={{
+                      background: item.color + "15",
+                      borderRadius: "50%",
+                      width: 48,
+                      height: 48,
                       display: "flex",
-                      justifyContent: "space-between",
                       alignItems: "center",
-                      fontSize: 20,
-                      fontWeight: 600,
+                      justifyContent: "center",
+                      fontSize: 24,
+                      color: item.color,
                     }}
                   >
-                    <span>Doanh thu hằng tháng</span>
-                    <BaseControlRangePicker
-                      value={range}
-                      onChange={onRangeChange}
-                      format="DD-MM-YYYY"
-                    />
+                    {item.icon}
                   </div>
-                }
-                style={{
-                  borderRadius: 16,
-                  boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
-                  padding: 36,
-                  marginBottom: 32,
-                }}
-              >
-                {isLoading ? (
-                  <div style={{ textAlign: "center", padding: 24 }}>
-                    <Spin />
+                  <div>
+                    <div
+                      style={{
+                        color: token.colorTextDescription,
+                        fontSize: 15,
+                      }}
+                    >
+                      {item.title}
+                    </div>
+                    <div
+                      style={{
+                        color: item.color,
+                        fontWeight: 700,
+                        fontSize: "1.5rem",
+                        marginTop: 4,
+                      }}
+                    >
+                      {item.value.toLocaleString()} {item.suffix}
+                    </div>
                   </div>
-                ) : error ? (
-                  <Alert type="error" message="Lỗi tải dữ liệu" description={error} showIcon />
-                ) : (
-                  <Line {...lineConfig} />
-                )}
-              </Card>
-            </Col>
+                </Card>
+              ))}
+            </div>
+          </Col>
 
-            {/* Biểu đồ cột */}
-            <Col xs={24}>
-              <Card
-                title={<span style={{ fontWeight: 600 }}>Tổng quan</span>}
-                extra={
-                  <select style={{ borderRadius: 8, padding: "2px 8px" }}>
-                    <option>Monthly</option>
-                    <option>Weekly</option>
-                  </select>
-                }
-                style={{
-                  borderRadius: 16,
-                  boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
-                  padding: 24,
-                  height: "100%",
-                }}
-              >
-                <BarColumn {...columnConfig} />
-              </Card>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    </BaseScreenAdmin>
+          {/* Cột phải: hai biểu đồ */}
+          <Col xs={24} md={16} lg={18}>
+            <Row gutter={[32, 32]}>
+              {/* Biểu đồ đường */}
+              <Col xs={24}>
+                <Card
+                  title={
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        fontSize: 20,
+                        fontWeight: 600,
+                      }}
+                    >
+                      <span>Doanh thu hằng tháng</span>
+                      <BaseControlRangePicker
+                        value={range}
+                        onChange={onRangeChange}
+                        format="DD-MM-YYYY"
+                      />
+                    </div>
+                  }
+                  style={{
+                    borderRadius: 16,
+                    boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
+                    padding: 36,
+                    marginBottom: 32,
+                  }}
+                >
+                  {isLoading ? (
+                    <div style={{ textAlign: "center", padding: 24 }}>
+                      <Spin />
+                    </div>
+                  ) : error ? (
+                    <Alert
+                      type="error"
+                      message="Lỗi tải dữ liệu"
+                      description={error}
+                      showIcon
+                    />
+                  ) : (
+                    <Line {...lineConfig} />
+                  )}
+                </Card>
+              </Col>
+
+              {/* Biểu đồ cột */}
+              <Col xs={24}>
+                <Card
+                  title={<span style={{ fontWeight: 600 }}>Tổng quan</span>}
+                  extra={
+                    <select style={{ borderRadius: 8, padding: "2px 8px" }}>
+                      <option>Monthly</option>
+                      <option>Weekly</option>
+                    </select>
+                  }
+                  style={{
+                    borderRadius: 16,
+                    boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
+                    padding: 24,
+                    height: "100%",
+                  }}
+                >
+                  <BarColumn {...columnConfig} />
+                </Card>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </BaseScreenAdmin>
+    </>
   );
 };
 

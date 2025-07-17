@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { ThemeSwitch } from "EmoEase/components/Themes/Theme";
 
 /**
  * Neon 404 Page (inspired by your screenshot)
@@ -18,39 +19,18 @@ import Link from "next/link";
 
 // Optional central color tokens – change once, reuse everywhere
 const ACCENT = "#ccff00"; // neon lime you liked
-const BG = "#020712";     // deep navy/blue‑black you mentioned
+const BG = "#020712"; // deep navy/blue‑black you mentioned
 
 export default function NotFound() {
   return (
-    <main
+    <div className="min-h-screen">
+      <main
       className="relative flex min-h-screen w-full flex-col items-center justify-center text-center select-none"
       style={{ backgroundColor: BG }}
     >
-      {/* ─── Corner Meta Blocks ───────────────────────────────────────────── */}
-      <header className="pointer-events-none absolute left-4 top-4 text-xs leading-tight tracking-wider text-white/70 sm:left-8 sm:top-8">
-        <div className="pointer-events-auto space-x-2">
-          <span className="font-semibold text-white">YOUR NAME</span>
-          <span className="inline-flex items-center gap-1">
-            <span
-              className="inline-block h-2 w-2 animate-pulse rounded-full"
-              style={{ backgroundColor: ACCENT }}
-            />
-            <span>AVAILABLE FOR FREELANCE</span>
-          </span>
-        </div>
-      </header>
-
       <nav className="pointer-events-none absolute right-4 top-4 text-xs leading-tight tracking-wider text-white/70 sm:right-8 sm:top-8">
         <div className="pointer-events-auto flex items-center gap-4">
-          <Link href="#" className="hover:text-white transition-colors">DRIBBBLE</Link>
-          <Link href="#" className="hover:text-white transition-colors">INSTAGRAM</Link>
-          <Link
-            href="/contact"
-            className="rounded-sm px-2 py-1 font-medium text-black transition-colors hover:opacity-90"
-            style={{ backgroundColor: ACCENT }}
-          >
-            LET'S TALK
-          </Link>
+          <ThemeSwitch />
         </div>
       </nav>
 
@@ -78,7 +58,7 @@ export default function NotFound() {
 
       {/* ─── Message ──────────────────────────────────────────────────────── */}
       <h1 className="text-xl font-medium tracking-wide text-white sm:text-2xl md:text-3xl">
-        SORRY, THERE'S <span className="block sm:inline" />
+        SORRY, THERE&apos;S <span className="block sm:inline" />
         <span style={{ color: ACCENT }}>NOTHING HERE</span>
       </h1>
 
@@ -96,12 +76,10 @@ export default function NotFound() {
       {/* ─── Footer Meta ──────────────────────────────────────────────────── */}
       <footer className="pointer-events-none absolute bottom-4 flex w-full items-end justify-between px-4 text-[10px] leading-tight tracking-widest text-white/50 sm:bottom-6 sm:px-8">
         <span>9/1999</span>
-        <span>
-          YOUR NAME © {new Date().getFullYear()}
-        </span>
+        <span>YOUR NAME © {new Date().getFullYear()}</span>
         <span>CODED BY YOU</span>
       </footer>
     </main>
+    </div>
   );
 }
-

@@ -31,6 +31,11 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       refreshTokenValue: null,
 
+      reset: () => {
+        set({ token: null, refreshTokenValue: null });
+        Cookies.remove("auth-storage");
+      },
+
       login: async (email, password) => {
         try {
           const resp = await apiClient.authService.auth.loginCreate(
@@ -71,7 +76,10 @@ export const useAuthStore = create<AuthState>()(
           const { token: newToken, refreshToken: newRefresh } =
             resp.data as never;
           set({ token: newToken, refreshTokenValue: newRefresh });
-          apiClient.authService.setSecurityData({ token: newToken, refreshToken: newRefresh });
+          apiClient.authService.setSecurityData({
+            token: newToken,
+            refreshToken: newRefresh,
+          });
         } catch {
           // revoke token cũ nếu refresh thất bại
           apiClient.authService.auth
@@ -82,7 +90,10 @@ export const useAuthStore = create<AuthState>()(
             })
             .catch(() => {});
           set({ token: null, refreshTokenValue: null });
-          apiClient.authService.setSecurityData({ token: null, refreshToken: null });
+          apiClient.authService.setSecurityData({
+            token: null,
+            refreshToken: null,
+          });
           throw new Error("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại.");
         }
       },
@@ -99,7 +110,10 @@ export const useAuthStore = create<AuthState>()(
             .catch(() => {});
         }
         set({ token: null, refreshTokenValue: null });
-        apiClient.authService.setSecurityData({ token: null, refreshToken: null });
+        apiClient.authService.setSecurityData({
+          token: null,
+          refreshToken: null,
+        });
       },
     }),
     {

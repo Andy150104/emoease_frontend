@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Form, message } from "antd";
+import { Form } from "antd";
 import Image from "next/image";
 import { useSpring, useTrail, animated } from "@react-spring/web";
 import BaseControlTextField from "EmoEase/components/BaseControl/BasecontrolTextField";
@@ -11,6 +11,7 @@ import { useAuthStore } from "EmoEase/stores/Auth/AuthStore";
 import { isAxiosError } from "axios";
 import BubbleBackground from "EmoEase/components/Bubble/BubbleBackground";
 import { useRouter } from "next/navigation";
+import { useNotification } from "EmoEase/Provider/NotificationProvider";
 
 const xmlColumns = {
   email: { id: "email", name: "Email", rules: "required" },
@@ -20,7 +21,7 @@ const xmlColumns = {
 type LoginFormValues = { email: string; password: string };
 
 export default function LoginPage() {
-  const [messageApi, contextHolder] = message.useMessage();
+  const messageApi = useNotification();
   const [form] = Form.useForm<LoginFormValues>();
   const login = useAuthStore((state) => state.login);
   const router = useRouter();
@@ -32,8 +33,8 @@ export default function LoginPage() {
   const onFinish = async (values: LoginFormValues) => {
     try {
       await login(values.email, values.password);
-      messageApi.success("Đăng nhập thành công!");
       router.push("/Admin")
+      messageApi.success("Đăng nhập thành công!");
     } catch (error: unknown) {
       let errorMessage =
         "Đăng nhập thất bại, vui lòng kiểm tra lại email/mật khẩu.";
@@ -68,7 +69,7 @@ export default function LoginPage() {
       <BubbleBackground />
       <div className="relative z-10 bg-white bg-opacity-90 dark:bg-gray-800 dark:bg-opacity-90 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8">
         <h2 className="text-center text-2xl sm:text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">
-          Welcome to Lorem!
+          Welcome to EmoEase!
         </h2>
         <Form<LoginFormValues>
           form={form}
@@ -107,7 +108,6 @@ export default function LoginPage() {
 
   return (
     <>
-      {contextHolder}
       <div className="flex flex-col md:flex-row min-h-screen">
         {/* Left: background + mobile form */}
         <div className="relative flex-1 h-screen md:h-auto overflow-hidden">
