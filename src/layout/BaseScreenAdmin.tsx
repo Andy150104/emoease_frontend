@@ -121,7 +121,7 @@ const BaseScreenAdmin: React.FC<BaseScreenAdminProps> = ({
         </FadeInUp>
 
         <Footer style={{ textAlign: "center" }}>
-          Ant Design ©{new Date().getFullYear()} Created by Ant UED
+          EmoEasse ©{new Date().getFullYear()} Created by SOLTECH 
         </Footer>
       </Layout>
     </Layout>
