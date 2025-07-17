@@ -1,7 +1,10 @@
 // src/stores/usePaymentStore.ts
 import apiClient from "EmoEase/hooks/apiClient";
 import { create } from "zustand";
-import { GetCreatedPatientProfileDto, GetPatientProfilesCreatedEndpointResponse } from "EmoEase/api/api-profile-service";
+import {
+  GetCreatedPatientProfileDto,
+  GetPatientProfilesCreatedEndpointResponse,
+} from "EmoEase/api/api-profile-service";
 import { useLoadingStore } from "../Loading/LoadingStore";
 
 interface ProfileState {
@@ -12,13 +15,13 @@ interface ProfileState {
     startTime: string,
     endTime: string,
     pageIndex?: number,
-    pageSize?: number
+    pageSize?: number,
   ) => Promise<GetCreatedPatientProfileDto[] | undefined>;
   fetchProfile: (
     startTime: string,
     endTime: string,
     pageIndex?: number,
-    pageSize?: number
+    pageSize?: number,
   ) => Promise<GetPatientProfilesCreatedEndpointResponse | undefined>;
 }
 
@@ -30,14 +33,15 @@ export const useProfilesStore = create<ProfileState>((set) => ({
   fetchProfiles: async (startTime, endTime, pageIndex = 1, pageSize = 10) => {
     set({ isLoading: true, error: null });
     try {
-      useLoadingStore.getState().showLoading()
-      const res = await apiClient.profileService.patients.getPatientProfilesCreated({
-        PageIndex: pageIndex,
-        PageSize: pageSize,
-        StartDate: startTime,
-        EndDate: endTime,
-      });
-      useLoadingStore.getState().hideLoading()
+      useLoadingStore.getState().showLoading();
+      const res =
+        await apiClient.profileService.patients.getPatientProfilesCreated({
+          PageIndex: pageIndex,
+          PageSize: pageSize,
+          StartDate: startTime,
+          EndDate: endTime,
+        });
+      useLoadingStore.getState().hideLoading();
       const profiles = res.data.datapoints ?? [];
       set({ patientProfiles: profiles, isLoading: false });
       return profiles;
@@ -49,15 +53,16 @@ export const useProfilesStore = create<ProfileState>((set) => ({
       return undefined;
     }
   },
-     fetchProfile: async (startTime, endTime, pageIndex = 1, pageSize = 10) => {
+  fetchProfile: async (startTime, endTime, pageIndex = 1, pageSize = 10) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await apiClient.profileService.patients.getPatientProfilesCreated({
-        PageIndex: pageIndex,
-        PageSize: pageSize,
-        StartDate: startTime,
-        EndDate: endTime,
-      });
+      const res =
+        await apiClient.profileService.patients.getPatientProfilesCreated({
+          PageIndex: pageIndex,
+          PageSize: pageSize,
+          StartDate: startTime,
+          EndDate: endTime,
+        });
       set({ isLoading: false });
       return res.data;
     } catch (err) {

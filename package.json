@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "format": "prettier --write .",
     "gen": "swagger-typescript-api generate -p openapi.json -o src/api -n api.ts -T axios",
     "gen-payment": "swagger-typescript-api generate -p openapi-payment-service.json -o src/api -n api-payment-service.ts -T axios",
     "gen-profile": "swagger-typescript-api generate -p openapi-profile-service.json -o src/api -n api-profile-service.ts -T axios",
@@ -40,6 +41,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "next-plugin-antd-less": "^1.8.0",
+    "prettier": "^3.6.2",
     "swagger-typescript-api": "^13.2.7",
     "tailwindcss": "^4",
     "typescript": "^5"

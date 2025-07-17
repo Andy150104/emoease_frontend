@@ -1,8 +1,8 @@
 // src/AntdThemeProvider.tsx
-'use client';
-import React from 'react';
-import { ConfigProvider, theme as antdTheme } from 'antd';
-import { useTheme } from 'EmoEase/Provider/ThemeProvider';
+"use client";
+import React from "react";
+import { ConfigProvider, theme as antdTheme } from "antd";
+import { useTheme } from "EmoEase/Provider/ThemeProvider";
 
 export function AntdThemeProvider({ children }: { children: React.ReactNode }) {
   const { isDarkMode } = useTheme();
@@ -15,9 +15,9 @@ export function AntdThemeProvider({ children }: { children: React.ReactNode }) {
           : antdTheme.defaultAlgorithm,
         token: isDarkMode
           ? {
-              colorBgLayout: '#020712',
-              colorBgContainer: '#050D18',
-              colorText: '#ffffff',
+              colorBgLayout: "#020712",
+              colorBgContainer: "#050D18",
+              colorText: "#ffffff",
             }
           : {},
       }}

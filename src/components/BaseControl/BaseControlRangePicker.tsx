@@ -1,19 +1,23 @@
 // src/components/DateRangePicker.tsx
-'use client'
+"use client";
 
-import React from 'react'
-import { DatePicker } from 'antd'
-import type { Dayjs } from 'dayjs'
+import React from "react";
+import { DatePicker } from "antd";
+import type { Dayjs } from "dayjs";
 
-const { RangePicker } = DatePicker
+const { RangePicker } = DatePicker;
 
 interface DateRangePickerProps {
-  value: [Dayjs, Dayjs]
-  format: string
-  onChange: (dates: [Dayjs, Dayjs] | null) => void
+  value: [Dayjs, Dayjs];
+  format: string;
+  onChange: (dates: [Dayjs, Dayjs] | null) => void;
 }
 
-const BaseControlRangePicker: React.FC<DateRangePickerProps> = ({ value, format= 'YYYY-MM-DD', onChange }) => (
+const BaseControlRangePicker: React.FC<DateRangePickerProps> = ({
+  value,
+  format = "YYYY-MM-DD",
+  onChange,
+}) => (
   <RangePicker
     value={value}
     onChange={(dates) => {
@@ -22,6 +26,6 @@ const BaseControlRangePicker: React.FC<DateRangePickerProps> = ({ value, format=
     format={format}
     allowClear={false}
   />
-)
+);
 
-export default BaseControlRangePicker
+export default BaseControlRangePicker;

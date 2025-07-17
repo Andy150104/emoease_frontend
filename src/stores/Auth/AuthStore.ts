@@ -45,7 +45,7 @@ export const useAuthStore = create<AuthState>()(
               deviceType: DeviceType.Web,
               clientDeviceId: navigator.userAgent,
             },
-            { format: "json" }
+            { format: "json" },
           );
           const { token, refreshToken } = resp.data as unknown as {
             token: string;
@@ -56,7 +56,7 @@ export const useAuthStore = create<AuthState>()(
           apiClient.authService.setSecurityData({ token, refreshToken });
         } catch {
           throw new Error(
-            "Đăng nhập thất bại, vui lòng kiểm tra email/mật khẩu."
+            "Đăng nhập thất bại, vui lòng kiểm tra email/mật khẩu.",
           );
         }
       },
@@ -131,6 +131,6 @@ export const useAuthStore = create<AuthState>()(
           });
         }
       },
-    }
-  )
+    },
+  ),
 );

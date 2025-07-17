@@ -63,7 +63,7 @@ export default function BubbleBackground() {
       loop: true,
       delay,
       config: { duration, easing: easings.easeInOutQuad },
-    }))
+    })),
   );
 
   return (
@@ -83,7 +83,7 @@ export default function BubbleBackground() {
               opacity: style.opacity,
               transform: to(
                 [style.x, style.y, style.scale],
-                (x, y, s) => `translate3d(${x}px, ${y}px, 0) scale(${s})`
+                (x, y, s) => `translate3d(${x}px, ${y}px, 0) scale(${s})`,
               ),
             }}
           />

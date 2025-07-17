@@ -22,14 +22,14 @@ const PROTECTED_PREFIXES = [
 /** Kiểm tra xem pathname có nằm trong PUBLIC_PATHS không */
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some(
-    (p) => pathname === p || pathname.startsWith(p + "/")
+    (p) => pathname === p || pathname.startsWith(p + "/"),
   );
 }
 
 /** Kiểm tra xem pathname có cần login không */
 function isProtectedPath(pathname: string): boolean {
   return PROTECTED_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(p + "/")
+    (p) => pathname === p || pathname.startsWith(p + "/"),
   );
 }
 
@@ -42,9 +42,10 @@ export function middleware(req: NextRequest) {
   if (raw) {
     try {
       const parsed = JSON.parse(raw);
-      token = typeof parsed.token === "string"
-        ? parsed.token
-        : parsed.state?.token ?? null;
+      token =
+        typeof parsed.token === "string"
+          ? parsed.token
+          : (parsed.state?.token ?? null);
     } catch (err) {
       console.log("[middleware] JSON.parse error:", err);
     }
@@ -78,7 +79,6 @@ export function middleware(req: NextRequest) {
   // 4) Đã login, path được phép → cho qua
   return NextResponse.next();
 }
-
 
 export const config = {
   matcher: [
