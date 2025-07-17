@@ -4,20 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { ThemeSwitch } from "EmoEase/components/Themes/Theme";
 
-/**
- * Neon 404 Page (inspired by your screenshot)
- * --------------------------------------------------
- * ✅ Fullscreen dark background
- * ✅ Giant “404” with neon eye in the zero
- * ✅ Message: “SORRY, THERE'S NOTHING HERE” (accent on NOTHING HERE)
- * ✅ "GO HOME" button
- * ✅ Corner micro‑nav text blocks (customizable)
- *
- * TailwindCSS required.
- * You can tweak palette by adjusting the CSS variables below or inline class names.
- */
-
-// Optional central color tokens – change once, reuse everywhere
 const ACCENT = "#ccff00"; // neon lime you liked
 const BG = "#020712"; // deep navy/blue‑black you mentioned
 
