@@ -15,15 +15,15 @@ const ProfilesPage: React.FC = () => {
     error,
     fetchProfiles,
   } = useProfilesStore();
-    const startOfMonth = moment("2004-01-01").startOf("day").toISOString();
-    const endOfMonth = moment().endOf("month").toISOString();
   useEffect(() => {
-    fetchProfiles(startOfMonth, endOfMonth, 1, 10);
+    const start = moment("2004-01-01").startOf("day").toISOString();
+    const end = moment().endOf("month").toISOString();
+    fetchProfiles(start, end, 1, 10);
   }, [fetchProfiles]);
 
   return (
     <BaseScreenAdmin
-      defaultSelectedKeys={["dashboard-user"]} 
+      defaultSelectedKeys={["dashboard-user"]}
       breadcrumbItems={[{ title: "Danh sách hồ sơ theo mốc thời gian" }]}
     >
       <h2>Danh sách hồ sơ theo mốc thời gian</h2>
@@ -36,7 +36,7 @@ const ProfilesPage: React.FC = () => {
         />
       )}
 
-        {!isLoading && !error && <ProfilesByMonthTable datapoints={datapoints} />}
+      {!isLoading && !error && <ProfilesByMonthTable datapoints={datapoints} />}
     </BaseScreenAdmin>
   );
 };

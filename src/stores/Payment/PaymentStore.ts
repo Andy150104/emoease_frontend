@@ -1,6 +1,11 @@
 // src/stores/usePaymentStore.ts
 import apiClient from "EmoEase/hooks/apiClient";
-import { PaymentStatus, PaymentType, type DailyRevenue } from "EmoEase/api/api-payment-service";
+import {
+  GetAllPaymentsResponse,
+  PaymentStatus,
+  PaymentType,
+  type DailyRevenue,
+} from "EmoEase/api/api-payment-service";
 import { create } from "zustand";
 import { useLoadingStore } from "../Loading/LoadingStore";
 
@@ -9,7 +14,12 @@ interface PaymentState {
   isLoading: boolean;
   error: string | null;
   fetchDailyRevenue: (startTime: string, endTime: string) => Promise<void>;
-  getAllPaymentPatient: (pageIndex: number, pageSize: number, createAt: string, patientProfileId: string, status: string) => Promise<void>;
+  getAllPaymentPatient: (
+    pageIndex: number,
+    pageSize: number,
+    createAt: string,
+    patientProfileId: string
+  ) => Promise<GetAllPaymentsResponse>;
 }
 
 export const usePaymentStore = create<PaymentState>((set) => ({
@@ -34,9 +44,14 @@ export const usePaymentStore = create<PaymentState>((set) => ({
       });
     }
   },
-  getAllPaymentPatient: async (pageIndex, pageSize, createAt, patientProfileId, status) => {
+  getAllPaymentPatient: async (
+    pageIndex,
+    pageSize,
+    createAt,
+    patientProfileId
+  ) => {
     try {
-      useLoadingStore.getState().showLoading()
+      useLoadingStore.getState().showLoading();
       const res = await apiClient.paymentService.payments.getAllPayments({
         CreatedAt: createAt,
         PageIndex: pageIndex,
@@ -45,12 +60,15 @@ export const usePaymentStore = create<PaymentState>((set) => ({
         PaymentType: PaymentType.Booking,
         SortOrder: "",
         Status: PaymentStatus.Pending ?? "",
-      })
+      });
+      useLoadingStore.getState().hideLoading();
+      return res.data;
     } catch (err: unknown) {
       console.error("Error fetching daily revenue", err);
       set({
         isLoading: false,
       });
+      return { payments: undefined };
     }
-  }
+  },
 }));
