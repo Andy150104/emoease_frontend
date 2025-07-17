@@ -5,6 +5,7 @@ import { AntdThemeProvider } from "EmoEase/components/Themes/AntdThemeProvider";
 import { ThemeProvider } from "EmoEase/Provider/ThemeProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ChartThemeProvider } from "EmoEase/Provider/ChartThemeProvider";
+import { NotificationProvider } from "EmoEase/Provider/NotificationProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AntdThemeProvider>
             <ChartThemeProvider>
-              {children}
+              <NotificationProvider>{children}</NotificationProvider>
             </ChartThemeProvider>
           </AntdThemeProvider>
         </ThemeProvider>

@@ -42,6 +42,7 @@ const BaseControlTextField: React.FC<BaseControlTextFieldProps> = ({
           readOnly={readonly}
           placeholder={placeholder}
           maxLength={maxlength}
+          size="large"
         />
       ) : (
         <Input
@@ -51,6 +52,7 @@ const BaseControlTextField: React.FC<BaseControlTextFieldProps> = ({
           readOnly={readonly}
           placeholder={placeholder}
           maxLength={maxlength}
+          size="large"
         />
       )}
     </Form.Item>

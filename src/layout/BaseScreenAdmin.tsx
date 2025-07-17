@@ -6,6 +6,8 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { AdminSidebar } from "EmoEase/components/SideBar/SideBar";
 import Loading from "EmoEase/components/Loading/Loading";
 import { FadeInUp } from "EmoEase/components/Animation/FadeInUp";
+import { useValidateStore } from "EmoEase/stores/Validate/ValidateStore";
+import NotFound from "EmoEase/app/404/page";
 
 const { Header, Content, Footer } = Layout;
 
@@ -27,14 +29,20 @@ const BaseScreenAdmin: React.FC<BaseScreenAdminProps> = ({
   // 1️⃣ collapsed được quản lý ở đây
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const invalid = useValidateStore.getState().inValid;
 
   useEffect(() => {
-    setMounted(true);
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id)
   }, []);
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  if (invalid) {
+    return <NotFound />
+  }
 
   if (!mounted) {
     return (
@@ -50,7 +58,6 @@ const BaseScreenAdmin: React.FC<BaseScreenAdminProps> = ({
       </div>
     );
   }
-
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {/* 2️⃣ Truyền collapsed & onCollapse xuống Sidebar */}

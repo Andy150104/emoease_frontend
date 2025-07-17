@@ -9,6 +9,7 @@ import {
   UserOutlined,
   TeamOutlined,
   FileOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Menu, Layout, theme } from "antd";
@@ -16,6 +17,8 @@ import imageEmoLogo from "EmoEase/assets/emo.webp";
 import { useTheme } from "EmoEase/Provider/ThemeProvider";
 import { ThemeSwitch } from "../Themes/Theme";
 import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "EmoEase/stores/Auth/AuthStore";
+import { useNotification } from "EmoEase/Provider/NotificationProvider";
 
 const { Sider } = Layout;
 type MenuItem = Required<MenuProps>["items"][number];
@@ -58,6 +61,8 @@ const navItems: NavMenuItem[] = [
     getItem("Team 2", "team-2", undefined, undefined, "/teams/2"),
   ]),
   getItem("Files", "files", <FileOutlined />, undefined, "/files"),
+  getItem("Đăng xuất", "logout", <LogoutOutlined />),
+  getItem("", "", <ThemeSwitch />)
 ];
 
 /* ---------- HELPERS ---------- */
@@ -114,7 +119,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const [mounted, setMounted] = useState(false);
   const { isDarkMode } = useTheme();
   const { token: { colorPrimary } } = theme.useToken();
-
+  const messageApi = useNotification();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -131,8 +136,15 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const selectedKeys = defaultSelectedKeys ?? getSelectedKeys(pathname);
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
-    const path = keyPathMap[key as string];
-    if (path) router.push(path);
+    if (key === "logout") {
+    useAuthStore.getState().logout()
+    useAuthStore.persist.clearStorage()
+    router.push("/Login")
+    messageApi.success("Đăng xuất thành công!")
+    return;
+  }
+  const path = keyPathMap[key];
+  if (path) router.push(path);
   };
 
   return (
@@ -190,11 +202,6 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           flex: 1,
         }}
       />
-
-      {/* Theme switch dán đáy */}
-      <div className="mt-auto px-4 pb-4">
-        <ThemeSwitch />
-      </div>
     </Sider>
   );
 };
