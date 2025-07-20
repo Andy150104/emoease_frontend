@@ -10,6 +10,7 @@ import {
   TeamOutlined,
   FileOutlined,
   LogoutOutlined,
+  SolutionOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Menu, Layout, theme } from "antd";
@@ -73,6 +74,7 @@ const navItems: NavMenuItem[] = [
     getItem("Team 2", "team-2", undefined, undefined, "/teams/2"),
   ]),
   getItem("Files", "files", <FileOutlined />, undefined, "/files"),
+  getItem("Subscriptions", "subscriptions", <SolutionOutlined />, undefined, "/Admin/subscriptions"),
   getItem("Đăng xuất", "logout", <LogoutOutlined />),
   getItem("", "", <ThemeSwitch />),
 ];
