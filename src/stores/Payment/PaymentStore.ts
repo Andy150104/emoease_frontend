@@ -3,7 +3,6 @@ import apiClient from "EmoEase/hooks/apiClient";
 import {
   GetAllPaymentsResponse,
   PaymentStatus,
-  PaymentType,
   type DailyRevenue,
 } from "EmoEase/api/api-payment-service";
 import { create } from "zustand";
@@ -17,8 +16,9 @@ interface PaymentState {
   getAllPaymentPatient: (
     pageIndex: number,
     pageSize: number,
-    createAt: string,
+    createAt: string | undefined,
     patientProfileId: string,
+    status?: PaymentStatus,
   ) => Promise<GetAllPaymentsResponse>;
 }
 
@@ -49,17 +49,18 @@ export const usePaymentStore = create<PaymentState>((set) => ({
     pageSize,
     createAt,
     patientProfileId,
+    status,
   ) => {
     try {
       useLoadingStore.getState().showLoading();
       const res = await apiClient.paymentService.payments.getAllPayments({
-        CreatedAt: createAt,
+        CreatedAt: createAt ?? undefined,
         PageIndex: pageIndex,
-        PageSize: pageSize,
+        PageSize: 100,
         PatientProfileId: patientProfileId ?? "",
-        PaymentType: PaymentType.Booking,
-        SortOrder: "",
-        Status: PaymentStatus.Pending ?? "",
+        PaymentType: undefined,
+        SortOrder: undefined,
+        Status: status ?? PaymentStatus.Pending,
       });
       useLoadingStore.getState().hideLoading();
       return res.data;

@@ -52,7 +52,10 @@ export function middleware(req: NextRequest) {
   }
 
   // Nếu đã login rồi mà truy cập /login → redirect về /Admin
-  if (token && pathname.toLowerCase() === "/login") {
+  if (
+    token &&
+    (pathname.toLowerCase() === "/login" || pathname.toLowerCase() === "/")
+  ) {
     const url = req.nextUrl.clone();
     url.pathname = "/Admin";
     return NextResponse.redirect(url);

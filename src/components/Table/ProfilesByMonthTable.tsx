@@ -9,6 +9,7 @@ import {
   Divider,
   Space,
   Tag,
+  Input,
 } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import moment from "moment";
@@ -16,6 +17,9 @@ import { CalendarOutlined, ProfileOutlined } from "@ant-design/icons";
 import { GetCreatedPatientProfileDto } from "EmoEase/api/api-profile-service";
 import apiClient from "EmoEase/hooks/apiClient";
 import { FadeInOnScrollSpring } from "../Animation/FadeInOnScroll";
+import PaymentsCardModal from "../PaymentCard/PaymentCard";
+import { usePaymentStore } from "EmoEase/stores/Payment/PaymentStore";
+import { PaymentDto, PaymentStatus } from "EmoEase/api/api-payment-service";
 
 const { Title, Text } = Typography;
 
@@ -44,20 +48,25 @@ interface ProfilesByMonthCardsProps {
 
 const columns: ColumnsType<Profile> = [
   {
-    title: "Full Name",
+    title: "Tên đầy đủ",
     dataIndex: "fullName",
     key: "fullName",
-    render: (text) => <Text strong>{text}</Text>,
+    width: 250,
+    render: (text) => (
+      <Text strong style={{ whiteSpace: "nowrap" }}>
+        {text}
+      </Text>
+    ),
   },
-  { title: "Gender", dataIndex: "gender", key: "gender" },
+  { title: "Giới tính", dataIndex: "gender", key: "gender" },
   {
-    title: "Birth Date",
+    title: "Sinh nhật",
     dataIndex: "birthDate",
     key: "birthDate",
     render: (d) => (d !== "0001-01-01" ? moment(d).format("DD/MM/YYYY") : "-"),
   },
   {
-    title: "Created At",
+    title: "Ngày tạo",
     dataIndex: "createdAt",
     key: "createdAt",
     render: (d) => moment(d).format("DD/MM/YYYY HH:mm"),
@@ -71,10 +80,55 @@ const ProfilesByMonthCards: React.FC<ProfilesByMonthCardsProps> = ({
   const [selected, setSelected] = useState<GetCreatedPatientProfileDto | null>(
     null,
   );
-
   const [startTimeSelected, setStartTimeSelected] = useState<string>("");
   const [endTimeSelected, setEndTimeSelected] = useState<string>("");
+  const [searchText, setSearchText] = useState<string>("");
+  const [modalProfileId, setModalProfileId] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<PaymentStatus>(
+    PaymentStatus.Pending,
+  );
+  const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+  const [createdAtFilter, setCreatedAtFilter] = useState<string | null>(null);
+  const [paymentsData, setPaymentsData] = useState<{
+    pageIndex: number;
+    pageSize: number;
+    totalCount: number;
+    totalPages: number;
+    data: PaymentDto[];
+  }>({
+    pageIndex: 1,
+    pageSize: 10,
+    totalCount: 0,
+    totalPages: 0,
+    data: [],
+  });
+  const defaultPageSize = 10;
 
+  const fetchPayments = async (
+    page: number,
+    patientProfileId: string,
+    status = selectedStatus,
+    createdAt = createdAtFilter,
+  ) => {
+    const res = await usePaymentStore
+      .getState()
+      .getAllPaymentPatient(
+        page,
+        defaultPageSize,
+        createdAt ?? undefined,
+        patientProfileId,
+        status,
+      );
+    // giả sử res có các trường: pageIndex, pageSize, totalCount, totalPages, payments[]
+    setPaymentsData({
+      pageIndex: res.payments?.pageIndex ?? 0,
+      pageSize: res.payments?.pageSize ?? 0,
+      totalCount: res.payments?.totalCount ?? 0,
+      totalPages: res.payments?.totalPages ?? 0,
+      data: res.payments?.data ?? [],
+    });
+    setPaymentModalVisible(true);
+  };
   const handleTableChange = async (pagination: TablePaginationConfig) => {
     if (!selected) return;
     const page = pagination.current ?? 1;
@@ -109,7 +163,26 @@ const ProfilesByMonthCards: React.FC<ProfilesByMonthCardsProps> = ({
   const closeDrawer = () => {
     setVisible(false);
     setSelected(null);
+    setSearchText("");
   };
+
+  const showModal = (id: string) => {
+    setModalProfileId(id);
+    fetchPayments(1, id, selectedStatus, createdAtFilter);
+  };
+
+  const enhancedColumns: ColumnsType<Profile> = [
+    ...columns,
+    {
+      title: "Hành động",
+      key: "action",
+      render: (_, record) => (
+        <Button type="link" onClick={() => showModal(record.id)}>
+          Xem chi tiết
+        </Button>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -205,15 +278,29 @@ const ProfilesByMonthCards: React.FC<ProfilesByMonthCardsProps> = ({
               <Divider orientation="left" style={{ fontWeight: "bold" }}>
                 Detailed Profiles
               </Divider>
+              <Input.Search
+                placeholder="Tìm theo tên đầy đủ"
+                allowClear
+                onSearch={(value) => setSearchText(value)}
+                onChange={(e) => setSearchText(e.target.value)}
+                style={{ marginBottom: 16, width: 300 }}
+              />
               <Table<Profile>
-                columns={columns}
-                dataSource={(selected.profiles?.data ?? []).map((item) => ({
-                  id: item.id ?? "",
-                  fullName: item.fullName ?? "",
-                  gender: item.gender ?? "",
-                  birthDate: item.birthDate ?? "",
-                  createdAt: item.createdAt ?? "",
-                }))}
+                columns={enhancedColumns}
+                scroll={{ x: true }}
+                dataSource={(selected.profiles?.data ?? [])
+                  .filter((item) =>
+                    (item.fullName ?? "")
+                      .toLowerCase()
+                      .includes(searchText.toLowerCase()),
+                  )
+                  .map((item) => ({
+                    id: item.id ?? "",
+                    fullName: item.fullName ?? "",
+                    gender: item.gender ?? "",
+                    birthDate: item.birthDate ?? "",
+                    createdAt: item.createdAt ?? "",
+                  }))}
                 rowKey="id"
                 bordered
                 pagination={{
@@ -223,6 +310,27 @@ const ProfilesByMonthCards: React.FC<ProfilesByMonthCardsProps> = ({
                   showSizeChanger: false,
                 }}
                 onChange={handleTableChange}
+              />
+              <PaymentsCardModal
+                visible={paymentModalVisible}
+                onClose={() => setPaymentModalVisible(false)}
+                paymentsData={paymentsData}
+                status={selectedStatus}
+                onStatusChange={(newStatus) => {
+                  setSelectedStatus(newStatus);
+                  if (modalProfileId)
+                    fetchPayments(1, modalProfileId, newStatus);
+                }}
+                onCreatedAtChange={(dateString) => {
+                  setCreatedAtFilter(dateString);
+                  if (modalProfileId)
+                    fetchPayments(
+                      1,
+                      modalProfileId,
+                      selectedStatus,
+                      dateString,
+                    );
+                }}
               />
             </>
           )}

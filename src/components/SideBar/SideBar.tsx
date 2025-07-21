@@ -6,9 +6,6 @@ import { Knewave } from "next/font/google";
 import {
   PieChartOutlined,
   DesktopOutlined,
-  UserOutlined,
-  TeamOutlined,
-  FileOutlined,
   LogoutOutlined,
   SolutionOutlined,
 } from "@ant-design/icons";
@@ -20,6 +17,7 @@ import { ThemeSwitch } from "../Themes/Theme";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "EmoEase/stores/Auth/AuthStore";
 import { useNotification } from "EmoEase/Provider/NotificationProvider";
+import { useLoadingStore } from "EmoEase/stores/Loading/LoadingStore";
 
 const { Sider } = Layout;
 type MenuItem = Required<MenuProps>["items"][number];
@@ -64,17 +62,13 @@ const navItems: NavMenuItem[] = [
     undefined,
     "/Admin/profiles",
   ),
-  getItem("Users", "users", <UserOutlined />, [
-    getItem("Tom", "user-tom", undefined, undefined, "/users/tom"),
-    getItem("Bill", "user-bill", undefined, undefined, "/users/bill"),
-    getItem("Alex", "user-alex", undefined, undefined, "/users/alex"),
-  ]),
-  getItem("Teams", "teams", <TeamOutlined />, [
-    getItem("Team 1", "team-1", undefined, undefined, "/teams/1"),
-    getItem("Team 2", "team-2", undefined, undefined, "/teams/2"),
-  ]),
-  getItem("Files", "files", <FileOutlined />, undefined, "/files"),
-  getItem("Subscriptions", "subscriptions", <SolutionOutlined />, undefined, "/Admin/subscriptions"),
+  getItem(
+    "Subscriptions",
+    "subscriptions",
+    <SolutionOutlined />,
+    undefined,
+    "/Admin/subscriptions",
+  ),
   getItem("Đăng xuất", "logout", <LogoutOutlined />),
   getItem("", "", <ThemeSwitch />),
 ];
@@ -139,6 +133,15 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const pathname = usePathname();
   const router = useRouter();
 
+  useEffect(() => {
+    navItems.forEach((item) => {
+      if (item.path) router.prefetch(item.path);
+      item.children?.forEach(
+        (child) => child.path && router.prefetch(child.path),
+      );
+    });
+  }, [router]);
+
   useEffect(() => setMounted(true), []);
   if (!mounted) return <div style={{ width: collapsed ? 80 : 240 }} />;
 
@@ -153,14 +156,18 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     if (key === "logout") {
+      useLoadingStore.getState().showLoading();
       useAuthStore.getState().logout();
       useAuthStore.persist.clearStorage();
       router.push("/Login");
+      useLoadingStore.getState().hideLoading();
       messageApi.success("Đăng xuất thành công!");
       return;
     }
     const path = keyPathMap[key];
-    if (path) router.push(path);
+    if (path) {
+      router.push(path);
+    }
   };
 
   return (

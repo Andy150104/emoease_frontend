@@ -12,6 +12,9 @@ import { isAxiosError } from "axios";
 import BubbleBackground from "EmoEase/components/Bubble/BubbleBackground";
 import { useRouter } from "next/navigation";
 import { useNotification } from "EmoEase/Provider/NotificationProvider";
+import Loading from "EmoEase/components/Loading/Loading";
+import { useLoadingStore } from "EmoEase/stores/Loading/LoadingStore";
+import { Knewave } from "next/font/google";
 
 const xmlColumns = {
   email: { id: "email", name: "Email", rules: "required" },
@@ -19,6 +22,10 @@ const xmlColumns = {
 } as const;
 
 type LoginFormValues = { email: string; password: string };
+const knewave = Knewave({
+  weight: "400",
+  subsets: ["latin"],
+});
 
 export default function LoginPage() {
   const messageApi = useNotification();
@@ -32,9 +39,11 @@ export default function LoginPage() {
 
   const onFinish = async (values: LoginFormValues) => {
     try {
+      useLoadingStore.getState().showLoading();
       await login(values.email, values.password);
-      router.push("/Admin");
-      messageApi.success("Đăng nhập thành công!");
+      await router.push("/Admin");
+      await messageApi.success("Đăng nhập thành công!");
+      useLoadingStore.getState().hideLoading();
     } catch (error: unknown) {
       let errorMessage =
         "Đăng nhập thất bại, vui lòng kiểm tra lại email/mật khẩu.";
@@ -68,7 +77,9 @@ export default function LoginPage() {
     <animated.div style={mountSprings} className="relative w-full max-w-md">
       <BubbleBackground />
       <div className="relative z-10 bg-white bg-opacity-90 dark:bg-gray-800 dark:bg-opacity-90 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8">
-        <h2 className="text-center text-2xl sm:text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">
+        <h2
+          className={`${knewave.className} text-xl sm:text-2xl md:text-3xl font-light tracking-wide text-center px-4 text-[#4a2580]`}
+        >
           Welcome to EmoEase!
         </h2>
         <Form<LoginFormValues>
@@ -109,6 +120,7 @@ export default function LoginPage() {
   return (
     <>
       <div className="flex flex-col md:flex-row min-h-screen">
+        <Loading />
         {/* Left: background + mobile form */}
         <div className="relative flex-1 h-screen md:h-auto overflow-hidden">
           <Image
@@ -118,8 +130,10 @@ export default function LoginPage() {
             className="object-cover object-right brightness-90 dark:brightness-75"
           />
           <div className="absolute inset-0 bg-gradient-to-tr from-pink-500 via-red-400 to-purple-500 opacity-50 dark:opacity-40" />
-          <div className="absolute bottom-8 left-6 md:bottom-12 md:left-12 text-white">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold drop-shadow-2xl">
+          <div className="absolute bottom-8 left-6 md:bottom-12 md:left-12 text-white z-10">
+            <h1
+              className={`text-3xl sm:text-4xl md:text-5xl font-extrabold drop-shadow-2xl`}
+            >
               Welcome To EmoEase!! <ThemeSwitch />
             </h1>
             <p className="mt-2 sm:mt-3 text-base sm:text-lg md:text-xl drop-shadow-lg">

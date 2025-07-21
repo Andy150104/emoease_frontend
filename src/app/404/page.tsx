@@ -1,13 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { ThemeSwitch } from "EmoEase/components/Themes/Theme";
+import { useValidateStore } from "EmoEase/stores/Validate/ValidateStore";
 
 const ACCENT = "#ccff00"; // neon lime you liked
 const BG = "#020712"; // deep navy/blue‑black you mentioned
 
 export default function NotFound() {
+  useEffect(() => {
+    return () => {
+      useValidateStore.getState().setInValid(false);
+    };
+  }, []);
   return (
     <div className="min-h-screen">
       <main
