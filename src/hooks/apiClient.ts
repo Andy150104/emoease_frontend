@@ -118,7 +118,8 @@ export const profileClient = new ProfileApi({
 });
 
 export const subscriptionClient = new SubscriptionApi({
-  baseUrl: process.env.NEXT_PUBLIC_SUBSCRIPTION_API_URL || "/subscription-service",
+  baseUrl:
+    process.env.NEXT_PUBLIC_SUBSCRIPTION_API_URL || "/subscription-service",
   customFetch: axiosFetch,
 });
 

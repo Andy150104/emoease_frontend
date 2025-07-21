@@ -6,9 +6,6 @@ import { Knewave } from "next/font/google";
 import {
   PieChartOutlined,
   DesktopOutlined,
-  UserOutlined,
-  TeamOutlined,
-  FileOutlined,
   LogoutOutlined,
   SolutionOutlined,
 } from "@ant-design/icons";
@@ -65,17 +62,13 @@ const navItems: NavMenuItem[] = [
     undefined,
     "/Admin/profiles",
   ),
-  getItem("Users", "users", <UserOutlined />, [
-    getItem("Tom", "user-tom", undefined, undefined, "/users/tom"),
-    getItem("Bill", "user-bill", undefined, undefined, "/users/bill"),
-    getItem("Alex", "user-alex", undefined, undefined, "/users/alex"),
-  ]),
-  getItem("Teams", "teams", <TeamOutlined />, [
-    getItem("Team 1", "team-1", undefined, undefined, "/teams/1"),
-    getItem("Team 2", "team-2", undefined, undefined, "/teams/2"),
-  ]),
-  getItem("Files", "files", <FileOutlined />, undefined, "/files"),
-  getItem("Subscriptions", "subscriptions", <SolutionOutlined />, undefined, "/Admin/subscriptions"),
+  getItem(
+    "Subscriptions",
+    "subscriptions",
+    <SolutionOutlined />,
+    undefined,
+    "/Admin/subscriptions",
+  ),
   getItem("Đăng xuất", "logout", <LogoutOutlined />),
   getItem("", "", <ThemeSwitch />),
 ];

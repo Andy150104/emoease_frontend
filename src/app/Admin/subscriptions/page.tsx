@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Table, DatePicker, Alert, Typography, theme, Switch, message } from "antd";
+import {
+  Table,
+  DatePicker,
+  Alert,
+  Typography,
+  theme,
+  Switch,
+  message,
+} from "antd";
 import { Pie } from "@ant-design/charts";
 import dayjs, { Dayjs } from "dayjs";
 import BaseScreenAdmin from "EmoEase/layout/BaseScreenAdmin";
@@ -64,8 +72,21 @@ const SubscriptionsPage = () => {
       key: "isActive",
       align: "center" as const,
       render: (_: boolean, record: ServicePackage) => (
-        <span style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center" }}>
-          <span style={{ minWidth: 80, fontWeight: 500, color: record.isActive ? token.colorSuccess : token.colorWarning }}>
+        <span
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            justifyContent: "center",
+          }}
+        >
+          <span
+            style={{
+              minWidth: 80,
+              fontWeight: 500,
+              color: record.isActive ? token.colorSuccess : token.colorWarning,
+            }}
+          >
             {record.isActive ? "Hoạt động" : "Tạm dừng"}
           </span>
           <Switch
@@ -79,7 +100,7 @@ const SubscriptionsPage = () => {
 
   // Pie chart config
   const pieConfig = {
-    data: servicePackagesTotal.map(pkg => ({
+    data: servicePackagesTotal.map((pkg) => ({
       name: pkg.name,
       value: pkg.totalSubscriptions,
     })),
@@ -91,7 +112,16 @@ const SubscriptionsPage = () => {
     },
     legend: { position: "bottom" },
     tooltip: {},
-    color: ["#4a2580", "#36cfc9", "#ffc53d", "#ff7875", "#73d13d", "#597ef7", "#ff85c0", "#ffd666"],
+    color: [
+      "#4a2580",
+      "#36cfc9",
+      "#ffc53d",
+      "#ff7875",
+      "#73d13d",
+      "#597ef7",
+      "#ff85c0",
+      "#ffd666",
+    ],
     style: { fontFamily: "inherit" },
   };
 
@@ -100,7 +130,14 @@ const SubscriptionsPage = () => {
       defaultSelectedKeys={["subscriptions"]}
       breadcrumbItems={[{ title: "Gói dịch vụ" }]}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 16,
+        }}
+      >
         <Title level={3} style={{ margin: 0 }}>
           Gói dịch vụ & số lượng đăng ký
         </Title>
@@ -108,7 +145,7 @@ const SubscriptionsPage = () => {
           <span>Từ ngày:</span>
           <DatePicker
             value={fromDate}
-            onChange={date => date && setFromDate(date)}
+            onChange={(date) => date && setFromDate(date)}
             format="DD-MM-YYYY"
             allowClear={false}
             style={{ borderRadius: 8, cursor: "pointer" }}
@@ -118,7 +155,7 @@ const SubscriptionsPage = () => {
           <span>Đến ngày:</span>
           <DatePicker
             value={toDate}
-            onChange={date => date && setToDate(date)}
+            onChange={(date) => date && setToDate(date)}
             format="DD-MM-YYYY"
             allowClear={false}
             style={{ borderRadius: 8, cursor: "pointer" }}
@@ -128,11 +165,23 @@ const SubscriptionsPage = () => {
         </div>
       </div>
       {/* Pie chart for total subscriptions by package */}
-      <div style={{ marginBottom: 32, background: token.colorBgContainer, borderRadius: 16, boxShadow: "0 4px 24px rgba(0,0,0,0.07)", padding: 24 }}>
-        <Title level={4} style={{ marginBottom: 16 }}>Tỉ lệ đăng ký theo gói</Title>
+      <div
+        style={{
+          marginBottom: 32,
+          background: token.colorBgContainer,
+          borderRadius: 16,
+          boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
+          padding: 24,
+        }}
+      >
+        <Title level={4} style={{ marginBottom: 16 }}>
+          Tỉ lệ đăng ký theo gói
+        </Title>
         <Pie {...pieConfig} height={320} />
       </div>
-      {error && <Alert type="error" message={error} style={{ marginBottom: 16 }} />}
+      {error && (
+        <Alert type="error" message={error} style={{ marginBottom: 16 }} />
+      )}
       <Table
         columns={columns}
         dataSource={servicePackages}
