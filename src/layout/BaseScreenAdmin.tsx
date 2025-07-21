@@ -8,6 +8,7 @@ import Loading from "EmoEase/components/Loading/Loading";
 import { FadeInUp } from "EmoEase/components/Animation/FadeInUp";
 import { useValidateStore } from "EmoEase/stores/Validate/ValidateStore";
 import NotFound from "EmoEase/app/404/page";
+import { useSidebarStore } from "EmoEase/stores/SideBar/SideBarStore";
 
 const { Header, Content, Footer } = Layout;
 
@@ -27,9 +28,10 @@ const BaseScreenAdmin: React.FC<BaseScreenAdminProps> = ({
   breadcrumbItems = [],
 }) => {
   // 1️⃣ collapsed được quản lý ở đây
-  const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const invalid = useValidateStore.getState().inValid;
+  const collapsed = useSidebarStore((s) => s.collapsed);
+  const setCollapsed = useSidebarStore((s) => s.setCollapsed);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setMounted(true));
@@ -49,6 +51,7 @@ const BaseScreenAdmin: React.FC<BaseScreenAdminProps> = ({
       <div
         style={{
           minHeight: "100vh",
+          background: colorBgContainer,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -105,6 +108,8 @@ const BaseScreenAdmin: React.FC<BaseScreenAdminProps> = ({
             />
           )}
         </Header>
+
+        <Loading />
         <FadeInUp>
           <Content style={{ margin: "16px 24px" }}>
             <div
@@ -114,7 +119,6 @@ const BaseScreenAdmin: React.FC<BaseScreenAdminProps> = ({
                 borderRadius: borderRadiusLG,
               }}
             >
-              <Loading />
               {children}
             </div>
           </Content>

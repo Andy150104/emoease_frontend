@@ -1,5 +1,10 @@
 // src/apiClient.ts
-import axios, { AxiosInstance, Method, AxiosRequestConfig } from "axios";
+import axios, {
+  AxiosInstance,
+  Method,
+  AxiosRequestConfig,
+  AxiosError,
+} from "axios";
 import { Api as PaymentApi } from "EmoEase/api/api-payment-service";
 import { Api as ProfileApi } from "EmoEase/api/api-profile-service";
 import { Api as AuthApi } from "EmoEase/api/api";
@@ -11,22 +16,39 @@ const axiosInstance: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL, // ví dụ: "https://api.emoease.vn"
 });
 
+interface RetryConfig extends AxiosRequestConfig {
+  _retry?: boolean;
+}
+
 axiosInstance.interceptors.request.use((cfg) => {
   const { token } = useAuthStore.getState();
   if (token && cfg.headers) {
     cfg.headers.Authorization = `Bearer ${token}`;
   }
+  console.log("vào in1");
   return cfg;
 });
 
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error: AxiosError & { config?: RetryConfig }) => {
     const status = error.response?.status;
-    if (status === 401 || status === 403 || status === 418) {
-      // if (typeof window !== "undefined") {
-      //   window.location.href = "/Login";
-      // }
+    const originalRequest = error.config!;
+    if (status === 401 && !originalRequest._retry) {
+      try {
+        await useAuthStore.getState().refreshToken();
+        const newToken = useAuthStore.getState().token;
+        if (newToken && originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        }
+        return axiosInstance(originalRequest);
+      } catch {
+        useAuthStore.getState().logout();
+        useAuthStore.persist.clearStorage();
+        useValidateStore.getState().setInValid(true);
+      }
+    }
+    if ((status === 403 || status === 418) && !originalRequest._retry) {
       useAuthStore.getState().logout();
       useAuthStore.persist.clearStorage();
       useValidateStore.getState().setInValid(true);

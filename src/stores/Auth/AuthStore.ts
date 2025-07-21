@@ -51,7 +51,6 @@ export const useAuthStore = create<AuthState>()(
             token: string;
             refreshToken: string;
           };
-
           set({ token, refreshTokenValue: refreshToken });
           apiClient.authService.setSecurityData({ token, refreshToken });
         } catch {

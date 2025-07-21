@@ -1,6 +1,6 @@
-"use client";
 import React from "react";
 import { Button, Tooltip } from "antd";
+import { SunOutlined, MoonOutlined } from "@ant-design/icons";
 import { useTheme } from "../../Provider/ThemeProvider";
 
 // Tùy chỉnh màu nhanh ở đây
@@ -23,16 +23,17 @@ interface ThemeToggleButtonProps {
 
 export const ThemeSwitch: React.FC<ThemeToggleButtonProps> = ({
   size = "small",
-  showText = true,
+  showText = false,
   square = false,
 }) => {
   const { toggleSwitchTheme, isDarkMode, ref } = useTheme();
 
-  const label = isDarkMode ? "Dark" : "Light";
-
   const tooltip = isDarkMode
     ? "Chuyển sang Light mode"
     : "Chuyển sang Dark mode";
+
+  // Chọn icon dựa trên theme hiện tại
+  const IconComponent = isDarkMode ? SunOutlined : MoonOutlined;
 
   return (
     <Tooltip title={tooltip}>
@@ -46,7 +47,10 @@ export const ThemeSwitch: React.FC<ThemeToggleButtonProps> = ({
           isDarkMode ? DARK_STYLES : LIGHT_STYLES,
         ].join(" ")}
       >
-        {showText && label}
+        <IconComponent />
+        {showText && (
+          <span className="ml-2">{isDarkMode ? "Light" : "Dark"}</span>
+        )}
       </Button>
     </Tooltip>
   );

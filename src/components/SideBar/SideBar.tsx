@@ -19,6 +19,7 @@ import { ThemeSwitch } from "../Themes/Theme";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "EmoEase/stores/Auth/AuthStore";
 import { useNotification } from "EmoEase/Provider/NotificationProvider";
+import { useLoadingStore } from "EmoEase/stores/Loading/LoadingStore";
 
 const { Sider } = Layout;
 type MenuItem = Required<MenuProps>["items"][number];
@@ -137,6 +138,15 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const pathname = usePathname();
   const router = useRouter();
 
+  useEffect(() => {
+    navItems.forEach((item) => {
+      if (item.path) router.prefetch(item.path);
+      item.children?.forEach(
+        (child) => child.path && router.prefetch(child.path),
+      );
+    });
+  }, [router]);
+
   useEffect(() => setMounted(true), []);
   if (!mounted) return <div style={{ width: collapsed ? 80 : 240 }} />;
 
@@ -151,14 +161,18 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     if (key === "logout") {
+      useLoadingStore.getState().showLoading();
       useAuthStore.getState().logout();
       useAuthStore.persist.clearStorage();
       router.push("/Login");
+      useLoadingStore.getState().hideLoading();
       messageApi.success("Đăng xuất thành công!");
       return;
     }
     const path = keyPathMap[key];
-    if (path) router.push(path);
+    if (path) {
+      router.push(path);
+    }
   };
 
   return (

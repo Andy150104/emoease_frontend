@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Spin, Alert, theme } from "antd";
+import { Row, Col, Card, Spin, Alert, theme, Grid } from "antd";
 import { Line } from "@ant-design/charts";
 import { Column as BarColumn, ColumnConfig } from "@ant-design/charts";
 import {
@@ -19,27 +19,29 @@ import dayjs, { Dayjs } from "dayjs";
 import BaseControlRangePicker from "EmoEase/components/BaseControl/BaseControlRangePicker";
 import Head from "next/head";
 
+const { useBreakpoint } = Grid;
+
 const DashboardRevenuePage: React.FC = () => {
+  // store, theme & responsive
   const { revenues, isLoading, error, fetchDailyRevenue } = usePaymentStore();
   const { token } = theme.useToken();
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
 
-  // Khoảng ngày để filter dữ liệu
+  // range filter
   const [range, setRange] = useState<[Dayjs, Dayjs]>(() => [
     dayjs("2004-01-01"),
     dayjs("2025-07-15"),
   ]);
-
-  // Fetch dữ liệu mỗi khi range thay đổi
   useEffect(() => {
     const [start, end] = range;
     fetchDailyRevenue(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"));
   }, [fetchDailyRevenue, range]);
-
   const onRangeChange = (dates: [Dayjs, Dayjs] | null) => {
     if (dates) setRange(dates);
   };
 
-  // Tính các số liệu tổng hợp
+  // summary stats
   const totalRevenue = revenues.reduce(
     (sum, r) => sum + (r.totalRevenue ?? 0),
     0,
@@ -50,11 +52,11 @@ const DashboardRevenuePage: React.FC = () => {
   );
   const avgRevenue = revenues.length ? totalRevenue / revenues.length : 0;
   const maxRevenueDay = revenues.reduce(
-    (max, r) => ((r.totalRevenue ?? 0) > (max.totalRevenue ?? 0) ? r : max),
+    (max, r) => (r.totalRevenue! > max.totalRevenue! ? r : max),
     revenues[0] || { date: "", totalRevenue: 0, totalPayment: 0 },
   );
   const maxPaymentDay = revenues.reduce(
-    (max, r) => ((r.totalPayment ?? 0) > (max.totalPayment ?? 0) ? r : max),
+    (max, r) => (r.totalPayment! > max.totalPayment! ? r : max),
     revenues[0] || { date: "", totalRevenue: 0, totalPayment: 0 },
   );
 
@@ -95,24 +97,29 @@ const DashboardRevenuePage: React.FC = () => {
     },
   ];
 
-  // Cấu hình cho biểu đồ đường
+  // line chart config
   const lineConfig: React.ComponentProps<typeof Line> = {
     data: revenues as DailyRevenue[],
     xField: "date",
     yField: "totalRevenue",
     smooth: true,
     autoFit: true,
-    padding: "auto",
+    padding: isMobile ? [10, 10, 30, 40] : "auto",
+    height: isMobile ? 200 : 300,
     xAxis: {
-      type: "timeCat",
-      tickCount: revenues.length || 5,
+      type: "time",
+      mask: "DD/MM",
+      tickCount: isMobile ? 3 : Math.min(revenues.length, 6),
       title: { text: "Ngày" },
-      label: { autoRotate: false },
+      label: {
+        formatter: (val: string) => val, // giữ mask
+        style: { fontSize: isMobile ? 10 : 12 },
+      },
     },
     yAxis: {
       title: { text: "Doanh thu (₫)" },
       label: {
-        formatter: (val: number | string) => `${Number(val).toLocaleString()}₫`,
+        formatter: (v: number | string) => `${Number(v).toLocaleString()}₫`,
         style: { fill: "red" },
       },
     },
@@ -123,32 +130,34 @@ const DashboardRevenuePage: React.FC = () => {
         value: `${d.totalRevenue?.toLocaleString() ?? 0}₫`,
       }),
     },
-    height: 300,
   };
 
-  // Dữ liệu cho biểu đồ cột
+  // bar chart data & config
   const columnData = revenues.map((r) => ({
     date: dayjs(r.date).format("DD/MM"),
     totalPayment: r.totalPayment ?? 0,
   }));
-
-  // Cấu hình cho biểu đồ cột
   const columnConfig: ColumnConfig = {
     data: columnData,
     xField: "date",
     yField: "totalPayment",
-    columnWidthRatio: 0.6,
+    columnWidthRatio: isMobile ? 0.4 : 0.6,
+    maxColumnWidth: isMobile ? 20 : undefined,
     color: token.colorPrimary,
-    label: {
-      style: { fill: "#fff", fontSize: 14 },
-      formatter: (value: number) => `${value}`,
+    label: isMobile
+      ? false
+      : {
+          style: { fill: "#fff", fontSize: 14 },
+        },
+    xAxis: {
+      title: { text: "Ngày" },
+      label: { style: { fontSize: isMobile ? 10 : 12 } },
     },
-    xAxis: { title: { text: "Ngày" } },
     yAxis: {
       title: { text: "Số giao dịch" },
       label: { style: { fill: "red" } },
     },
-    height: 220,
+    height: isMobile ? 180 : 220,
   };
 
   return (
@@ -161,7 +170,7 @@ const DashboardRevenuePage: React.FC = () => {
         breadcrumbItems={[{ title: "Doanh thu" }]}
       >
         <Row gutter={[32, 32]}>
-          {/* Cột trái: cards thống kê */}
+          {/* Thống kê */}
           <Col xs={24} md={8} lg={6}>
             <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
               {stats.map((item, idx) => (
@@ -172,11 +181,10 @@ const DashboardRevenuePage: React.FC = () => {
                     borderRadius: 16,
                     background: token.colorBgContainer,
                     boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
-                    textAlign: "left",
-                    padding: 16,
                     display: "flex",
                     alignItems: "center",
                     gap: 16,
+                    padding: 16,
                   }}
                 >
                   <div
@@ -219,23 +227,24 @@ const DashboardRevenuePage: React.FC = () => {
             </div>
           </Col>
 
-          {/* Cột phải: hai biểu đồ */}
+          {/* Biểu đồ */}
           <Col xs={24} md={16} lg={18}>
             <Row gutter={[32, 32]}>
-              {/* Biểu đồ đường */}
+              {/* Line chart */}
               <Col xs={24}>
                 <Card
                   title={
                     <div
                       style={{
                         display: "flex",
+                        flexWrap: isMobile ? "wrap" : "nowrap",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        fontSize: 20,
+                        fontSize: isMobile ? 16 : 20,
                         fontWeight: 600,
                       }}
                     >
-                      <span>Doanh thu hằng tháng</span>
+                      <span>Doanh thu tháng</span>
                       <BaseControlRangePicker
                         value={range}
                         onChange={onRangeChange}
@@ -246,7 +255,7 @@ const DashboardRevenuePage: React.FC = () => {
                   style={{
                     borderRadius: 16,
                     boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
-                    padding: 36,
+                    padding: isMobile ? 16 : 36,
                     marginBottom: 32,
                   }}
                 >
@@ -262,29 +271,34 @@ const DashboardRevenuePage: React.FC = () => {
                       showIcon
                     />
                   ) : (
-                    <Line {...lineConfig} />
+                    <div style={{ width: "100%" }}>
+                      <Line {...lineConfig} />
+                    </div>
                   )}
                 </Card>
               </Col>
 
-              {/* Biểu đồ cột */}
+              {/* Bar chart */}
               <Col xs={24}>
                 <Card
                   title={<span style={{ fontWeight: 600 }}>Tổng quan</span>}
                   extra={
-                    <select style={{ borderRadius: 8, padding: "2px 8px" }}>
-                      <option>Monthly</option>
-                      <option>Weekly</option>
-                    </select>
+                    !isMobile && (
+                      <select style={{ borderRadius: 8, padding: "2px 8px" }}>
+                        <option>Monthly</option>
+                        <option>Weekly</option>
+                      </select>
+                    )
                   }
                   style={{
                     borderRadius: 16,
                     boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
-                    padding: 24,
-                    height: "100%",
+                    padding: isMobile ? 16 : 24,
                   }}
                 >
-                  <BarColumn {...columnConfig} />
+                  <div style={{ width: "100%" }}>
+                    <BarColumn {...columnConfig} />
+                  </div>
                 </Card>
               </Col>
             </Row>
