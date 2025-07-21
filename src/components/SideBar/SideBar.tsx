@@ -154,14 +154,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const antItems = toAntdItems(menuItems);
   const selectedKeys = defaultSelectedKeys ?? getSelectedKeys(pathname);
 
-  const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+  const handleMenuClick: MenuProps["onClick"] = async ({ key }) => {
     if (key === "logout") {
       useLoadingStore.getState().showLoading();
-      useAuthStore.getState().logout();
+      await useAuthStore.getState().logout();
       useAuthStore.persist.clearStorage();
-      router.push("/Login");
+      await messageApi.success("Đăng xuất thành công!")
       useLoadingStore.getState().hideLoading();
-      messageApi.success("Đăng xuất thành công!");
+      router.push("/Login")
       return;
     }
     const path = keyPathMap[key];

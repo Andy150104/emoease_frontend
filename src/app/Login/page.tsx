@@ -45,6 +45,7 @@ export default function LoginPage() {
       await messageApi.success("Đăng nhập thành công!");
       useLoadingStore.getState().hideLoading();
     } catch (error: unknown) {
+      useLoadingStore.getState().hideLoading();
       let errorMessage =
         "Đăng nhập thất bại, vui lòng kiểm tra lại email/mật khẩu.";
       if (isAxiosError(error)) {
