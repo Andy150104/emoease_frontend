@@ -97,10 +97,10 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      logout: () => {
+      logout: async () => {
         const { token, refreshTokenValue } = get();
         if (token && refreshTokenValue) {
-          apiClient.authService.auth
+          await apiClient.authService.auth
             .revokeTokenCreate({
               token,
               refreshToken: refreshTokenValue,
