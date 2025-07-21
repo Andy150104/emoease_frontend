@@ -6,8 +6,11 @@ import { Pie } from "@ant-design/charts";
 import dayjs, { Dayjs } from "dayjs";
 import BaseScreenAdmin from "EmoEase/layout/BaseScreenAdmin";
 import { useSubscriptionStore } from "EmoEase/stores/Subscription/SubscriptionStore";
+import type { ServicePackage } from "EmoEase/stores/Subscription/SubscriptionStore";
 
 const { Title } = Typography;
+
+type PieData = { name: string; value: number };
 
 const SubscriptionsPage = () => {
   const {
@@ -60,7 +63,7 @@ const SubscriptionsPage = () => {
       dataIndex: "isActive",
       key: "isActive",
       align: "center" as const,
-      render: (_: boolean, record: any) => (
+      render: (_: boolean, record: ServicePackage) => (
         <span style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center" }}>
           <span style={{ minWidth: 80, fontWeight: 500, color: record.isActive ? token.colorSuccess : token.colorWarning }}>
             {record.isActive ? "Hoạt động" : "Tạm dừng"}
@@ -84,7 +87,7 @@ const SubscriptionsPage = () => {
     colorField: "name",
     radius: 0.9,
     label: {
-      content: (data: any) => `${data.name}: ${data.value}`,
+      content: ({ name, value }: PieData) => `${name}: ${value}`,
     },
     legend: { position: "bottom" },
     tooltip: {},

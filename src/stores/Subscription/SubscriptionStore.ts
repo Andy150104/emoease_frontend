@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import apiClient from "EmoEase/hooks/apiClient";
-import { UpdateServicePackageDto, SubscriptionStatus } from "EmoEase/api/api-subscription-service";
+import { UpdateServicePackageDto, SubscriptionStatus, ServicePackageDto, ServicePackageWithTotal } from "EmoEase/api/api-subscription-service";
 import { useLoadingStore } from "../Loading/LoadingStore";
 
 // --- Types ---
@@ -69,7 +69,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
       });
       let packages: ServicePackage[] = [];
       if (res.data && res.data.servicePackages && Array.isArray(res.data.servicePackages.data)) {
-        packages = res.data.servicePackages.data.map((pkg: any) => ({
+        packages = res.data.servicePackages.data.map((pkg: ServicePackageDto) => ({
           id: pkg.id ?? "",
           name: pkg.name ?? "",
           totalSubscriptions: 0, // Not available in this endpoint
@@ -94,7 +94,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
       const res = await apiClient.subscriptionService.servicePackages.getTotalServicePackages(params);
       let packages: ServicePackageTotal[] = [];
       if (Array.isArray(res.data)) {
-        packages = res.data.map((pkg: any) => ({
+        packages = res.data.map((pkg: ServicePackageWithTotal) => ({
           id: pkg.id ?? "",
           name: pkg.name ?? "",
           totalSubscriptions: pkg.totalSubscriptions ?? 0,
