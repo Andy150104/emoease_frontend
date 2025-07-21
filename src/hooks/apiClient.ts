@@ -3,6 +3,7 @@ import axios, { AxiosInstance, Method, AxiosRequestConfig } from "axios";
 import { Api as PaymentApi } from "EmoEase/api/api-payment-service";
 import { Api as ProfileApi } from "EmoEase/api/api-profile-service";
 import { Api as AuthApi } from "EmoEase/api/api";
+import { Api as SubscriptionApi } from "EmoEase/api/api-subscription-service";
 import { useAuthStore } from "EmoEase/stores/Auth/AuthStore";
 import { useValidateStore } from "EmoEase/stores/Validate/ValidateStore";
 
@@ -94,10 +95,16 @@ export const profileClient = new ProfileApi({
   customFetch: axiosFetch,
 });
 
+export const subscriptionClient = new SubscriptionApi({
+  baseUrl: process.env.NEXT_PUBLIC_SUBSCRIPTION_API_URL || "/subscription-service",
+  customFetch: axiosFetch,
+});
+
 const apiClient = {
   paymentService: paymentClient,
   authService: AuthClient,
   profileService: profileClient,
+  subscriptionService: subscriptionClient,
 };
 
 export default apiClient;

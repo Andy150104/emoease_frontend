@@ -26,3 +26,8 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   color: #030a14;
 }
+
+/* Force pointer cursor on Ant Design DatePicker input when read-only */
+.ant-picker input[readonly] {
+  cursor: pointer !important;
+}
