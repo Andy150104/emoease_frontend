@@ -6,6 +6,7 @@ import { ThemeProvider } from "EmoEase/Provider/ThemeProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ChartThemeProvider } from "EmoEase/Provider/ChartThemeProvider";
 import { NotificationProvider } from "EmoEase/Provider/NotificationProvider";
+import '@ant-design/v5-patch-for-react-19';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,19 +44,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <AntdRegistry />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <AntdThemeProvider>
-            <ChartThemeProvider>
-              <NotificationProvider>{children}</NotificationProvider>
-            </ChartThemeProvider>
-          </AntdThemeProvider>
-        </ThemeProvider>
+        <AntdRegistry>
+          <ThemeProvider>
+            <AntdThemeProvider>
+              <ChartThemeProvider>
+                <NotificationProvider>{children}</NotificationProvider>
+              </ChartThemeProvider>
+            </AntdThemeProvider>
+          </ThemeProvider>
+        </AntdRegistry>
       </body>
     </html>
   );

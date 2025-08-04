@@ -10,8 +10,16 @@ const nextConfig: NextConfig = {
       "rubicmarketing.com",
       "www.yarooms.com",
       "randomuser.me",
+      'via.placeholder.com',
+      'cdnphoto.dantri.com.vn'
     ], // thêm các domain bạn dùng
   },
+  // experimental: {
+  //   optimizeCss: true,
+  // },
+  // compiler: {
+  //   removeConsole: process.env.NODE_ENV === "production",
+  // },
 };
 
 export default nextConfig;
