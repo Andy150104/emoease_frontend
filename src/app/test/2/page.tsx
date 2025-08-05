@@ -182,3 +182,22 @@
 //     </div>
 //   );
 // }
+// src/pages/DemoPage.tsx
+"use client";
+import React from "react";
+import BaseScreenAdmin from "EmoEase/layout/BaseScreenAdmin";
+
+const DemoPage: React.FC = () => {
+
+
+  return (
+    <BaseScreenAdmin
+      defaultSelectedKeys={["dashboard-user"]}
+      breadcrumbItems={[{ title: "Danh sách hồ sơ theo mốc thời gian" }]}
+    >
+      <div></div>
+    </BaseScreenAdmin>
+  );
+};
+
+export default DemoPage;
