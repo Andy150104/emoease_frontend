@@ -1,6 +1,6 @@
 // src/components/Themes/ThemeProvider.tsx
 "use client";
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import {
   useModeAnimation,
   ThemeAnimationType,
@@ -21,6 +21,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     easing: "ease-in-out",
     globalClassName: "dark",
   });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (themeHook.isDarkMode) root.classList.add("new-dark");
+    else root.classList.remove("new-dark");
+  }, [themeHook.isDarkMode]);
 
   return (
     <ThemeContext.Provider value={themeHook}>{children}</ThemeContext.Provider>
