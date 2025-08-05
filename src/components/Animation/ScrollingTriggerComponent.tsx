@@ -16,7 +16,8 @@ const ScrollSmootherWrapper: React.FC<Props> = ({ children }) => {
     const smoother = ScrollSmoother.create({
       wrapper: "#smooth-wrapper",
       content: "#smooth-content",
-      smooth: 1,
+      smooth: 1.5,
+      smoothTouch: 1,
       effects: true,
       normalizeScroll: true
     });
@@ -36,12 +37,12 @@ const ScrollSmootherWrapper: React.FC<Props> = ({ children }) => {
       tl.fromTo(
         card,
         { x: dir * 200, opacity: 0 },
-        { x: 0, opacity: 1, ease: "power2.out", duration: 0.8 },
+        { x: 0, opacity: 1, ease: "power2.out", duration: 0.1 },
       )
         // 2nd tween: bay ra
         .to(
           card,
-          { x: -dir * 200, opacity: 0, ease: "power2.in", duration: 0.8 },
+          { x: -dir * 200, opacity: 0, ease: "power2.in", duration: 0.1 },
           // băt đầu tween thứ 2 ngay sau tween thứ nhất
           "+=0",
         );
@@ -68,7 +69,7 @@ const ScrollSmootherWrapper: React.FC<Props> = ({ children }) => {
       );
     });
 
-gsap.utils.toArray<HTMLElement>(".gsap-zoom").forEach((el) => {
+gsap.utils.toArray<HTMLElement>(".gsap-text-zoom").forEach((el) => {
   const tl = gsap.timeline({
     scrollTrigger: {
       trigger: el,
