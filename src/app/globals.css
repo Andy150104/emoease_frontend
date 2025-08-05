@@ -25,7 +25,9 @@
     --color-bgContrast: #66C8B6;
   }
 }
-
+html, body {
+  background-color: #49BBBD;
+}
 
 body {
   background: var(--background);
@@ -37,4 +39,18 @@ body {
 /* Force pointer cursor on Ant Design DatePicker input when read-only */
 .ant-picker input[readonly] {
   cursor: pointer !important;
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
 }

@@ -18,7 +18,7 @@ const BaseScreen: FC<BaseScreenProps> = ({ children }) => {
       {/* HEADER */}
 
       {/* MAIN CONTENT */}
-      <main className="flex-grow pt-24">
+      <main className="flex-grow pt-24 bg-white dark:bg-gray-900">
         {children}
       </main>
 

@@ -23,8 +23,9 @@ export default function Navigationbar() {
 
   // Xác định item đang active dựa trên href (dành cho desktop)
   const activeItem =
-    menuItems.slice(0, 5).find((item) => pathname.startsWith(item.href ?? "")) ||
-    menuItems[0];
+    menuItems
+      .slice(0, 5)
+      .find((item) => pathname.startsWith(item.href ?? "")) || menuItems[0];
   const currentKey = activeItem.key;
 
   // --- Spring cho desktop underline indicator ---
@@ -68,7 +69,7 @@ export default function Navigationbar() {
       // animate thu underline về giữa
       api.start({
         to: async (next) => {
-           next({
+          next({
             width: 0,
             x: targetX + targetW / 2,
           });
@@ -90,7 +91,7 @@ export default function Navigationbar() {
   const closeMenu = () => setIsOpen(false);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-[#49BBBD] text-white p-4">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-[#49BBBD] dark:bg-[#1a4a4c] text-white p-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -105,7 +106,7 @@ export default function Navigationbar() {
           </div>
 
           {/* Desktop menu */}
-          <div className="hidden md:flex flex-1 justify-center relative">
+          <div className="hidden md:flex flex-1 justify-center items-center relative mx-20">
             {menuItems.slice(0, 5).map((item) => {
               const isActive = item.key === currentKey;
               return (
@@ -115,7 +116,7 @@ export default function Navigationbar() {
                   data-key={item.key}
                   onClick={handleNavClick(item.href ?? "", item.key)}
                   className={`
-          inline-block mx-6 pb-2 text-base tracking-wide transition-all duration-500
+          inline-block mx-4 pb-2 text-base tracking-wide transition-all duration-500 whitespace-nowrap
           ${isActive ? "text-white font-semibold" : "text-white hover:font-bold"}
         `}
                 >
@@ -134,17 +135,40 @@ export default function Navigationbar() {
           </div>
 
           {/* Desktop auth & theme */}
-          <div className="hidden md:flex items-center space-x-3">
-            <ThemeSwitch />
+          <div className="hidden md:flex items-center space-x-3 ml-8">
+            <div className="ml-8">
+               <ThemeSwitch />
+            </div>
             <Link
               href="/Login"
-              className="text-white font-medium text-base hover:underline"
+              className="
+                flex items-center justify-center
+                h-12 px-6
+                border-2 border-white
+                text-white font-medium text-base whitespace-nowrap
+                rounded-full
+                transition-all duration-300
+                hover:bg-white hover:text-[#49BBBD]
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white
+              "
             >
               Đăng nhập
             </Link>
+
+            {/* Đăng Ký */}
             <Link
               href="/Signup"
-              className="bg-[#73b4a1] hover:bg-[#5da38f] text-white font-medium text-base px-4 py-2 rounded"
+              className="
+                flex items-center justify-center
+                h-12 px-6
+                bg-gradient-to-r from-[#5da38f] to-[#4a8a7a]
+                text-white font-medium text-base whitespace-nowrap
+                rounded-full shadow-lg
+                transition-all duration-300
+                hover:from-[#4a8a7a] hover:to-[#5da38f]
+                hover:shadow-xl
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5da38f]
+              "
             >
               Đăng Ký
             </Link>

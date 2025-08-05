@@ -16,13 +16,13 @@ const stats: StatItem[] = [
 ];
 
 const Stats: React.FC = () => (
-  <section className="pt-12 bg-white">
+  <section className="pt-12 bg-white dark:bg-gray-900">
     {/* Header */}
     <div className="max-w-3xl mx-auto text-center px-4">
-      <div className="text-3xl md:text-4xl font-bold text-gray-900 pb-12">
-        Our Success
+      <div className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white pb-12">
+        Thành công của chúng tôi
       </div>
-      <p className="mt-4 text-gray-600">
+      <p className="mt-4 text-gray-600 dark:text-gray-400">
         Ornare id fames interdum porttitor nulla turpis etiam. Diam vitae sollicitudin at nec nam et pharetra gravida. Adipiscing a quis ultrices eu ornare tristique vel nisl orci.
       </p>
     </div>
@@ -34,7 +34,7 @@ const Stats: React.FC = () => (
           <span className={`text-4xl md:text-5xl font-extrabold ${item.colorClass}`}>
             {item.value}
           </span>
-          <p className="mt-2 text-gray-800">{item.label}</p>
+          <p className="mt-2 text-gray-800 dark:text-gray-200">{item.label}</p>
         </div>
       ))}
     </div>
