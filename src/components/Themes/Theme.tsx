@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Tooltip } from "antd";
 import { SunOutlined, MoonOutlined } from "@ant-design/icons";
 import { useTheme } from "../../Provider/ThemeProvider";
@@ -28,11 +28,16 @@ export const ThemeSwitch: React.FC<ThemeToggleButtonProps> = ({
 }) => {
   const { toggleSwitchTheme, isDarkMode, ref } = useTheme();
 
-  const tooltip = isDarkMode
-    ? "Chuyển sang Light mode"
-    : "Chuyển sang Dark mode";
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) {
+    // bạn có thể trả về null, loading spinner, hoặc placeholder ẩn đi
+    return null;
+  }
 
-  // Chọn icon dựa trên theme hiện tại
+  const tooltip = isDarkMode ? "Chuyển sang Light mode" : "Chuyển sang Dark mode";
   const IconComponent = isDarkMode ? SunOutlined : MoonOutlined;
 
   return (
