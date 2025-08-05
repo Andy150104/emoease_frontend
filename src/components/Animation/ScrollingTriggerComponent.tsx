@@ -16,8 +16,8 @@ const ScrollSmootherWrapper: React.FC<Props> = ({ children }) => {
     const smoother = ScrollSmoother.create({
       wrapper: "#smooth-wrapper",
       content: "#smooth-content",
-      smooth: 1.5,
-      smoothTouch: 0.4,
+      smooth: 1,
+      smoothTouch: 0.15,
       effects: true,
       normalizeScroll: true
     });
@@ -30,7 +30,7 @@ const ScrollSmootherWrapper: React.FC<Props> = ({ children }) => {
           trigger: card,
           start: "top 90%",
           end: "top 10%",// tới khi card trên cùng viewport
-          scrub: 0.5, 
+          scrub: 0.4, 
         },
       });
       // 1st tween: bay vào
