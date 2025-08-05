@@ -17,7 +17,7 @@ const ScrollSmootherWrapper: React.FC<Props> = ({ children }) => {
       wrapper: "#smooth-wrapper",
       content: "#smooth-content",
       smooth: 1.5,
-      smoothTouch: 1,
+      smoothTouch: 0.4,
       effects: true,
       normalizeScroll: true
     });
@@ -28,9 +28,9 @@ const ScrollSmootherWrapper: React.FC<Props> = ({ children }) => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: card,
-          start: "top bottom", // khi card dưới đáy viewport
-          end: "bottom top", // tới khi card trên cùng viewport
-          scrub: true,
+          start: "top 90%",
+          end: "top 10%",// tới khi card trên cùng viewport
+          scrub: 0.5, 
         },
       });
       // 1st tween: bay vào
@@ -39,6 +39,7 @@ const ScrollSmootherWrapper: React.FC<Props> = ({ children }) => {
         { x: dir * 200, opacity: 0 },
         { x: 0, opacity: 1, ease: "power2.out", duration: 0.1 },
       )
+      .to({}, { duration: 0.5 })
         // 2nd tween: bay ra
         .to(
           card,
