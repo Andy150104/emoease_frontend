@@ -11,7 +11,7 @@ const features = [
     icon: <FiFileText className="w-8 h-8 text-white" />,
     bg: "bg-indigo-500",
     title: "Online Billing, Invoicing, & Contracts",
-    desc: "Simple and secure control of your organization's financial and legal transactions. Send customized invoices and contracts.",
+    desc: "Simple and secure control of your organization’s financial and legal transactions. Send customized invoices and contracts.",
   },
   {
     icon: <FiCalendar className="w-8 h-8 text-white" />,
@@ -23,30 +23,30 @@ const features = [
     icon: <FiUsers className="w-8 h-8 text-white" />,
     bg: "bg-cyan-400",
     title: "Customer Tracking",
-    desc: "Automate and track emails to individuals or groups. Built-in system helps organize your organization's workflow.",
+    desc: "Automate and track emails to individuals or groups. Built-in system helps organize your organization’s workflow.",
   },
 ];
 
 const FeatureSection: React.FC = () => (
   <>
     <BaseScreen>
-      {/* Hero Section */}
       <HeroSection />
-      
-      {/* Stats Section with proper spacing */}
-      <div className="relative z-10 bg-white">
+      <div className="pt-12">
         <Stats />
       </div>
-      
-      {/* Feature Cards Section */}
-      <section className="relative bg-white py-24">
+      <div className="bg-[#49BBBD] h-[600px] rounded-b-[32rem] z-10"></div>
+      <section
+        className="bg-white overflow-hidden relative z-0"
+        data-speed="0.6"
+        data-lag="0.2"
+      >
         {/* Header */}
-        <div className="max-w-2xl mx-auto text-center px-4 mb-16">
-          <div className="text-3xl font-bold mb-4">
+        <div className="max-w-2xl mx-auto text-center px-4 mb-12 mt-48">
+          <div className="text-3xl font-bold mb-2">
             Tính năng nổi bật{" "}
             <span className="text-teal-400 font-bold">FLearning</span>
           </div>
-          <p className="text-gray-500 text-lg">
+          <p className="text-gray-500">
             TOTC vận dụng AI trong việc cá nhân hóa khóa học phù hợp với học
             sinh.
           </p>
@@ -58,7 +58,9 @@ const FeatureSection: React.FC = () => (
             {features.map((f, idx) => (
               <div
                 key={idx}
-                className="feature-card relative bg-white pt-16 pb-8 px-8 rounded-2xl shadow-lg text-center transform transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+                className="feature-card relative bg-white pt-16 pb-8 px-8 rounded-2xl shadow-lg text-center"
+                data-speed={1 + idx * 0.3}
+                data-lag="0.2"
               >
                 {/* icon circle */}
                 <div
@@ -67,13 +69,12 @@ const FeatureSection: React.FC = () => (
                       transform -translate-x-1/2 
                       ${f.bg} w-16 h-16 rounded-full 
                       flex items-center justify-center
-                      transition-transform duration-300 hover:scale-110
                     `}
                 >
                   {f.icon}
                 </div>
 
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
                   {f.title}
                 </h3>
                 <p className="text-gray-500 text-sm leading-relaxed">
@@ -83,13 +84,13 @@ const FeatureSection: React.FC = () => (
             ))}
           </div>
         </div>
+        <div className="bg-white h-[500px]"></div>
       </section>
-      
-      {/* More Section */}
-      <MoreSection />
-      
-      {/* Spacer for testing */}
-      <div className="bg-amber-300 h-[1000px]" />
+      <div className="mt-32">
+        <MoreSection />
+      </div>
+      {/* spacer */}
+      <div className="bg-amber-300 h-[2000px]" />
     </BaseScreen>
   </>
 );

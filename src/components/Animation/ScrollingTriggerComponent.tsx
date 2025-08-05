@@ -21,86 +21,77 @@ const ScrollSmootherWrapper: React.FC<Props> = ({ children }) => {
       normalizeScroll: true
     });
 
-    // Feature cards animation with stagger
-    const featureCards = gsap.utils.toArray<HTMLElement>(".feature-card");
-    if (featureCards.length > 0) {
-      gsap.fromTo(
-        featureCards,
-        { 
-          y: 100, 
-          opacity: 0,
-          scale: 0.9
+    // timeline cho cả in và out
+    gsap.utils.toArray<HTMLElement>(".feature-card").forEach((card, i) => {
+      const dir = i % 2 === 0 ? -1 : 1;
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: card,
+          start: "top bottom", // khi card dưới đáy viewport
+          end: "bottom top", // tới khi card trên cùng viewport
+          scrub: true,
         },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.8,
-          stagger: 0.2,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: featureCards[0],
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
-    }
-
-    // Hero badges animation - simplified to avoid conflicts
-    const heroBadges = gsap.utils.toArray<HTMLElement>(".hero-badge");
-    heroBadges.forEach((badge, index) => {
-      gsap.fromTo(
+      });
+      // 1st tween: bay vào
+      tl.fromTo(
+        card,
+        { x: dir * 200, opacity: 0 },
+        { x: 0, opacity: 1, ease: "power2.out", duration: 0.8 },
+      )
+        // 2nd tween: bay ra
+        .to(
+          card,
+          { x: -dir * 200, opacity: 0, ease: "power2.in", duration: 0.8 },
+          // băt đầu tween thứ 2 ngay sau tween thứ nhất
+          "+=0",
+        );
+    });
+    gsap.utils.toArray<HTMLElement>(".hero-badge").forEach((badge, i) => {
+      const dir = (i % 2 === 0 ? -1 : 1) * 1; // chẵn/trái, lẻ/phải
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: badge,
+          start: "top 95%",   // khi badge gần chạm đáy khung nhìn
+          end: "bottom 5%",  // tới khi badge gần chạm đỉnh
+          scrub: true,
+        },
+      })
+      .fromTo(
         badge,
-        { 
-          x: (index % 2 === 0 ? -50 : 50),
-          opacity: 0,
-          scale: 0.8
-        },
-        {
-          x: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.6,
-          delay: index * 0.1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: badge,
-            start: "top 85%",
-            toggleActions: "play none none reverse"
-          }
-        }
+        { x: dir * 250, autoAlpha: 1 },
+        { x: 0, autoAlpha: 1, opacity: 1, ease: "power2.out", duration: 0.6 }
+      )
+      .to(
+        badge,
+        { x: -dir * 250, autoAlpha: 1, opacity: 0, ease: "power2.in", duration: 0.6 },
+        "+=0"
       );
     });
 
-    // Zoom animations with better timing
-    const zoomElements = gsap.utils.toArray<HTMLElement>(".gsap-zoom");
-    zoomElements.forEach((el, index) => {
-      gsap.fromTo(
-        el,
-        { 
-          scale: 0.8, 
-          opacity: 0,
-          y: 30
-        },
-        {
-          scale: 1,
-          opacity: 1,
-          y: 0,
-          duration: 0.7,
-          delay: index * 0.1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 75%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
-    });
+gsap.utils.toArray<HTMLElement>(".gsap-zoom").forEach((el) => {
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: el,
+      start: "top 80%",    // khi text vừa chạm 80% chiều cao viewport
+      end: "bottom 20%",   // khi text chạm 20% đỉnh viewport
+      scrub: true,
+    },
+  });
 
-    // Cleanup function
+  // 1) zoom in: scale 0.5 → 1
+  tl.fromTo(
+    el,
+    { scale: 0.5, autoAlpha: 0 },
+    { scale: 1, autoAlpha: 1, ease: "power2.out", duration: 0.6 }
+  )
+  // 2) zoom out: scale 1 → 0.5
+  .to(
+    el,
+    { scale: 0.5, autoAlpha: 0, ease: "power2.in", duration: 0.6 },
+    "+=0"
+  );
+});
+
     return () => {
       smoother.kill();
       ScrollTrigger.getAll().forEach((t) => t.kill());

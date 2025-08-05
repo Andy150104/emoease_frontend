@@ -16,25 +16,25 @@ const stats: StatItem[] = [
 ];
 
 const Stats: React.FC = () => (
-  <section className="py-20 bg-white">
+  <section className="pt-12 bg-white">
     {/* Header */}
-    <div className="max-w-3xl mx-auto text-center px-4 mb-16">
-      <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+    <div className="max-w-3xl mx-auto text-center px-4">
+      <div className="text-3xl md:text-4xl font-bold text-gray-900 pb-12">
         Our Success
       </div>
-      <p className="text-gray-600 text-lg leading-relaxed">
+      <p className="mt-4 text-gray-600">
         Ornare id fames interdum porttitor nulla turpis etiam. Diam vitae sollicitudin at nec nam et pharetra gravida. Adipiscing a quis ultrices eu ornare tristique vel nisl orci.
       </p>
     </div>
 
     {/* Stats grid */}
-    <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 text-center">
+    <div className="mt-12 max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 text-center">
       {stats.map((item, idx) => (
-        <div key={idx} className="transform transition-all duration-300 hover:scale-105">
-          <span className={`text-4xl md:text-5xl font-extrabold ${item.colorClass} block mb-2`}>
+        <div key={idx}>
+          <span className={`text-4xl md:text-5xl font-extrabold ${item.colorClass}`}>
             {item.value}
           </span>
-          <p className="text-gray-800 font-medium">{item.label}</p>
+          <p className="mt-2 text-gray-800">{item.label}</p>
         </div>
       ))}
     </div>
