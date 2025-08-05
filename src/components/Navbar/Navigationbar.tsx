@@ -6,6 +6,13 @@ import { Button } from "antd";
 import { useSpring, useTransition, animated } from "@react-spring/web";
 import { ThemeSwitch } from "../Themes/Theme";
 import { usePathname, useRouter } from "next/navigation";
+import { Kaushan_Script } from "next/font/google";
+
+const kaushan = Kaushan_Script({
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+});
 
 export default function Navigationbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -102,7 +109,9 @@ export default function Navigationbar() {
               width={28}
               height={28}
             />
-            <span className="text-3xl font-semibold">FLearning</span>
+            <span className={`${kaushan.className} text-3xl cursor-pointer`}>
+              FLearning
+            </span>
           </div>
 
           {/* Desktop menu */}
@@ -137,7 +146,7 @@ export default function Navigationbar() {
           {/* Desktop auth & theme */}
           <div className="hidden md:flex items-center space-x-3 ml-8">
             <div className="ml-8">
-               <ThemeSwitch />
+              <ThemeSwitch />
             </div>
             <Link
               href="/Login"
@@ -217,6 +226,10 @@ export default function Navigationbar() {
       {/* Mobile menu */}
       {isOpen && (
         <div className="md:hidden bg-gray-900 px-4 py-3">
+          <div className="flex justify-center">
+            <ThemeSwitch />
+          </div>
+
           {transitions((style, item) => {
             const isActive = item.key === currentKey;
             return (
