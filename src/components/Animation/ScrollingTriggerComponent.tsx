@@ -29,8 +29,8 @@ const ScrollSmootherWrapper: React.FC<Props> = ({ children }) => {
         scrollTrigger: {
           trigger: card,
           start: "top 90%",
-          end: "top 10%",// tới khi card trên cùng viewport
-          scrub: 0.4, 
+          end: "top 10%", // tới khi card trên cùng viewport
+          scrub: 0.4,
         },
       });
       // 1st tween: bay vào
@@ -38,10 +38,12 @@ const ScrollSmootherWrapper: React.FC<Props> = ({ children }) => {
         card,
         { x: dir * 200, opacity: 0 },
         { x: 0, opacity: 1, ease: "power1.out", duration: 0.2 },
-      ).to(
-        card,
-        { x: -dir * 200, opacity: 0, ease: "power1.in", duration: 0.2 },
-      );
+      ).to(card, {
+        x: -dir * 200,
+        opacity: 0,
+        ease: "power1.in",
+        duration: 0.2,
+      });
     });
     gsap.utils.toArray<HTMLElement>(".hero-badge").forEach((badge, i) => {
       const dir = (i % 2 === 0 ? -1 : 1) * 1; // chẵn/trái, lẻ/phải
@@ -94,6 +96,38 @@ const ScrollSmootherWrapper: React.FC<Props> = ({ children }) => {
           { scale: 0.5, autoAlpha: 0, ease: "power2.in", duration: 0.6 },
           "+=0",
         );
+    });
+
+    gsap.utils.toArray<HTMLElement>(".scroll-section").forEach((sec) => {
+      gsap.fromTo(
+        sec,
+        { autoAlpha: 0, y: 50 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          ease: "power2.out",
+          duration: 0.6,
+          scrollTrigger: {
+            trigger: sec,
+            start: "top 80%",
+            end: "top 50%",
+            toggleActions: "play reverse play reverse",
+          },
+        },
+      );
+    });
+
+    gsap.utils.toArray<HTMLElement>(".bg-parallax").forEach((bg) => {
+      gsap.to(bg, {
+        yPercent: 20,
+        ease: "none",
+        scrollTrigger: {
+          trigger: bg,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
     });
 
     return () => {

@@ -13,7 +13,7 @@ const kaushan = Kaushan_Script({
   display: "swap",
 });
 
-export default function Navigationbar() {
+export default function NavigationbarWhite() {
   const [isOpen, setIsOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const lastScrollY = useRef(0);
@@ -100,33 +100,33 @@ export default function Navigationbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-useEffect(() => {
-  if (!navRef.current) return;
-  const navHeight = navRef.current.getBoundingClientRect().height;
-  const SCROLL_THRESHOLD = 5;
+  useEffect(() => {
+    if (!navRef.current) return;
+    const navHeight = navRef.current.getBoundingClientRect().height;
+    const SCROLL_THRESHOLD = 5;
 
-  const onMouseMove = (e: MouseEvent) => {
-    const y = window.scrollY;
-    const cursorY = e.clientY;
+    const onMouseMove = (e: MouseEvent) => {
+      const y = window.scrollY;
+      const cursorY = e.clientY;
 
-    if (y <= SCROLL_THRESHOLD) {
-      setShowNav(true);
-    } else if (cursorY <= navHeight) {
-      setShowNav(true);
-    } else {
-      setShowNav(false);
-    }
-  };
+      if (y <= SCROLL_THRESHOLD) {
+        setShowNav(true);
+      } else if (cursorY <= navHeight) {
+        setShowNav(true);
+      } else {
+        setShowNav(false);
+      }
+    };
 
-  window.addEventListener("mousemove", onMouseMove);
-  return () => window.removeEventListener("mousemove", onMouseMove);
-}, []);
+    window.addEventListener("mousemove", onMouseMove);
+    return () => window.removeEventListener("mousemove", onMouseMove);
+  }, []);
 
   return (
     <nav
       onMouseEnter={() => setShowNav(true)}
       ref={navRef}
-      className={`fixed top-0 left-0 w-full z-50 bg-[#49BBBD] dark:bg-[#1a4a4c] text-white p-4 transform transition-transform duration-300 ${
+      className={`fixed top-0 left-0 w-full z-50 bg-[#e1f0ff] dark:bg-[#1a4a4c] text-black p-4 transform transition-transform duration-300 ${
         showNav ? "translate-y-0" : "-translate-y-full"
       }`}
     >
@@ -154,8 +154,8 @@ useEffect(() => {
                   onClick={handleNavClick(item.href!, item.key)}
                   className={`inline-block mx-4 pb-2 text-base tracking-wide transition-all duration-500 whitespace-nowrap ${
                     isActive
-                      ? "text-white font-semibold"
-                      : "text-white hover:font-bold"
+                      ? "text-black font-semibold"
+                      : "text-black hover:font-bold"
                   }`}
                 >
                   {item.label}
@@ -175,13 +175,13 @@ useEffect(() => {
             <ThemeSwitch />
             <button
               onClick={() => router.push("/Login")}
-              className="flex items-center justify-center h-12 px-6 border-2 border-white text-white font-medium text-base whitespace-nowrap rounded-full transition-all duration-300 hover:bg-white hover:text-[#49BBBD] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white "
+              className="flex items-center justify-center h-12 px-6 border-2 border-white text-black font-medium text-base whitespace-nowrap rounded-full transition-all duration-300 hover:bg-white hover:text-[#49BBBD] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white "
             >
               Đăng nhập
             </button>
             <button
               onClick={() => router.push("/Signup")}
-              className="flex items-center justify-center h-12 px-6 bg-gradient-to-r from-[#5da38f] to-[#4a8a7a] text-white font-medium text-base whitespace-nowrap rounded-full shadow-lg transition-all duration-300 hover:from-[#4a8a7a] hover:to-[#5da38f] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5da38f]"
+              className="flex items-center justify-center h-12 px-6 bg-gradient-to-r from-[#5da38f] to-[#4a8a7a] text-black font-medium text-base whitespace-nowrap rounded-full shadow-lg transition-all duration-300 hover:from-[#4a8a7a] hover:to-[#5da38f] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5da38f]"
             >
               Đăng Ký
             </button>
@@ -189,7 +189,7 @@ useEffect(() => {
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:text-white hover:bg-gray-700"
+              className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:text-black hover:bg-gray-700"
             >
               {isOpen ? (
                 <svg
@@ -260,7 +260,7 @@ useEffect(() => {
                     closeMenu();
                     router.push(item.href!);
                   }}
-                  className={`block text-base py-1 transition ${isActive ? "text-white font-semibold" : "text-gray-300 hover:text-gray-400"}`}
+                  className={`block text-base py-1 transition ${isActive ? "text-black font-semibold" : "text-gray-300 hover:text-gray-400"}`}
                 >
                   {item.label}
                 </button>

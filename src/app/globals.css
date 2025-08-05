@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "antd/dist/reset.css";
-@custom-variant dark (&:where(.new-dark, .new-dark *));
+/* @custom-variant dark (&:where(.new-dark, .new-dark *)); */
+@custom-variant dark (&:where(.dark, .dark *));
 @layer theme, base, components, utilities;
 
 @layer utilities {
@@ -10,6 +11,11 @@
   @media (min-width: 2000px) {
     .xxl\:w-\[50rem\] {
       width: 50rem;
+    }
+  }
+  @media (min-width: 2200px) {
+    .xxl\:max-w-\[2000px\] {
+      max-width: 2000px !important;
     }
   }
 }

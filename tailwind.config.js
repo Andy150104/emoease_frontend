@@ -17,7 +17,7 @@ module.exports = {
       },
       screens: {
         // tên tuỳ bạn, ở đây dùng 'xxl'
-        xxl: '2600px',
+        xxl: '2200px',
       },
     }
   },
