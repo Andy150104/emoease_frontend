@@ -12,7 +12,9 @@ const nextConfig: NextConfig = {
       "randomuser.me",
       "via.placeholder.com",
       "cdnphoto.dantri.com.vn",
-      "cdn.shopaccino.com"
+      "cdn.shopaccino.com",
+      "gratisography.com",
+      "media.istockphoto.com"
     ],
   },
   // experimental: {

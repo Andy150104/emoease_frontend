@@ -20,6 +20,7 @@
     "@monaco-editor/react": "^4.7.0",
     "@react-spring/web": "^10.0.1",
     "antd": "^5.26.2",
+    "antd-img-crop": "^4.25.0",
     "antd-style": "^3.7.1",
     "axios": "^1.10.0",
     "gsap": "^3.13.0",
