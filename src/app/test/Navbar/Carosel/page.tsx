@@ -1,6 +1,6 @@
 // pages/index.tsx
 import React from "react";
-import BaseControlCarousel from "EmoEase/components/BaseControl/Carousel";
+import BaseControlCarousel from "EmoEase/components/Carousel/BaseControlCarousel";
 import CourseCard from "EmoEase/components/CourseCard/CourseCard";
 import BaseScreenWhiteNav from "EmoEase/layout/BaseScreenWhiteNav";
 import { ZoomIn } from "EmoEase/components/Animation/ZoomIn";

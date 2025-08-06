@@ -138,6 +138,7 @@ export default function NavigationbarWhite() {
               alt="Logo"
               width={28}
               height={28}
+              className="!w-auto !h-auto"
             />
             <span className={`${kaushan.className} text-3xl cursor-pointer`}>
               FLearning
