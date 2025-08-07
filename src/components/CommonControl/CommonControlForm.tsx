@@ -3,13 +3,12 @@ import { Row, Col } from 'antd';
 import BaseControlForm, { BaseControlFormProps } from '../BaseControl/BaseControlForm';
 import BaseControlTextField from '../BaseControl/BasecontrolTextField';
 import { FieldConfig } from 'EmoEase/utils/FieldConfig';
-
-
-
 export interface CommonControlFormProps extends Pick<BaseControlFormProps, 'form' | 'layout' | 'maxWidth'> {
   fields: FieldConfig[];
 }
-
+// CommonControlForm renders a form with fields defined in FieldConfig
+// It organizes fields into rows based on their span configuration  
+// Each row can contain multiple fields, respecting the total span of 24
 const CommonControlForm: React.FC<CommonControlFormProps> = ({
   form,
   layout,
