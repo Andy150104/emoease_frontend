@@ -117,7 +117,7 @@ export default function LoginPage() {
       </div>
     </animated.div>
   );
-  
+
   return (
     <>
       <div className="flex flex-col md:flex-row min-h-screen">
@@ -136,13 +136,13 @@ export default function LoginPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-tr from-pink-500 via-red-400 to-purple-500 opacity-50 dark:opacity-40" />
           <div className="absolute bottom-8 left-6 md:bottom-12 md:left-12 text-white z-10">
-            <h1
+            <p
               className={`text-3xl sm:text-4xl md:text-5xl font-extrabold drop-shadow-2xl`}
             >
-              Welcome To EmoEase!! <ThemeSwitch />
-            </h1>
+              Welcome To EmoEase!!
+            </p>
             <p className="mt-2 sm:mt-3 text-base sm:text-lg md:text-xl drop-shadow-lg">
-              Let&apos;s Login
+              Let&apos;s Login <span className="pl-4"> <ThemeSwitch /></span>
             </p>
           </div>
           {/* Mobile */}
