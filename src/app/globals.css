@@ -31,9 +31,8 @@
     --color-bgContrast: #66C8B6;
   }
 }
-html, body {
-  background-color: #49BBBD;
-}
+
+body { margin:0; }
 
 body {
   background: var(--background);
