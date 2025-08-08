@@ -9,7 +9,7 @@ import { FadeInUp } from "EmoEase/components/Animation/FadeInUp";
 import { useValidateStore } from "EmoEase/stores/Validate/ValidateStore";
 import NotFound from "EmoEase/app/404/page";
 import { useSidebarStore } from "EmoEase/stores/SideBar/SideBarStore";
-import "@ant-design/v5-patch-for-react-19";
+
 const { Header, Content, Footer } = Layout;
 
 interface BaseScreenAdminProps {
