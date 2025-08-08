@@ -1,7 +1,5 @@
 export const revalidate = 120; // ISR: regen mỗi 60s
-export const metadataBase = new URL(
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://emoease-frontend.vercel.app"
-);
+
 import { Metadata } from "next";
 import LoginPage from "./Client";
 export const metadata: Metadata = {
@@ -10,10 +8,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "EmoEase",
     description: "EmoEase",
-    url: "/Login",
+    url: "https://emoease-frontend.vercel.app/Login",
     images: [
       {
-        url: "/emo.png",
+        url: "https://emoease-frontend.vercel.app/emo.png",
         width: 800,
         height: 600,
         alt: "Logo S-SNEAKER",
