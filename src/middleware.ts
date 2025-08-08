@@ -35,6 +35,13 @@ function isProtectedPath(pathname: string): boolean {
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const userAgent = req.headers.get("user-agent") || "";
+
+  // Allow well-known link preview bots to bypass auth redirects
+  // so they can fetch Open Graph/Twitter metadata to render rich previews
+  const isCrawler = /(facebookexternalhit|Facebot|Twitterbot|Slackbot|TelegramBot|LinkedInBot|Pinterest|Discordbot|WhatsApp|zalo|ZaloOA)/i.test(
+    userAgent,
+  );
 
   // Lấy cookie
   const raw = req.cookies.get("auth-storage")?.value;
@@ -61,17 +68,22 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // 1) Public paths → cho qua
+  // 1) Bots/crawlers → cho qua to read metadata for link previews
+  if (isCrawler) {
+    return NextResponse.next();
+  }
+
+  // 2) Public paths → cho qua
   if (isPublicPath(pathname)) {
     return NextResponse.next();
   }
 
-  // 2) Nếu không phải protected → cho qua
+  // 3) Nếu không phải protected → cho qua
   if (!isProtectedPath(pathname)) {
     return NextResponse.next();
   }
 
-  // 3) Protected path mà chưa login → redirect về /login
+  // 4) Protected path mà chưa login → redirect về /login
   if (!token) {
     const loginUrl = req.nextUrl.clone();
     loginUrl.pathname = "/404";
@@ -79,7 +91,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // 4) Đã login, path được phép → cho qua
+  // 5) Đã login, path được phép → cho qua
   return NextResponse.next();
 }
 
