@@ -133,14 +133,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const pathname = usePathname();
   const router = useRouter();
 
-  useEffect(() => {
-    navItems.forEach((item) => {
-      if (item.path) router.prefetch(item.path);
-      item.children?.forEach(
-        (child) => child.path && router.prefetch(child.path),
-      );
-    });
-  }, [router]);
+  // useEffect(() => {
+  //   navItems.forEach((item) => {
+  //     if (item.path) router.prefetch(item.path);
+  //     item.children?.forEach(
+  //       (child) => child.path && router.prefetch(child.path),
+  //     );
+  //   });
+  // }, [router]);
 
   useEffect(() => setMounted(true), []);
   if (!mounted) return <div style={{ width: collapsed ? 80 : 240 }} />;
@@ -156,12 +156,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
   const handleMenuClick: MenuProps["onClick"] = async ({ key }) => {
     if (key === "logout") {
-      useLoadingStore.getState().showLoading();
-      await useAuthStore.getState().logout();
+      const { showLoading, hideLoading } = useLoadingStore.getState();
+      showLoading();
+      useAuthStore.getState().logout();
       useAuthStore.persist.clearStorage();
-      await messageApi.success("Đăng xuất thành công!")
-      useLoadingStore.getState().hideLoading();
-      router.push("/Login")
+      messageApi.success("Đăng xuất thành công!")
+      // window.location.href = "/Login"
+      await router.push("/Login");
+      await hideLoading();
       return;
     }
     const path = keyPathMap[key];

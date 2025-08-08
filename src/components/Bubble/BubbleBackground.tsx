@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect, useMemo } from "react";
 import { useSprings, animated, easings, to } from "@react-spring/web";
 
