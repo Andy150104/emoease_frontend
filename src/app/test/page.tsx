@@ -10,8 +10,10 @@ export default async function Page() {
   if (authCookie) {
     try {
       // cookieRawStorage lưu JSON string, có thể url-encoded
-      const { token: t } = JSON.parse(decodeURIComponent(authCookie));
-      token = t;
+      console.log(authCookie)
+      const parsed = JSON.parse(decodeURIComponent(authCookie));
+      // Lấy token từ nested state
+      token = parsed.state?.token ?? null;
       console.log("token", token)
     } catch (e) {
       console.warn("Không parse được auth-storage cookie:", e);

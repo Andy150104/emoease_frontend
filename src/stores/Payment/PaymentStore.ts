@@ -20,6 +20,7 @@ interface PaymentState {
     patientProfileId: string,
     status?: PaymentStatus,
   ) => Promise<GetAllPaymentsResponse>;
+  clearRevenues: () => void;
 }
 
 export const usePaymentStore = create<PaymentState>((set) => ({
@@ -72,4 +73,5 @@ export const usePaymentStore = create<PaymentState>((set) => ({
       return { payments: undefined };
     }
   },
+  clearRevenues: () => set({ revenues: [] }),
 }));
