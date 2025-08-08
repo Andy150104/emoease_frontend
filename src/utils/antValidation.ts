@@ -12,7 +12,7 @@ export function buildRules(xmlColumn: XmlColumn): Rule[] {
       if (rule === "required") {
         return {
           required: true,
-          message: `Please input your ${xmlColumn.name.toLowerCase()}!`,
+          message: `Vui lòng nhập ${xmlColumn.name.toLowerCase()}!`,
         };
       }
       if (rule.startsWith("confirm_password:")) {

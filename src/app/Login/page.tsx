@@ -14,7 +14,7 @@ export const metadata: Metadata = {
         url: "https://emoease-frontend.vercel.app/emo.png",
         width: 800,
         height: 600,
-        alt: "Logo S-SNEAKER",
+        alt: "EmoEase logo",
       },
     ],
     siteName: "EmoEase",
