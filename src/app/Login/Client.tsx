@@ -134,7 +134,6 @@ export default function LoginPage() {
             src={bgQuestion}
             alt="Hero"
             fill
-            priority
             placeholder="blur"
             onLoadingComplete={() => setMounted(true)}
             className="object-cover object-right brightness-90 dark:brightness-75"

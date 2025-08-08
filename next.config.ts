@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
     domains: [
       "images.unsplash.com",
@@ -17,12 +16,10 @@ const nextConfig: NextConfig = {
       "media.istockphoto.com"
     ],
   },
-  // experimental: {
-  //   optimizeCss: true,
-  // },
-  // compiler: {
-  //   removeConsole: process.env.NODE_ENV === "production",
-  // },
+  compiler: {
+    // loại console.* ở prod, cũng giúp giảm bundle
+    removeConsole: process.env.NODE_ENV === "production", // chỉ loại console ở production
+  },
 };
 
 export default nextConfig;
