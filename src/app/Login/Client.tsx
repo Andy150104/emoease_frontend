@@ -117,13 +117,7 @@ export default function LoginPage() {
       </div>
     </animated.div>
   );
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
+  
   return (
     <>
       <div className="flex flex-col md:flex-row min-h-screen">
@@ -134,8 +128,10 @@ export default function LoginPage() {
             src={bgQuestion}
             alt="Hero"
             fill
+            priority
             placeholder="blur"
-            onLoadingComplete={() => setMounted(true)}
+            fetchPriority="high"
+            sizes="100vw"
             className="object-cover object-right brightness-90 dark:brightness-75"
           />
           <div className="absolute inset-0 bg-gradient-to-tr from-pink-500 via-red-400 to-purple-500 opacity-50 dark:opacity-40" />

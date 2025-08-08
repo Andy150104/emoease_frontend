@@ -20,6 +20,9 @@ const nextConfig: NextConfig = {
     // loại console.* ở prod, cũng giúp giảm bundle
     removeConsole: process.env.NODE_ENV === "production", // chỉ loại console ở production
   },
+  experimental: {
+    optimizePackageImports: ["antd", "@ant-design/icons"],
+  },
 };
 
 export default nextConfig;
