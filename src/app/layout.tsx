@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "plyr/dist/plyr.css";
 import { AntdThemeProvider } from "EmoEase/components/Themes/AntdThemeProvider";
 import { ThemeProvider } from "EmoEase/Provider/ThemeProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
