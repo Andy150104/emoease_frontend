@@ -13,7 +13,8 @@ const nextConfig: NextConfig = {
       "cdnphoto.dantri.com.vn",
       "cdn.shopaccino.com",
       "gratisography.com",
-      "media.istockphoto.com"
+      "media.istockphoto.com",
+      "res.cloudinary.com",
     ],
   },
   compiler: {
