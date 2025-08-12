@@ -56,8 +56,6 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt, tracks }: Prop
   const hlsRef = useRef<Hls | null>(null);
   const plyrRef = useRef<Plyr | null>(null);
   const [switching, setSwitching] = useState(false);
-  const [subtitleOptions, setSubtitleOptions] = useState<Array<{ index: number; label: string }>>([]);
-  const [selectedSubtitleIdx, setSelectedSubtitleIdx] = useState<number>(-1);
 
   useEffect(() => {
     let mounted = true;
@@ -111,10 +109,6 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt, tracks }: Prop
           hls.subtitleTrack = pickIndex;
           const tt = video.textTracks;
           for (let i = 0; i < tt.length; i += 1) tt[i].mode = i === pickIndex ? "showing" : "disabled";
-
-          const options = sts.map((t, i) => ({ index: i, label: (t?.name || t?.lang || `Track ${i + 1}`) + "" }));
-          setSubtitleOptions(options);
-          setSelectedSubtitleIdx(pickIndex);
         });
 
         hls.on(Events.MANIFEST_PARSED, (_e: unknown, data: ManifestParsedData) => {
@@ -220,6 +214,8 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt, tracks }: Prop
         plyr = new PlyrCtor(video, {
           controls: ["play", "progress", "mute", "volume", "captions", "settings", "fullscreen"],
           captions: { active: true, language: "auto", update: true },
+          i18n: { settings: "Cài đặt", quality: "Chất lượng", speed: "Tốc độ phát", captions: "Phụ đề" },
+          fullscreen: { enabled: true, fallback: true, iosNative: true },
         }) as Plyr;
         plyrRef.current = plyr;
         try {
@@ -282,37 +278,6 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt, tracks }: Prop
               ))
             : null}
         </video>
-
-        {/* Menu phụ đề thủ công – chỉ dùng khi subtitle đến từ manifest HLS */}
-        {subtitleOptions.length > 0 && (
-          <div className="absolute right-4 bottom-20 z-20">
-            <label className="mr-2 text-white text-sm">Phụ đề:</label>
-            <select
-              className="bg-black/70 text-white text-sm px-2 py-1 rounded"
-              value={selectedSubtitleIdx}
-              onChange={(e) => {
-                const idx = Number(e.target.value);
-                setSelectedSubtitleIdx(idx);
-                const hls = hlsRef.current;
-                const video = videoRef.current;
-                if (!hls || !video) return;
-                hls.subtitleTrack = idx;
-                const tt = video.textTracks;
-                for (let i = 0; i < tt.length; i += 1) {
-                  tt[i].mode = i === idx ? "showing" : "disabled";
-                }
-              }}
-            >
-              {subtitleOptions.map((opt) => (
-                <option key={opt.index} value={opt.index}>
-                  {opt.label}
-                </option>
-              ))}
-              <option value={-1}>Tắt</option>
-            </select>
-          </div>
-        )}
-
         {switching && (
           <div className="absolute inset-0 grid place-items-center bg-black/40 text-white rounded-lg">
             <div className="flex items-center gap-2">

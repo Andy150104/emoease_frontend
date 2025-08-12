@@ -11,7 +11,7 @@ export default function VideoPage() {
 
   return (
     <main className="p-5">
-      <h1 className="mb-5 text-xl font-semibold">Xem Video</h1>
+      <h1 className="mb-5 text-xl font-semibold">Xem Video Ngrok 1</h1>
       <VideoPlayer src="https://res.cloudinary.com/dbfokyruf/video/upload/sp_auto:maxres_2160p/v1754913618/Kinh-nghim-phng-vn-backend-NET-C-2-nm-kinh-nghim.m3u8"
       urlVtt="https://res.cloudinary.com/dbfokyruf/raw/upload/v1754913621/Kinh-nghim-phng-vn-backend-NET-C-2-nm-kinh-nghim.vi-VN.vtt"/>
     </main>
