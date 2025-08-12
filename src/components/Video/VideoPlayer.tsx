@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
 // ✅ chỉ import type để safe với SSR
 import type Plyr from "plyr";
@@ -15,24 +14,15 @@ import { LoadingOutlined } from "@ant-design/icons";
 declare module "hls.js" {
   interface Hls {
     subtitleDisplay?: boolean;
+    subtitleTrack?: number;
   }
 }
-
-type ExternalTrack = {
-  src: string;
-  srclang: string;
-  label: string;
-  kind?: "subtitles" | "captions";
-  default?: boolean;
-};
 
 type Props = {
   src: string;
   poster?: string;
   /** Link .vtt bên ngoài (Cloudinary raw) */
   urlVtt?: string;
-  /** Vẫn hỗ trợ mảng tracks nếu cần nhiều hơn */
-  tracks?: ExternalTrack[];
 };
 
 type PlyrQualityOption = {
@@ -50,22 +40,66 @@ type ExtendedPlyrOptions = Plyr.Options & {
 };
 
 type PlyrWithQuality = Plyr & { quality: number };
+type PlyrWithLanguage = Plyr & { language: string };
 
-export default function YouTubeStylePlayer({ src, poster, urlVtt, tracks }: Props) {
+export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const trackRef = useRef<HTMLTrackElement | null>(null);
   const hlsRef = useRef<Hls | null>(null);
   const plyrRef = useRef<Plyr | null>(null);
   const [switching, setSwitching] = useState(false);
+  const [vttBlobUrl, setVttBlobUrl] = useState<string | null>(null);
+  const vttObjectUrlRef = useRef<string | null>(null);
+  const [vttBuster, setVttBuster] = useState(0);
+
+  // Bật đúng track ngoài sau khi track đã load
+  const onTrackLoad = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    const tt = v.textTracks;
+
+    // Chọn track tiếng Việt nếu có, nếu không chọn track đầu tiên
+    let targetIndex = -1;
+    for (let i = 0; i < tt.length; i++) {
+      const t = tt[i];
+      const lang = (t.language || "").toLowerCase();
+      const label = (t.label || "").toLowerCase();
+      const isVi = lang === "vi" || label.includes("việt") || label.includes("vietnam");
+      if (isVi && targetIndex === -1) targetIndex = i;
+    }
+    if (targetIndex === -1 && tt.length > 0) targetIndex = 0;
+
+    // Buộc reflow: đặt hidden rồi mới showing để đảm bảo render lại cue
+    for (let i = 0; i < tt.length; i++) {
+      tt[i].mode = i === targetIndex ? "hidden" : "disabled";
+    }
+    setTimeout(() => {
+      const v2 = videoRef.current;
+      if (!v2) return;
+      const tt2 = v2.textTracks;
+      if (targetIndex >= 0 && tt2[targetIndex]) tt2[targetIndex].mode = "showing";
+    }, 0);
+    // Nếu chưa tìm thấy -> để browser dùng default, Plyr vẫn hiện CC
+    try {
+      plyrRef.current?.toggleCaptions(true);
+    } catch {}
+
+    // debug nhanh (có thể bỏ):
+    // console.log([...tt].map(t => ({label: t.label, lang: t.language, mode: t.mode, cues: t.cues?.length ?? 0})));
+  };
+
+  const onTrackError = () => {
+    // Thử bust cache và trigger remount nếu lỗi
+    setVttBuster((prev) => prev + 1);
+  };
 
   useEffect(() => {
     let mounted = true;
+    const preferExternal = !!urlVtt;
 
     (async () => {
-      // ⬇️ dynamic import (client-only)
-      const PlyrMod = await import("plyr");
-      const PlyrCtor = PlyrMod.default;
-      const { default: HlsClass, Events } = await import("hls.js"); // <- lấy class & Events
-
+      const PlyrCtor = (await import("plyr")).default;
+      const { default: HlsClass, Events } = await import("hls.js");
       const video = videoRef.current;
       if (!mounted || !video) return;
 
@@ -78,70 +112,38 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt, tracks }: Prop
           maxBufferLength: 10,
           maxMaxBufferLength: 30,
           backBufferLength: 10,
-          // Hiển thị subtitle từ manifest (nếu có)
-          renderTextTracksNatively: true,
+          // Không ép render native text của HLS để tránh xung đột với track ngoài
           enableWebVTT: true,
           enableIMSC1: true,
         }) as Hls;
 
         hlsRef.current = hls;
-
         hls.loadSource(src);
         hls.attachMedia(video);
 
-        try {
-          hls.subtitleDisplay = true;
-        } catch {}
+        // External-only → tắt mọi thứ phụ đề của HLS để không chồng chéo
+        if (preferExternal) {
+          try { hls.subtitleDisplay = false; } catch {}
+          try { hls.subtitleTrack = -1; } catch {}
+        }
 
-        hls.on(Events.SUBTITLE_TRACKS_UPDATED, (_ev: unknown, d: unknown) => {
-          const data = d as { subtitleTracks?: Array<{ name?: string; lang?: string }> } | undefined;
-          const sts = data?.subtitleTracks ?? [];
-          if (!Array.isArray(sts) || sts.length === 0) return;
-
-          const pickIndex = (() => {
-            const enIdx = sts.findIndex((t) => {
-              const n = `${t?.name ?? ""} ${t?.lang ?? ""}`.toLowerCase();
-              return n === "en" || n.includes("english");
-            });
-            return enIdx >= 0 ? enIdx : 0;
-          })();
-
-          hls.subtitleTrack = pickIndex;
-          const tt = video.textTracks;
-          for (let i = 0; i < tt.length; i += 1) tt[i].mode = i === pickIndex ? "showing" : "disabled";
-        });
-
-        hls.on(Events.MANIFEST_PARSED, (_e: unknown, data: ManifestParsedData) => {
-          const heights = [...new Set((data.levels || []).map((l) => l.height).filter(Boolean))].sort(
-            (a, b) => (b ?? 0) - (a ?? 0)
-          );
+        hls.on(Events.MANIFEST_PARSED, (_e, data: ManifestParsedData) => {
+          const heights = [...new Set((data.levels || []).map(l => l.height).filter(Boolean))].sort((a,b)=>(b??0)-(a??0));
 
           const options: ExtendedPlyrOptions = {
             ratio: "16:9",
             seekTime: 10,
             controls: [
-              "play-large",
-              "restart",
-              "rewind",
-              "play",
-              "fast-forward",
-              "progress",
-              "current-time",
-              "duration",
-              "mute",
-              "volume",
-              "captions",
-              "settings",
-              "pip",
-              "airplay",
-              "download",
-              "fullscreen",
+              "play-large","restart","rewind","play","fast-forward","progress","current-time",
+              "duration","mute","volume","captions","settings","pip","airplay","download","fullscreen",
             ],
             settings: ["captions", "quality", "speed", "loop"],
             speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
-            captions: { active: true, language: "auto", update: true },
+            captions: { active: true, language: preferExternal ? "vi" : "auto", update: true },
             i18n: { settings: "Cài đặt", quality: "Chất lượng", speed: "Tốc độ phát", captions: "Phụ đề" },
             urls: { download: src },
+            fullscreen: { enabled: true, fallback: true, iosNative: true },
+            storage: { enabled: false },
             quality: {
               default: 0,
               options: [0, ...heights],
@@ -156,9 +158,9 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt, tracks }: Prop
 
                 let targetIdx = -1;
                 if (q === 0) {
-                  hls.currentLevel = -1;
+                  hls.currentLevel = -1; // Auto
                 } else {
-                  targetIdx = hls.levels.findIndex((l) => l.height === q);
+                  targetIdx = hls.levels.findIndex(l => l.height === q);
                   if (targetIdx < 0) targetIdx = 0;
                   hls.currentLevel = targetIdx;
                 }
@@ -168,10 +170,7 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt, tracks }: Prop
                   if (targetIdx !== -1 && fragData.frag.level !== targetIdx) return;
                   hls.off(Events.FRAG_BUFFERED, onFragBuffered);
                   v.currentTime = t;
-                  setTimeout(() => {
-                    if (!wasPaused) v.play().catch(() => {});
-                    setSwitching(false);
-                  }, 0);
+                  setTimeout(() => { if (!wasPaused) v.play().catch(()=>{}); setSwitching(false); }, 0);
                 };
                 hls.on(Events.FRAG_BUFFERED, onFragBuffered);
               },
@@ -181,54 +180,89 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt, tracks }: Prop
           plyr = new PlyrCtor(video, options) as Plyr;
           plyrRef.current = plyr;
 
-          try {
-            plyr?.on("ready", () => {
-              try {
-                // Bật CC để nhận external <track> nếu có
-                plyrRef.current?.toggleCaptions(true);
-              } catch {}
-            });
-          } catch {}
+          plyr.on?.("ready", () => {
+            try {
+              if (preferExternal) {
+                // Ưu tiên ngôn ngữ phụ đề tiếng Việt nếu có
+                try { (plyrRef.current as PlyrWithLanguage).language = "vi"; } catch {}
+              }
+              plyrRef.current?.toggleCaptions(true);
+            } catch {}
+            if (preferExternal) {
+              const tr = trackRef.current;
+              // 2 = HTMLTrackElement.LOADED
+              if (tr && tr.readyState === 2) onTrackLoad();
+              // nếu chưa loaded, onTrackLoad sẽ tự chạy khi <track> fire 'load'
+              // chạy lại 1 lần sau tick để chắc chắn render
+              setTimeout(() => onTrackLoad(), 50);
+              setTimeout(() => onTrackLoad(), 250);
+            }
+          });
+
+          // Sau khi manifest parse xong, đảm bảo HLS không bật subtitle nội bộ
+          if (preferExternal) {
+            try { hls.subtitleDisplay = false; } catch {}
+            try { hls.subtitleTrack = -1; } catch {}
+          }
         });
 
-        hls.on(Events.LEVEL_SWITCHED, (_e: unknown, d: LevelSwitchedData) => {
+        hls.on(Events.LEVEL_SWITCHED, (_e, d: LevelSwitchedData) => {
           const h = hls.levels?.[d.level]?.height ?? 0;
           if (plyr) (plyr as PlyrWithQuality).quality = h || 0;
         });
 
-        hls.on(Events.SUBTITLE_TRACK_LOADED, () => {
-          const v = videoRef.current;
-          if (!v) return;
-          const activeIdx = hls.subtitleTrack ?? -1;
-          const tt = v.textTracks;
-          for (let i = 0; i < tt.length; i += 1) tt[i].mode = i === activeIdx ? "showing" : "disabled";
-          setTimeout(() => {
-            try {
-              plyrRef.current?.toggleCaptions(true);
-            } catch {}
-          }, 0);
-        });
+        // ❌ Không đăng ký SUBTITLE_TRACKS_* (external-only)
       } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
         // Safari native HLS
         video.src = src;
         plyr = new PlyrCtor(video, {
           controls: ["play", "progress", "mute", "volume", "captions", "settings", "fullscreen"],
-          captions: { active: true, language: "auto", update: true },
+          captions: { active: true, language: preferExternal ? "vi" : "auto", update: true },
           i18n: { settings: "Cài đặt", quality: "Chất lượng", speed: "Tốc độ phát", captions: "Phụ đề" },
           fullscreen: { enabled: true, fallback: true, iosNative: true },
+          storage: { enabled: false },
         }) as Plyr;
         plyrRef.current = plyr;
-        try {
-          plyr?.on("ready", () => {
-            try {
-              plyrRef.current?.toggleCaptions(true);
-            } catch {}
-          });
-        } catch {}
+
+        plyr.on?.("ready", () => {
+          try {
+            if (preferExternal) {
+              try { (plyrRef.current as PlyrWithLanguage).language = "vi"; } catch {}
+            }
+            plyrRef.current?.toggleCaptions(true);
+          } catch {}
+          if (preferExternal) {
+            const tr = trackRef.current;
+            if (tr && tr.readyState === 2) onTrackLoad();
+            else {
+              // nếu chưa có metadata, chờ rồi bật track
+              if (video.readyState < 1) {
+                video.addEventListener("loadedmetadata", onTrackLoad, { once: true });
+              }
+            }
+            setTimeout(() => onTrackLoad(), 50);
+            setTimeout(() => onTrackLoad(), 250);
+          }
+        });
       } else {
+        // Fallback
         video.src = src;
-        plyr = new PlyrCtor(video) as Plyr;
+        plyr = new PlyrCtor(video, {
+          captions: { active: true, language: preferExternal ? "vi" : "auto", update: true },
+          storage: { enabled: false },
+        }) as Plyr;
         plyrRef.current = plyr;
+
+        if (preferExternal) {
+          const tr = trackRef.current;
+          if (tr && tr.readyState === 2) onTrackLoad();
+          else {
+            if (video.readyState >= 1) onTrackLoad();
+            else video.addEventListener("loadedmetadata", onTrackLoad, { once: true });
+          }
+          setTimeout(() => onTrackLoad(), 50);
+          setTimeout(() => onTrackLoad(), 250);
+        }
       }
     })().catch(() => {});
 
@@ -239,7 +273,88 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt, tracks }: Prop
       hlsRef.current = null;
       plyrRef.current = null;
     };
-  }, [src]);
+  }, [src, urlVtt]);
+
+  // Đảm bảo lắng nghe sự kiện load/error trực tiếp trên phần tử <track>
+  useEffect(() => {
+    const tr = trackRef.current;
+    if (!tr) return;
+
+    const handleLoad = () => onTrackLoad();
+    const handleError = () => onTrackError();
+
+    // Nếu đã loaded trước đó
+    if (tr.readyState === 2) {
+      onTrackLoad();
+    }
+
+    tr.addEventListener("load", handleLoad);
+    tr.addEventListener("error", handleError);
+
+    return () => {
+      tr.removeEventListener("load", handleLoad);
+      tr.removeEventListener("error", handleError);
+    };
+  }, [urlVtt]);
+
+  // Tải VTT thủ công -> tạo Blob URL để tránh CORS/cache không ổn định
+  useEffect(() => {
+    let aborted = false;
+    async function loadVtt() {
+      if (!urlVtt) {
+        if (vttObjectUrlRef.current) {
+          URL.revokeObjectURL(vttObjectUrlRef.current);
+          vttObjectUrlRef.current = null;
+        }
+        setVttBlobUrl(null);
+        return;
+      }
+      try {
+        const res = await fetch(urlVtt, { cache: "no-store", mode: "cors" });
+        if (!res.ok) throw new Error(`VTT fetch failed ${res.status}`);
+        const text = await res.text();
+        if (aborted) return;
+        const blob = new Blob([text], { type: "text/vtt" });
+        const bu = URL.createObjectURL(blob);
+        if (vttObjectUrlRef.current) {
+          URL.revokeObjectURL(vttObjectUrlRef.current);
+        }
+        vttObjectUrlRef.current = bu;
+        setVttBlobUrl(bu);
+      } catch {
+        // fallback: dùng URL gốc, vẫn để event load xử lý
+        setVttBlobUrl(null);
+      }
+    }
+    loadVtt();
+    return () => {
+      aborted = true;
+    };
+  }, [urlVtt]);
+
+  // Cleanup Blob URL khi unmount
+  useEffect(() => {
+    return () => {
+      if (vttObjectUrlRef.current) {
+        URL.revokeObjectURL(vttObjectUrlRef.current);
+        vttObjectUrlRef.current = null;
+      }
+    };
+  }, []);
+
+  // Khi video đã có metadata/first frame, thử kích hoạt lại phụ đề (ổn định khi reload)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const onMeta = () => onTrackLoad();
+    const onData = () => onTrackLoad();
+    video.addEventListener("loadedmetadata", onMeta);
+    video.addEventListener("loadeddata", onData);
+    return () => {
+      video.removeEventListener("loadedmetadata", onMeta);
+      video.removeEventListener("loadeddata", onData);
+    };
+  }, [src, urlVtt]);
 
   return (
     <div className="w-full max-w-[1200px] mx-auto">
@@ -251,33 +366,24 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt, tracks }: Prop
           controls
           crossOrigin="anonymous"
           poster={poster}
+          preload="metadata"   // giúp track load sớm
         >
-          {/* Track phụ đề ngoài (Cloudinary raw) */}
+          {/* ✅ CHỈ DÙNG EXTERNAL VTT */}
           {urlVtt ? (
             <track
-              key="vi-default"
-              kind="subtitles"
-              src={urlVtt}
+              ref={trackRef}
+              key={`${vttBlobUrl ?? urlVtt}?b=${vttBuster}`}          // remount khi đổi URL
+              kind="captions"       // dùng "captions" để Plyr nhận đúng
+              src={vttBlobUrl ?? `${urlVtt}${urlVtt.includes("?") ? "&" : "?"}b=${vttBuster}`}
               label="Tiếng Việt"
               srcLang="vi"
               default
+              onLoad={onTrackLoad}  // bật sau khi track đã load
+              onError={onTrackError}
             />
           ) : null}
-
-          {/* Vẫn hỗ trợ mảng tracks nếu cần nhiều track */}
-          {Array.isArray(tracks)
-            ? tracks.map((t, idx) => (
-                <track
-                  key={`${t.srclang}-${idx}`}
-                  kind={t.kind ?? "subtitles"}
-                  src={t.src}
-                  label={t.label}
-                  srcLang={t.srclang}
-                  default={t.default}
-                />
-              ))
-            : null}
         </video>
+
         {switching && (
           <div className="absolute inset-0 grid place-items-center bg-black/40 text-white rounded-lg">
             <div className="flex items-center gap-2">
