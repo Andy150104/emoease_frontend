@@ -71,7 +71,7 @@ const BaseControlUploadImage: React.FC<ImageCropUploadProps> = ({
   const onCropComplete = useCallback((_croppedArea: Area, pixels: Area) => {
     setCroppedAreaPixels(pixels);
   }, []);
-  const messageApi = useNotification()
+  const messageApi = useNotification();
 
   // 1) Enhanced showEditModal: convert external URL → base64 before editing
   const showEditModal = async (file: UploadFile) => {
@@ -236,7 +236,7 @@ const BaseControlUploadImage: React.FC<ImageCropUploadProps> = ({
 
   const fieldId = useMemo(() => xmlColumn.id, [xmlColumn.id]);
   const rulesList = useMemo<Rule[]>(() => buildRules(xmlColumn), [xmlColumn]);
-  
+
   return (
     <>
       <Form.Item

@@ -1,13 +1,13 @@
-"use client"; 
+"use client";
 import BaseScreen from "EmoEase/layout/BaseScreen";
 import React from "react";
 
 export default function NavbarPage() {
-    return (
-      <>
+  return (
+    <>
       <BaseScreen>
-      <div></div>
+        <div></div>
       </BaseScreen>
-      </>
-    )
+    </>
+  );
 }

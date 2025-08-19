@@ -62,7 +62,7 @@ export default function CropImagePage() {
     form.setFieldsValue(data);
     setIsDisable(true);
   };
-  
+
   if (!mounted) {
     return <Loading />;
   }

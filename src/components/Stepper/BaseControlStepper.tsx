@@ -1,6 +1,6 @@
-import React from 'react';
-import { Steps } from 'antd';
-import type { StepsProps } from 'antd';
+import React from "react";
+import { Steps } from "antd";
+import type { StepsProps } from "antd";
 
 export interface StepItem {
   title: React.ReactNode;
@@ -11,25 +11,25 @@ export interface CustomStepperProps {
   steps: StepItem[];
   currentIndex: number;
   onChange?: (current: number) => void;
-  direction?: StepsProps['direction']
+  direction?: StepsProps["direction"];
 }
 
 const CustomStepper: React.FC<CustomStepperProps> = ({
   steps,
   currentIndex,
   onChange,
-  direction = 'horizontal',
+  direction = "horizontal",
 }) => {
-  const items: StepsProps['items'] = steps.map((step, index) => ({
+  const items: StepsProps["items"] = steps.map((step, index) => ({
     key: String(index),
     title: step.title,
     description: step.description,
     status:
       index < currentIndex
-        ? 'finish'
+        ? "finish"
         : index === currentIndex
-        ? 'process'
-        : 'wait',
+          ? "process"
+          : "wait",
   }));
 
   return (

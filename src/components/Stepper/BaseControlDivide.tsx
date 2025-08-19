@@ -25,7 +25,9 @@ const BaseControlDivide: React.FC<BaseControlDivideProps> = ({
     <Row gutter={gutter}>
       {React.Children.map(children, (child, index) => {
         const sizeProps: ColProps =
-          colSizes && colSizes[index] ? colSizes[index]! : { span: defaultSpan };
+          colSizes && colSizes[index]
+            ? colSizes[index]!
+            : { span: defaultSpan };
 
         return (
           <Col key={index} {...sizeProps}>

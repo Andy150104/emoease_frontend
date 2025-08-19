@@ -47,17 +47,23 @@ export default function DashboardRevenueClient({ initialRevenues }: Props) {
   };
 
   // 4. Tính toán stats
-  const totalRevenue = revenues.reduce((sum, r) => sum + (r.totalRevenue ?? 0), 0);
-  const totalPayment = revenues.reduce((sum, r) => sum + (r.totalPayment ?? 0), 0);
+  const totalRevenue = revenues.reduce(
+    (sum, r) => sum + (r.totalRevenue ?? 0),
+    0,
+  );
+  const totalPayment = revenues.reduce(
+    (sum, r) => sum + (r.totalPayment ?? 0),
+    0,
+  );
   const avgRevenue = revenues.length ? totalRevenue / revenues.length : 0;
   const maxRevenueDay = revenues.length
     ? revenues.reduce((max, r) =>
-        (r.totalRevenue ?? 0) > (max.totalRevenue ?? 0) ? r : max
+        (r.totalRevenue ?? 0) > (max.totalRevenue ?? 0) ? r : max,
       )
     : { date: "", totalRevenue: 0, totalPayment: 0 };
   const maxPaymentDay = revenues.length
     ? revenues.reduce((max, r) =>
-        (r.totalPayment ?? 0) > (max.totalPayment ?? 0) ? r : max
+        (r.totalPayment ?? 0) > (max.totalPayment ?? 0) ? r : max,
       )
     : { date: "", totalRevenue: 0, totalPayment: 0 };
 
@@ -201,7 +207,12 @@ export default function DashboardRevenueClient({ initialRevenues }: Props) {
                     {item.icon}
                   </div>
                   <div>
-                    <div style={{ color: token.colorTextDescription, fontSize: 15 }}>
+                    <div
+                      style={{
+                        color: token.colorTextDescription,
+                        fontSize: 15,
+                      }}
+                    >
                       {item.title}
                     </div>
                     <div

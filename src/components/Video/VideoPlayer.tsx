@@ -3,7 +3,11 @@ import { useEffect, useRef, useState } from "react";
 // ✅ chỉ import type để safe với SSR
 import type Plyr from "plyr";
 import type Hls from "hls.js";
-import type { ManifestParsedData, LevelSwitchedData, FragBufferedData } from "hls.js";
+import type {
+  ManifestParsedData,
+  LevelSwitchedData,
+  FragBufferedData,
+} from "hls.js";
 import "plyr/dist/plyr.css";
 
 import styles from "EmoEase/components/Video/styles/VideoPlayer.module.css";
@@ -64,7 +68,8 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
       const t = tt[i];
       const lang = (t.language || "").toLowerCase();
       const label = (t.label || "").toLowerCase();
-      const isVi = lang === "vi" || label.includes("việt") || label.includes("vietnam");
+      const isVi =
+        lang === "vi" || label.includes("việt") || label.includes("vietnam");
       if (isVi && targetIndex === -1) targetIndex = i;
     }
     if (targetIndex === -1 && tt.length > 0) targetIndex = 0;
@@ -77,7 +82,8 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
       const v2 = videoRef.current;
       if (!v2) return;
       const tt2 = v2.textTracks;
-      if (targetIndex >= 0 && tt2[targetIndex]) tt2[targetIndex].mode = "showing";
+      if (targetIndex >= 0 && tt2[targetIndex])
+        tt2[targetIndex].mode = "showing";
     }, 0);
     // Nếu chưa tìm thấy -> để browser dùng default, Plyr vẫn hiện CC
     try {
@@ -123,24 +129,55 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
 
         // External-only → tắt mọi thứ phụ đề của HLS để không chồng chéo
         if (preferExternal) {
-          try { hls.subtitleDisplay = false; } catch {}
-          try { hls.subtitleTrack = -1; } catch {}
+          try {
+            hls.subtitleDisplay = false;
+          } catch {}
+          try {
+            hls.subtitleTrack = -1;
+          } catch {}
         }
 
         hls.on(Events.MANIFEST_PARSED, (_e, data: ManifestParsedData) => {
-          const heights = [...new Set((data.levels || []).map(l => l.height).filter(Boolean))].sort((a,b)=>(b??0)-(a??0));
+          const heights = [
+            ...new Set(
+              (data.levels || []).map((l) => l.height).filter(Boolean),
+            ),
+          ].sort((a, b) => (b ?? 0) - (a ?? 0));
 
           const options: ExtendedPlyrOptions = {
             ratio: "16:9",
             seekTime: 10,
             controls: [
-              "play-large","restart","rewind","play","fast-forward","progress","current-time",
-              "duration","mute","volume","captions","settings","pip","airplay","download","fullscreen",
+              "play-large",
+              "restart",
+              "rewind",
+              "play",
+              "fast-forward",
+              "progress",
+              "current-time",
+              "duration",
+              "mute",
+              "volume",
+              "captions",
+              "settings",
+              "pip",
+              "airplay",
+              "download",
+              "fullscreen",
             ],
             settings: ["captions", "quality", "speed", "loop"],
             speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
-            captions: { active: true, language: preferExternal ? "vi" : "auto", update: true },
-            i18n: { settings: "Cài đặt", quality: "Chất lượng", speed: "Tốc độ phát", captions: "Phụ đề" },
+            captions: {
+              active: true,
+              language: preferExternal ? "vi" : "auto",
+              update: true,
+            },
+            i18n: {
+              settings: "Cài đặt",
+              quality: "Chất lượng",
+              speed: "Tốc độ phát",
+              captions: "Phụ đề",
+            },
             urls: { download: src },
             fullscreen: { enabled: true, fallback: true, iosNative: true },
             storage: { enabled: false },
@@ -160,17 +197,24 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
                 if (q === 0) {
                   hls.currentLevel = -1; // Auto
                 } else {
-                  targetIdx = hls.levels.findIndex(l => l.height === q);
+                  targetIdx = hls.levels.findIndex((l) => l.height === q);
                   if (targetIdx < 0) targetIdx = 0;
                   hls.currentLevel = targetIdx;
                 }
 
-                const onFragBuffered = (_ev: unknown, fragData: FragBufferedData) => {
+                const onFragBuffered = (
+                  _ev: unknown,
+                  fragData: FragBufferedData,
+                ) => {
                   if (fragData?.frag?.type !== "main") return;
-                  if (targetIdx !== -1 && fragData.frag.level !== targetIdx) return;
+                  if (targetIdx !== -1 && fragData.frag.level !== targetIdx)
+                    return;
                   hls.off(Events.FRAG_BUFFERED, onFragBuffered);
                   v.currentTime = t;
-                  setTimeout(() => { if (!wasPaused) v.play().catch(()=>{}); setSwitching(false); }, 0);
+                  setTimeout(() => {
+                    if (!wasPaused) v.play().catch(() => {});
+                    setSwitching(false);
+                  }, 0);
                 };
                 hls.on(Events.FRAG_BUFFERED, onFragBuffered);
               },
@@ -184,7 +228,9 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
             try {
               if (preferExternal) {
                 // Ưu tiên ngôn ngữ phụ đề tiếng Việt nếu có
-                try { (plyrRef.current as PlyrWithLanguage).language = "vi"; } catch {}
+                try {
+                  (plyrRef.current as PlyrWithLanguage).language = "vi";
+                } catch {}
               }
               plyrRef.current?.toggleCaptions(true);
             } catch {}
@@ -201,8 +247,12 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
 
           // Sau khi manifest parse xong, đảm bảo HLS không bật subtitle nội bộ
           if (preferExternal) {
-            try { hls.subtitleDisplay = false; } catch {}
-            try { hls.subtitleTrack = -1; } catch {}
+            try {
+              hls.subtitleDisplay = false;
+            } catch {}
+            try {
+              hls.subtitleTrack = -1;
+            } catch {}
           }
         });
 
@@ -216,9 +266,26 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
         // Safari native HLS
         video.src = src;
         plyr = new PlyrCtor(video, {
-          controls: ["play", "progress", "mute", "volume", "captions", "settings", "fullscreen"],
-          captions: { active: true, language: preferExternal ? "vi" : "auto", update: true },
-          i18n: { settings: "Cài đặt", quality: "Chất lượng", speed: "Tốc độ phát", captions: "Phụ đề" },
+          controls: [
+            "play",
+            "progress",
+            "mute",
+            "volume",
+            "captions",
+            "settings",
+            "fullscreen",
+          ],
+          captions: {
+            active: true,
+            language: preferExternal ? "vi" : "auto",
+            update: true,
+          },
+          i18n: {
+            settings: "Cài đặt",
+            quality: "Chất lượng",
+            speed: "Tốc độ phát",
+            captions: "Phụ đề",
+          },
           fullscreen: { enabled: true, fallback: true, iosNative: true },
           storage: { enabled: false },
         }) as Plyr;
@@ -227,7 +294,9 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
         plyr.on?.("ready", () => {
           try {
             if (preferExternal) {
-              try { (plyrRef.current as PlyrWithLanguage).language = "vi"; } catch {}
+              try {
+                (plyrRef.current as PlyrWithLanguage).language = "vi";
+              } catch {}
             }
             plyrRef.current?.toggleCaptions(true);
           } catch {}
@@ -237,7 +306,9 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
             else {
               // nếu chưa có metadata, chờ rồi bật track
               if (video.readyState < 1) {
-                video.addEventListener("loadedmetadata", onTrackLoad, { once: true });
+                video.addEventListener("loadedmetadata", onTrackLoad, {
+                  once: true,
+                });
               }
             }
             setTimeout(() => onTrackLoad(), 50);
@@ -248,7 +319,11 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
         // Fallback
         video.src = src;
         plyr = new PlyrCtor(video, {
-          captions: { active: true, language: preferExternal ? "vi" : "auto", update: true },
+          captions: {
+            active: true,
+            language: preferExternal ? "vi" : "auto",
+            update: true,
+          },
           storage: { enabled: false },
         }) as Plyr;
         plyrRef.current = plyr;
@@ -258,7 +333,10 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
           if (tr && tr.readyState === 2) onTrackLoad();
           else {
             if (video.readyState >= 1) onTrackLoad();
-            else video.addEventListener("loadedmetadata", onTrackLoad, { once: true });
+            else
+              video.addEventListener("loadedmetadata", onTrackLoad, {
+                once: true,
+              });
           }
           setTimeout(() => onTrackLoad(), 50);
           setTimeout(() => onTrackLoad(), 250);
@@ -366,19 +444,22 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
           controls
           crossOrigin="anonymous"
           poster={poster}
-          preload="metadata"   // giúp track load sớm
+          preload="metadata" // giúp track load sớm
         >
           {/* ✅ CHỈ DÙNG EXTERNAL VTT */}
           {urlVtt ? (
             <track
               ref={trackRef}
-              key={`${vttBlobUrl ?? urlVtt}?b=${vttBuster}`}          // remount khi đổi URL
-              kind="captions"       // dùng "captions" để Plyr nhận đúng
-              src={vttBlobUrl ?? `${urlVtt}${urlVtt.includes("?") ? "&" : "?"}b=${vttBuster}`}
+              key={`${vttBlobUrl ?? urlVtt}?b=${vttBuster}`} // remount khi đổi URL
+              kind="captions" // dùng "captions" để Plyr nhận đúng
+              src={
+                vttBlobUrl ??
+                `${urlVtt}${urlVtt.includes("?") ? "&" : "?"}b=${vttBuster}`
+              }
               label="Tiếng Việt"
               srcLang="vi"
               default
-              onLoad={onTrackLoad}  // bật sau khi track đã load
+              onLoad={onTrackLoad} // bật sau khi track đã load
               onError={onTrackError}
             />
           ) : null}
@@ -387,7 +468,9 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
         {switching && (
           <div className="absolute inset-0 grid place-items-center bg-black/40 text-white rounded-lg">
             <div className="flex items-center gap-2">
-              <Spin indicator={<LoadingOutlined style={{ fontSize: 28 }} spin />} />
+              <Spin
+                indicator={<LoadingOutlined style={{ fontSize: 28 }} spin />}
+              />
               <span>Đang đổi chất lượng…</span>
             </div>
           </div>

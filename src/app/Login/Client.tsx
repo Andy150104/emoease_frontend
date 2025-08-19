@@ -142,7 +142,11 @@ export default function LoginPage() {
               Welcome To EmoEase!!
             </p>
             <p className="mt-2 sm:mt-3 text-base sm:text-lg md:text-xl drop-shadow-lg">
-              Let&apos;s Login <span className="pl-4"> <ThemeSwitch /></span>
+              Let&apos;s Login{" "}
+              <span className="pl-4">
+                {" "}
+                <ThemeSwitch />
+              </span>
             </p>
           </div>
           {/* Mobile */}

@@ -1,8 +1,8 @@
 // File: src/components/BaseScreen.tsx
-import React, { ReactNode, FC } from 'react';
-import Footer from 'EmoEase/components/Footer/Footer';
-import ScrollSmootherWrapper from 'EmoEase/components/Animation/ScrollingTriggerComponent';
-import NavigationbarWhite from 'EmoEase/components/Navbar/NavigationbarWhite';
+import React, { ReactNode, FC } from "react";
+import Footer from "EmoEase/components/Footer/Footer";
+import ScrollSmootherWrapper from "EmoEase/components/Animation/ScrollingTriggerComponent";
+import NavigationbarWhite from "EmoEase/components/Navbar/NavigationbarWhite";
 
 interface BaseScreenProps {
   children: ReactNode;
@@ -15,15 +15,15 @@ const BaseScreenWhiteNav: FC<BaseScreenProps> = ({ children }) => {
       <ScrollSmootherWrapper>
         <div id="smooth-wrapper" className="overflow-hidden">
           <div id="smooth-content">
-      {/* HEADER */}
+            {/* HEADER */}
 
-      {/* MAIN CONTENT */}
-      <main className="flex-grow pt-24 bg-white dark:bg-gray-900">
-        {children}
-      </main>
+            {/* MAIN CONTENT */}
+            <main className="flex-grow pt-24 bg-white dark:bg-gray-900">
+              {children}
+            </main>
 
-      {/* FOOTER */}
-      <Footer />
+            {/* FOOTER */}
+            <Footer />
           </div>
         </div>
       </ScrollSmootherWrapper>

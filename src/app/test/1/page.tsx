@@ -1,6 +1,6 @@
 // ví dụ: pages/index.tsx hoặc component khác
-import VideoCard from 'EmoEase/components/Video/VideoCard';
-import React from 'react';
+import VideoCard from "EmoEase/components/Video/VideoCard";
+import React from "react";
 
 export default function HomePage() {
   return (

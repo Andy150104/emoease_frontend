@@ -1,6 +1,6 @@
 // File: src/components/Footer.jsx
-import React from 'react';
-import Image from 'next/image';
+import React from "react";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -9,11 +9,11 @@ export default function Footer() {
         {/* Top: logo + description */}
         <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between mb-12">
           <div className="flex items-center mb-8 lg:mb-0">
-           <Image
+            <Image
               src="/assets/Flearning.png"
               alt="TOTC logo"
-              width={40}       // bắt buộc
-              height={40}      // bắt buộc
+              width={40} // bắt buộc
+              height={40} // bắt buộc
               className="mr-3"
             />
             <span className="text-white text-lg font-semibold">
@@ -57,9 +57,7 @@ export default function Footer() {
               Terms &amp; Conditions
             </a>
           </div>
-          <div className="text-gray-500">
-            © 2021 Class Technologies Inc.
-          </div>
+          <div className="text-gray-500">© 2021 Class Technologies Inc.</div>
         </div>
       </div>
     </footer>

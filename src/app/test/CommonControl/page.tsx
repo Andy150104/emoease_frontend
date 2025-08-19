@@ -46,7 +46,7 @@ const DemoPage: React.FC = () => {
       // nếu thành công sẽ vào đây, không throw
       await form.validateFields();
       console.log("not error");
-      form.resetFields()
+      form.resetFields();
       return true; // cho modal đóng
     } catch (error) {
       console.log("error", error);
@@ -79,8 +79,8 @@ const DemoPage: React.FC = () => {
         cancelText="Huỷ"
         onOk={handleSave}
         onCancel={() => {
-            console.log("Đã huỷ") 
-            form.resetFields();
+          console.log("Đã huỷ");
+          form.resetFields();
         }}
         extraFooterButtons={[
           {

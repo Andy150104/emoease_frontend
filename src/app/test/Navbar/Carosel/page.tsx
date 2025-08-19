@@ -202,27 +202,100 @@ const recommendedCourses = [
 
 const HomePage: React.FC = () => (
   <BaseScreenWhiteNav>
-  <FadeTransition show={true}>
-        <div>
-      {/* Section 1: Welcome back - Enhanced with better descriptions */}
-      <section className="bg-[#4abbbd66] w-screen" data-speed="0.9">
-        <div className="max-w-7xl xxl:max-w-[2000px] mx-auto px-4 py-12">
-          <ZoomIn>
+    <FadeTransition show={true}>
+      <div>
+        {/* Section 1: Welcome back - Enhanced with better descriptions */}
+        <section className="bg-[#4abbbd66] w-screen" data-speed="0.9">
+          <div className="max-w-7xl xxl:max-w-[2000px] mx-auto px-4 py-12">
+            <ZoomIn>
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex-1">
+                  <p className="text-3xl font-bold text-gray-800 mb-2">
+                    Chào mừng trở lại! 🎓
+                  </p>
+                  <p className="text-lg text-gray-600 mb-4">
+                    Bạn muốn tiếp tục hành trình học tập nào hôm nay? Hãy chọn
+                    khóa học phù hợp để phát triển kỹ năng của bạn.
+                  </p>
+                </div>
+                <a
+                  href="#"
+                  className="inline-flex items-center px-6 py-3 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 transition-colors shadow-md"
+                >
+                  <span>Xem chi tiết lộ trình</span>
+                  <svg
+                    className="ml-2 w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </a>
+              </div>
+            </ZoomIn>
+            <BaseControlCarousel
+              infinite={false}
+              // autoplay
+              autoplaySpeed={4000}
+              isShowFooter
+              totalItemsPerSlide={3}
+              classItemStyle="md:mx-4"
+            >
+              {continuingCourses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  imageUrl={course.imageUrl}
+                  title={course.title}
+                  instructor={course.instructor}
+                  instructorAvatar={course.instructorAvatar}
+                  isShowProgress
+                  progress={course.progress!}
+                  currentLesson={course.currentLesson!}
+                  totalLessons={course.totalLessons!}
+                  routerPush={course.href}
+                />
+              ))}
+            </BaseControlCarousel>
+          </div>
+        </section>
+        <section className="scroll-section bg-[#252641] text-white rounded-3xl px-6 py-12 md:px-16 md:py-20 mx-4 md:mx-auto max-w-7xl xxl:max-w-[2000px] my-20">
+          <h1 className="text-2xl md:text-4xl font-semibold text-center mb-4">
+            Tự học theo tiến độ của bạn
+          </h1>
+          <p className="text-sm md:text-base text-center opacity-90 mb-8">
+            Truy cập thư viện bài giảng đa dạng, học mọi lúc mọi nơi và quản lý
+            tiến độ cá nhân một cách linh hoạt.
+          </p>
+        </section>
+        {/* Section 2: Next in pathway - Enhanced with visual highlights */}
+        <section
+          className="bg-gradient-to-br from-blue-50 to-indigo-100 w-screen my-8"
+          data-speed="0.9"
+        >
+          <div className="max-w-7xl xxl:max-w-[2000px] mx-auto px-4 py-12">
             <div className="flex items-center justify-between mb-8">
               <div className="flex-1">
-                <p className="text-3xl font-bold text-gray-800 mb-2">
-                  Chào mừng trở lại! 🎓
-                </p>
-                <p className="text-lg text-gray-600 mb-4">
-                  Bạn muốn tiếp tục hành trình học tập nào hôm nay? Hãy chọn
-                  khóa học phù hợp để phát triển kỹ năng của bạn.
+                <div className="flex items-center space-x-3 mb-2">
+                  <p className="text-2xl font-bold text-gray-800">
+                    Các khoá học tiếp theo trong lộ trình
+                  </p>
+                </div>
+                <p className="text-gray-600 mb-4">
+                  Khám phá các khóa học được thiết kế đặc biệt để phát triển kỹ
+                  năng của bạn theo lộ trình tối ưu.
                 </p>
               </div>
               <a
                 href="#"
-                className="inline-flex items-center px-6 py-3 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 transition-colors shadow-md"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-md"
               >
-                <span>Xem chi tiết lộ trình</span>
+                <span>Xem tất cả</span>
                 <svg
                   className="ml-2 w-4 h-4"
                   fill="none"
@@ -238,176 +311,103 @@ const HomePage: React.FC = () => (
                 </svg>
               </a>
             </div>
-          </ZoomIn>
-          <BaseControlCarousel
-            infinite={false}
-            // autoplay
-            autoplaySpeed={4000}
-            isShowFooter
-            totalItemsPerSlide={3}
-            classItemStyle="md:mx-4"
-          >
-            {continuingCourses.map((course) => (
-              <CourseCard
-                key={course.id}
-                imageUrl={course.imageUrl}
-                title={course.title}
-                instructor={course.instructor}
-                instructorAvatar={course.instructorAvatar}
-                isShowProgress
-                progress={course.progress!}
-                currentLesson={course.currentLesson!}
-                totalLessons={course.totalLessons!}
-                routerPush={course.href}
-              />
-            ))}
-          </BaseControlCarousel>
-        </div>
-      </section>
-      <section className="scroll-section bg-[#252641] text-white rounded-3xl px-6 py-12 md:px-16 md:py-20 mx-4 md:mx-auto max-w-7xl xxl:max-w-[2000px] my-20">
-        <h1 className="text-2xl md:text-4xl font-semibold text-center mb-4">
-          Tự học theo tiến độ của bạn
-        </h1>
-        <p className="text-sm md:text-base text-center opacity-90 mb-8">
-          Truy cập thư viện bài giảng đa dạng, học mọi lúc mọi nơi và quản lý
-          tiến độ cá nhân một cách linh hoạt.
-        </p>
-      </section>
-      {/* Section 2: Next in pathway - Enhanced with visual highlights */}
-      <section
-        className="bg-gradient-to-br from-blue-50 to-indigo-100 w-screen my-8"
-        data-speed="0.9"
-      >
-        <div className="max-w-7xl xxl:max-w-[2000px] mx-auto px-4 py-12">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-2">
-                <p className="text-2xl font-bold text-gray-800">
-                  Các khoá học tiếp theo trong lộ trình
+            <BaseControlCarousel
+              infinite={false}
+              autoplay={false}
+              isShowFooter={false}
+              totalItemsPerSlide={3}
+              classItemStyle="md:mx-4"
+            >
+              {nextInPathway.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  imageUrl={course.imageUrl}
+                  title={course.title}
+                  descriptionLines={course.descriptionLines}
+                  instructor={course.instructor}
+                  instructorAvatar={course.instructorAvatar}
+                  routerPush={course.href}
+                />
+              ))}
+            </BaseControlCarousel>
+          </div>
+        </section>
+
+        {/* Section: Học trực tiếp cùng giảng viên */}
+        <section
+          className="bg-[#252641] text-white rounded-3xl px-6 py-12 md:px-16 md:py-20 mx-4 md:mx-auto max-w-7xl xxl:max-w-[2000px] my-20 relative z-0"
+          data-speed="0.7"
+        >
+          <h1 className="text-2xl md:text-4xl font-semibold text-center mb-4">
+            Học trực tiếp cùng giảng viên
+          </h1>
+          <p className="text-sm md:text-base text-center opacity-90 mb-8">
+            Tham gia các buổi livestream tương tác, đặt câu hỏi theo thời gian
+            thực và nhận hướng dẫn cá nhân hóa. Tận dung cơ hội học hỏi từ các
+            chuyên gia hàng đầu trong ngành.
+            <br />
+            <span className="font-semibold">Đăng ký ngay để không bỏ lỡ!</span>
+          </p>
+        </section>
+
+        {/* Section 3: Recommended for you - Enhanced with better descriptions */}
+        <section className="bg-[#84c5c6] w-screen my-8 relative z-50">
+          <div className="max-w-7xl xxl:max-w-[2000px] mx-auto px-4 py-12">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex-1">
+                <div className="flex items-center space-x-3 mb-2">
+                  <p className="text-2xl font-bold text-gray-800">
+                    Các khoá học đề xuất phù hợp với bạn
+                  </p>
+                </div>
+                <p className="text-gray-600 mb-4">
+                  Dựa trên sở thích và tiến độ học tập của bạn, chúng tôi đã
+                  chọn ra những khóa học phù hợp nhất.
                 </p>
               </div>
-              <p className="text-gray-600 mb-4">
-                Khám phá các khóa học được thiết kế đặc biệt để phát triển kỹ
-                năng của bạn theo lộ trình tối ưu.
-              </p>
-            </div>
-            <a
-              href="#"
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-md"
-            >
-              <span>Xem tất cả</span>
-              <svg
-                className="ml-2 w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+              <a
+                href="#"
+                className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors shadow-md"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </a>
-          </div>
-          <BaseControlCarousel
-            infinite={false}
-            autoplay={false}
-            isShowFooter={false}
-            totalItemsPerSlide={3}
-            classItemStyle="md:mx-4"
-          >
-            {nextInPathway.map((course) => (
-              <CourseCard
-                key={course.id}
-                imageUrl={course.imageUrl}
-                title={course.title}
-                descriptionLines={course.descriptionLines}
-                instructor={course.instructor}
-                instructorAvatar={course.instructorAvatar}
-                routerPush={course.href}
-              />
-            ))}
-          </BaseControlCarousel>
-        </div>
-      </section>
-
-      {/* Section: Học trực tiếp cùng giảng viên */}
-      <section
-        className="bg-[#252641] text-white rounded-3xl px-6 py-12 md:px-16 md:py-20 mx-4 md:mx-auto max-w-7xl xxl:max-w-[2000px] my-20 relative z-0"
-        data-speed="0.7"
-      >
-        <h1 className="text-2xl md:text-4xl font-semibold text-center mb-4">
-          Học trực tiếp cùng giảng viên
-        </h1>
-        <p className="text-sm md:text-base text-center opacity-90 mb-8">
-          Tham gia các buổi livestream tương tác, đặt câu hỏi theo thời gian
-          thực và nhận hướng dẫn cá nhân hóa. Tận dung cơ hội học hỏi từ các
-          chuyên gia hàng đầu trong ngành.
-          <br />
-          <span className="font-semibold">Đăng ký ngay để không bỏ lỡ!</span>
-        </p>
-      </section>
-
-      {/* Section 3: Recommended for you - Enhanced with better descriptions */}
-      <section className="bg-[#84c5c6] w-screen my-8 relative z-50">
-        <div className="max-w-7xl xxl:max-w-[2000px] mx-auto px-4 py-12">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-2">
-                <p className="text-2xl font-bold text-gray-800">
-                  Các khoá học đề xuất phù hợp với bạn
-                </p>
-              </div>
-              <p className="text-gray-600 mb-4">
-                Dựa trên sở thích và tiến độ học tập của bạn, chúng tôi đã chọn
-                ra những khóa học phù hợp nhất.
-              </p>
+                <span>Xem tất cả</span>
+                <svg
+                  className="ml-2 w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </a>
             </div>
-            <a
-              href="#"
-              className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors shadow-md"
+            <BaseControlCarousel
+              infinite={false}
+              autoplay={false}
+              isShowFooter={false}
+              totalItemsPerSlide={3}
+              classItemStyle="md:mx-4"
             >
-              <span>Xem tất cả</span>
-              <svg
-                className="ml-2 w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
+              {recommendedCourses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  imageUrl={course.imageUrl}
+                  title={course.title}
+                  descriptionLines={course.descriptionLines}
+                  instructor={course.instructor}
+                  price={course.price}
+                  routerPush={course.href}
                 />
-              </svg>
-            </a>
+              ))}
+            </BaseControlCarousel>
           </div>
-          <BaseControlCarousel
-            infinite={false}
-            autoplay={false}
-            isShowFooter={false}
-            totalItemsPerSlide={3}
-            classItemStyle="md:mx-4"
-          >
-            {recommendedCourses.map((course) => (
-              <CourseCard
-                key={course.id}
-                imageUrl={course.imageUrl}
-                title={course.title}
-                descriptionLines={course.descriptionLines}
-                instructor={course.instructor}
-                price={course.price}
-                routerPush={course.href}
-              />
-            ))}
-          </BaseControlCarousel>
-        </div>
-      </section>
-    </div>
-  </FadeTransition>
+        </section>
+      </div>
+    </FadeTransition>
   </BaseScreenWhiteNav>
 );
 

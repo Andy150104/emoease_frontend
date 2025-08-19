@@ -160,7 +160,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       showLoading();
       useAuthStore.getState().logout();
       useAuthStore.persist.clearStorage();
-      messageApi.success("Đăng xuất thành công!")
+      messageApi.success("Đăng xuất thành công!");
       // window.location.href = "/Login"
       await router.push("/Login");
       await hideLoading();

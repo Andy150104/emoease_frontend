@@ -90,15 +90,13 @@ export function enumToOptions(
     });
 }
 
-
-export function enumToTranslatedOptions<E extends Record<string, string|number>>(
-  e: E,
-  namespace: keyof typeof labels
-): { label: string; value: string }[] {
+export function enumToTranslatedOptions<
+  E extends Record<string, string | number>,
+>(e: E, namespace: keyof typeof labels): { label: string; value: string }[] {
   return Object.keys(e)
     .filter((key) => isNaN(Number(key)))
     .map((key) => {
-      const val = e[key as keyof E] as string|number;
+      const val = e[key as keyof E] as string | number;
       // @ts-expect-error: chúng ta biết labels[namespace][key] tồn tại hoặc fallback về key
       const text = labels[namespace][key] || key;
       return {

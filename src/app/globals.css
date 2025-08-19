@@ -5,9 +5,15 @@
 @layer theme, base, components, utilities;
 
 @layer utilities {
-  .dark .dark\:bg-slate-900 { background-color: #111827 !important; }
-  .dark .dark\:bg-slate-800 { background-color: #1f2937 !important; }
-  .dark .dark\:text-white   { color: #ffffff !important; }
+  .dark .dark\:bg-slate-900 {
+    background-color: #111827 !important;
+  }
+  .dark .dark\:bg-slate-800 {
+    background-color: #1f2937 !important;
+  }
+  .dark .dark\:text-white {
+    color: #ffffff !important;
+  }
   @media (min-width: 2000px) {
     .xxl\:w-\[50rem\] {
       width: 50rem;
@@ -20,7 +26,6 @@
   }
 }
 
-
 @theme {
   --color-bgContrast: #f9f9f9;
   --breakpoint-xxl: 2600px;
@@ -28,11 +33,13 @@
 
 @layer theme {
   .dark {
-    --color-bgContrast: #66C8B6;
+    --color-bgContrast: #66c8b6;
   }
 }
 
-body { margin:0; }
+body {
+  margin: 0;
+}
 
 body {
   background: var(--background);
@@ -48,7 +55,8 @@ body {
 
 /* Custom animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
