@@ -16,7 +16,7 @@ const CourseCardPage = ({}) => {
         ]}
         instructor="Nguyễn Văn A"
         price="199.000 VND"
-        routerPush="/test/Navbar/home"  
+        routerPush="/test/Navbar/home"
       />
 
       {/* Example CourseCard with progress */}

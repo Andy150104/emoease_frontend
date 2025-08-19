@@ -3,7 +3,9 @@
 import React, { useState } from "react";
 import { Button } from "antd";
 import BaseScreenAdmin from "EmoEase/layout/BaseScreenAdmin";
-import CustomStepper, { StepItem } from "EmoEase/components/Stepper/BaseControlStepper";
+import CustomStepper, {
+  StepItem,
+} from "EmoEase/components/Stepper/BaseControlStepper";
 import BaseControlStepperContent from "EmoEase/components/Stepper/BaseControlStepperContent";
 import BaseControlDivide from "EmoEase/components/Stepper/BaseControlDivide";
 
@@ -66,7 +68,9 @@ const StepperPage: React.FC = () => {
           Quay lại
         </Button>
         <Button
-          onClick={() => setCurrent((prev) => Math.min(prev + 1, steps.length - 1))}
+          onClick={() =>
+            setCurrent((prev) => Math.min(prev + 1, steps.length - 1))
+          }
           disabled={current === steps.length - 1}
           style={{ marginLeft: 8 }}
         >

@@ -39,9 +39,10 @@ export function middleware(req: NextRequest) {
 
   // Allow well-known link preview bots to bypass auth redirects
   // so they can fetch Open Graph/Twitter metadata to render rich previews
-  const isCrawler = /(facebookexternalhit|Facebot|Twitterbot|Slackbot|TelegramBot|LinkedInBot|Pinterest|Discordbot|WhatsApp|zalo|ZaloOA)/i.test(
-    userAgent,
-  );
+  const isCrawler =
+    /(facebookexternalhit|Facebot|Twitterbot|Slackbot|TelegramBot|LinkedInBot|Pinterest|Discordbot|WhatsApp|zalo|ZaloOA)/i.test(
+      userAgent,
+    );
 
   // Lấy cookie
   const raw = req.cookies.get("auth-storage")?.value;

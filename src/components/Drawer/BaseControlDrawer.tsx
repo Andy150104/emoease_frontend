@@ -1,6 +1,6 @@
 // src/components/CustomDrawer.tsx
-import React from 'react';
-import { Drawer, Space, Button } from 'antd';
+import React from "react";
+import { Drawer, Space, Button } from "antd";
 
 export interface CustomDrawerProps {
   /** Tiêu đề Drawer */
@@ -28,8 +28,8 @@ const BaseControlDrawer: React.FC<CustomDrawerProps> = ({
   onSubmit,
   children,
   width = 720,
-  cancelText = 'Cancel',
-  submitText = 'Submit',
+  cancelText = "Cancel",
+  submitText = "Submit",
 }) => (
   <Drawer
     title={title}

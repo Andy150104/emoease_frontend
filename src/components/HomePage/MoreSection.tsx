@@ -217,7 +217,10 @@ export default function MoreSection() {
         </div>
 
         {/* Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-speed="0.7">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
+          data-speed="0.7"
+        >
           {/* Left: Illustration */}
           <div className="w-full relative">
             {/* Bạn có thể giữ nguyên các hình nền động phía sau nếu cần */}
@@ -268,7 +271,9 @@ export default function MoreSection() {
                     {feat.icon}
                   </div>
                   {/* Nội dung text */}
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{feat.desc}</p>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                    {feat.desc}
+                  </p>
                 </div>
               ))}
             </div>

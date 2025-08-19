@@ -1,15 +1,13 @@
 // src/stores/usePaymentStore.ts
 import { create } from "zustand";
 
-const initialFileList = [
-  { url: "https://example.com/image.jpg" },
-]
+const initialFileList = [{ url: "https://example.com/image.jpg" }];
 const initialValues = {
-    firstName: "a",
-    email: "a",
-    phone: "a",
-    Image: initialFileList.map((f) => ({ baseUrl: f.url! })),
-}
+  firstName: "a",
+  email: "a",
+  phone: "a",
+  Image: initialFileList.map((f) => ({ baseUrl: f.url! })),
+};
 
 export interface TestFormValues {
   firstName: string;

@@ -1,9 +1,9 @@
 export const revalidate = 120; // ISR: regen mỗi 60s
 
 import { Metadata } from "next";
-import LoginPage from "./Client";
+import TableClientPage from "./Client";
 export const metadata: Metadata = {
-  title: "EmoEase – Login",
+  title: "EmoEase – Table Client",
   description:
     "Đăng nhập vào EmoEase để tiếp tục hành trình chăm sóc tinh thần của bạn.",
   openGraph: {
@@ -35,6 +35,6 @@ export const metadata: Metadata = {
     ],
   },
 };
-export default function Page() {
-  return <LoginPage />;
+export default function PageTableClient() {
+  return <TableClientPage />;
 }

@@ -126,7 +126,11 @@ export class ApiThirdModule extends HttpClient {
      * @request GET:/wards?province_code={code}
      */
     getAll: (province_code: string, params?: RequestParams) =>
-      this.request<Ward[]>(`/wards?province_code=${province_code}`, "GET", params),
+      this.request<Ward[]>(
+        `/wards?province_code=${province_code}`,
+        "GET",
+        params,
+      ),
   };
   search = {
     /**

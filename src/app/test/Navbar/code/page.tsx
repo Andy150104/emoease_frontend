@@ -28,9 +28,9 @@ export default function CodePage() {
           {/* Mobile: single settings dropdown */}
           <div className="w-full flex items-center justify-center mt-4 md:hidden !relative !z-10">
             <Dropdown
-              trigger={['click']}
-    getPopupContainer={trigger => trigger.parentElement!}
-    overlayClassName="!z-10"    
+              trigger={["click"]}
+              getPopupContainer={(trigger) => trigger.parentElement!}
+              overlayClassName="!z-10"
               menu={{
                 items: [
                   {
@@ -78,7 +78,9 @@ export default function CodePage() {
                 ],
               }}
             >
-              <Button type="text" icon={<FiSettings />}>Cài đặt</Button>
+              <Button type="text" icon={<FiSettings />}>
+                Cài đặt
+              </Button>
             </Dropdown>
           </div>
 

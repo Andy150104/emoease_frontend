@@ -100,27 +100,27 @@ export default function Navigationbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-useEffect(() => {
-  if (!navRef.current) return;
-  const navHeight = navRef.current.getBoundingClientRect().height;
-  const SCROLL_THRESHOLD = 5;
+  useEffect(() => {
+    if (!navRef.current) return;
+    const navHeight = navRef.current.getBoundingClientRect().height;
+    const SCROLL_THRESHOLD = 5;
 
-  const onMouseMove = (e: MouseEvent) => {
-    const y = window.scrollY;
-    const cursorY = e.clientY;
+    const onMouseMove = (e: MouseEvent) => {
+      const y = window.scrollY;
+      const cursorY = e.clientY;
 
-    if (y <= SCROLL_THRESHOLD) {
-      setShowNav(true);
-    } else if (cursorY <= navHeight) {
-      setShowNav(true);
-    } else {
-      setShowNav(false);
-    }
-  };
+      if (y <= SCROLL_THRESHOLD) {
+        setShowNav(true);
+      } else if (cursorY <= navHeight) {
+        setShowNav(true);
+      } else {
+        setShowNav(false);
+      }
+    };
 
-  window.addEventListener("mousemove", onMouseMove);
-  return () => window.removeEventListener("mousemove", onMouseMove);
-}, []);
+    window.addEventListener("mousemove", onMouseMove);
+    return () => window.removeEventListener("mousemove", onMouseMove);
+  }, []);
 
   return (
     <nav

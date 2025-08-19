@@ -37,7 +37,9 @@ export const ThemeSwitch: React.FC<ThemeToggleButtonProps> = ({
     return null;
   }
 
-  const tooltip = isDarkMode ? "Chuyển sang Light mode" : "Chuyển sang Dark mode";
+  const tooltip = isDarkMode
+    ? "Chuyển sang Light mode"
+    : "Chuyển sang Dark mode";
   const IconComponent = isDarkMode ? SunOutlined : MoonOutlined;
 
   return (

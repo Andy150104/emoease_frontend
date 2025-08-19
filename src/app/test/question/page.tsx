@@ -48,14 +48,21 @@ const QuestionPage: React.FC = () => {
                 form.setFieldsValue({
                   questions: [
                     ...qs,
-                    { question: "", correct: 0, answers: [{ text: "" }, { text: "" }] },
+                    {
+                      question: "",
+                      correct: 0,
+                      answers: [{ text: "" }, { text: "" }],
+                    },
                   ],
                 });
               }}
             >
               Thêm câu hỏi
             </Button>
-            <Button icon={<RobotOutlined />} style={{ background: "#52c41a", color: "#fff" }}>
+            <Button
+              icon={<RobotOutlined />}
+              style={{ background: "#52c41a", color: "#fff" }}
+            >
               Thêm với AI
             </Button>
           </Space>
@@ -70,7 +77,9 @@ const QuestionPage: React.FC = () => {
             { question: "", correct: 0, answers: [{ text: "" }, { text: "" }] },
           ],
         }}
-        onFinish={(values) => console.log("Form JSON:", JSON.stringify(values, null, 2))}
+        onFinish={(values) =>
+          console.log("Form JSON:", JSON.stringify(values, null, 2))
+        }
       >
         <Form.List name="questions">
           {(fields, { remove }) =>
@@ -92,7 +101,9 @@ const QuestionPage: React.FC = () => {
                   {...field}
                   name={[field.name, "question"]}
                   label="Nội dung câu hỏi"
-                  rules={[{ required: true, message: "Vui lòng nhập nội dung" }]}
+                  rules={[
+                    { required: true, message: "Vui lòng nhập nội dung" },
+                  ]}
                 >
                   <Input.TextArea
                     placeholder="Nhập nội dung..."
@@ -110,7 +121,9 @@ const QuestionPage: React.FC = () => {
                         {...field}
                         name={[field.name, "correct"]}
                         label="Chọn đáp án đúng"
-                        rules={[{ required: true, message: "Chọn đáp án đúng" }]}
+                        rules={[
+                          { required: true, message: "Chọn đáp án đúng" },
+                        ]}
                       >
                         <Radio.Group>
                           <Space direction="vertical" style={{ width: "100%" }}>
@@ -126,7 +139,9 @@ const QuestionPage: React.FC = () => {
                                   {...ansField}
                                   name={[ansField.name, "text"]}
                                   noStyle
-                                  rules={[{ required: true, message: "Nhập đáp án" }]}
+                                  rules={[
+                                    { required: true, message: "Nhập đáp án" },
+                                  ]}
                                 >
                                   <Input
                                     placeholder={`Đáp án ${String.fromCharCode(65 + aIndex)}`}

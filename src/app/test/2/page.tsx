@@ -188,8 +188,6 @@ import React from "react";
 import BaseScreenAdmin from "EmoEase/layout/BaseScreenAdmin";
 
 const DemoPage: React.FC = () => {
-
-
   return (
     <BaseScreenAdmin
       defaultSelectedKeys={["dashboard-user"]}

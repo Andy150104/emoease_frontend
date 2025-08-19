@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 import Navigationbar from "EmoEase/components/Navbar/Navigationbar";
 import React from "react";
 

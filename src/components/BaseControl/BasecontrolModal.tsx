@@ -1,13 +1,13 @@
 // src/components/BaseControl/BasecontrolModal.tsx
-"use client"
-import React, { ReactNode, useState } from 'react';
-import { Button, Modal, ButtonProps } from 'antd';
+"use client";
+import React, { ReactNode, useState } from "react";
+import { Button, Modal, ButtonProps } from "antd";
 import "./style/modal.css";
 
 interface FooterButtonConfig {
   key?: string;
   text: ReactNode;
-  type?: ButtonProps['type'];
+  type?: ButtonProps["type"];
   onClick?: () => void;
 }
 
@@ -49,14 +49,14 @@ export interface BasecontrolModalProps {
 }
 
 const BasecontrolModal: React.FC<BasecontrolModalProps> = ({
-  triggerText = 'Open Modal',
+  triggerText = "Open Modal",
   triggerButtonProps,
   title,
   header,
   children,
   hideFooter = false,
-  okText = 'OK',
-  cancelText = 'Cancel',
+  okText = "OK",
+  cancelText = "Cancel",
   width,
   height,
   isFullScreen = false,
@@ -73,7 +73,7 @@ const BasecontrolModal: React.FC<BasecontrolModalProps> = ({
     let shouldClose = true;
     if (onOk) {
       const result = await onOk();
-      if (typeof result === 'boolean') {
+      if (typeof result === "boolean") {
         shouldClose = result;
       }
     }
@@ -90,36 +90,44 @@ const BasecontrolModal: React.FC<BasecontrolModalProps> = ({
   let modalWidth: number | string | undefined = width;
 
   if (isFullScreen) {
-    modalWidth = '100vw';
+    modalWidth = "100vw";
     style.top = 0;
     style.padding = 0;
-    style.height = '100vh';
-    style.overflow = 'auto';
+    style.height = "100vh";
+    style.overflow = "auto";
   } else if (isResponsive) {
-    modalWidth = '90%';
+    modalWidth = "90%";
     style.maxWidth = 800;
   }
   if (height && !isFullScreen) {
     style.height = height;
   }
 
-  const footer = hideFooter
-    ? null
-    : (
-      <div className="flex justify-end space-x-2">
-        <Button onClick={handleCancel}>{cancelText}</Button>
-        {extraFooterButtons.map(btn => (
-          <Button key={btn.key || String(btn.text)} type={btn.type} onClick={btn.onClick}>
-            {btn.text}
-          </Button>
-        ))}
-        <Button type="primary" onClick={handleOk}>{okText}</Button>
-      </div>
-    );
+  const footer = hideFooter ? null : (
+    <div className="flex justify-end space-x-2">
+      <Button onClick={handleCancel}>{cancelText}</Button>
+      {extraFooterButtons.map((btn) => (
+        <Button
+          key={btn.key || String(btn.text)}
+          type={btn.type}
+          onClick={btn.onClick}
+        >
+          {btn.text}
+        </Button>
+      ))}
+      <Button type="primary" onClick={handleOk}>
+        {okText}
+      </Button>
+    </div>
+  );
 
   return (
     <>
-      <Button {...triggerButtonProps} onClick={showModal} type={triggerButtonProps?.type || 'primary'}>
+      <Button
+        {...triggerButtonProps}
+        onClick={showModal}
+        type={triggerButtonProps?.type || "primary"}
+      >
         {triggerText}
       </Button>
       <Modal

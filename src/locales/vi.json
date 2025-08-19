@@ -1,7 +1,7 @@
 {
   "DropdownOptions": {
-    "Latest":  "Mới nhất",
-    "Oldest":  "Cũ nhất",
+    "Latest": "Mới nhất",
+    "Oldest": "Cũ nhất",
     "Popular": "Phổ biến"
   },
   "OtherEnum": {

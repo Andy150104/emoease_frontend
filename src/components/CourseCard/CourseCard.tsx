@@ -38,39 +38,37 @@ const CourseCard: React.FC<CourseCardProps> = ({
   };
 
   // Nội dung popover
-const popContent = isShowProgress ? (
-  <div style={{ width: 280 }}>
-    <Title level={5} style={{ marginBottom: 8 }}>
-      Hãy học ngay bây giờ!!!
-    </Title>
-    <Button type="primary" onClick={handleClick}>
-      Học tiếp
-    </Button>
-  </div>
-) : (
-  <div style={{ width: 280 }}>
-    <Title level={5} style={{ marginBottom: 8 }}>
-      Mô tả khóa học
-    </Title>
-    <ul className="list-disc list-inside space-y-1 mb-4">
-      {descriptionLines.map((line, idx) => {
-        const words = line.split(" ");
-        const text =
-          words.length > 8
-            ? words.slice(0, 8).join(" ") + "..."
-            : line;
-        return (
-          <li key={idx}>
-            <Text>{text}</Text>
-          </li>
-        );
-      })}
-    </ul>
-    <Button type="primary" block>
-      Add to cart
-    </Button>
-  </div>
-);
+  const popContent = isShowProgress ? (
+    <div style={{ width: 280 }}>
+      <Title level={5} style={{ marginBottom: 8 }}>
+        Hãy học ngay bây giờ!!!
+      </Title>
+      <Button type="primary" onClick={handleClick}>
+        Học tiếp
+      </Button>
+    </div>
+  ) : (
+    <div style={{ width: 280 }}>
+      <Title level={5} style={{ marginBottom: 8 }}>
+        Mô tả khóa học
+      </Title>
+      <ul className="list-disc list-inside space-y-1 mb-4">
+        {descriptionLines.map((line, idx) => {
+          const words = line.split(" ");
+          const text =
+            words.length > 8 ? words.slice(0, 8).join(" ") + "..." : line;
+          return (
+            <li key={idx}>
+              <Text>{text}</Text>
+            </li>
+          );
+        })}
+      </ul>
+      <Button type="primary" block>
+        Add to cart
+      </Button>
+    </div>
+  );
 
   return (
     <Popover

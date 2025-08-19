@@ -72,7 +72,7 @@ export default function RootLayout({
       <Head>
         <link rel="preconnect" href="https://api.emoease.vn" />
         <link rel="dns-prefetch" href="https://api.emoease.vn" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />  
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preload" as="style" href="/_next/static/css/xxx.css" />
         <link rel="preload" as="image" href="/emo.png" />
         <link rel="preload" as="image" href="/hero-bg.jpg" />

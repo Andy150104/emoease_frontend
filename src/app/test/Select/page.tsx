@@ -23,7 +23,9 @@ const StepperPage: React.FC = () => {
     rules: "required",
   };
 
-  const submitAddressForm = useAddressThirdClientStore(s => s.submitAddressForm);
+  const submitAddressForm = useAddressThirdClientStore(
+    (s) => s.submitAddressForm,
+  );
 
   const handleChange = (value: string) => {
     console.log("Đã chọn:", value);
@@ -49,7 +51,12 @@ const StepperPage: React.FC = () => {
         width={140}
         size="middle"
       />
-      <BaseControlForm form={form} layout="vertical" onFinish={() => submitAddressForm(form)} initialValues={{ province: initialProvinceCode }}>
+      <BaseControlForm
+        form={form}
+        layout="vertical"
+        onFinish={() => submitAddressForm(form)}
+        initialValues={{ province: initialProvinceCode }}
+      >
         <UserControlSelectAddress
           xmlProvinceColumn={province}
           xmlWardColumn={ward}

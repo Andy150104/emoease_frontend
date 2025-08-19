@@ -7,7 +7,11 @@ interface Props {
   children: React.ReactNode;
 }
 
-const BaseControlStepperContent: React.FC<Props> = ({ index, current, children }) => {
+const BaseControlStepperContent: React.FC<Props> = ({
+  index,
+  current,
+  children,
+}) => {
   if (index !== current) return null;
   return <>{children}</>;
 };
