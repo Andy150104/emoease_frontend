@@ -1,5 +1,13 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import {
+  CSSProperties,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 // ✅ chỉ import type để safe với SSR
 import type Plyr from "plyr";
 import type Hls from "hls.js";
@@ -13,6 +21,7 @@ import "plyr/dist/plyr.css";
 import styles from "EmoEase/components/Video/styles/VideoPlayer.module.css";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import { createPortal } from "react-dom";
 
 // Bổ sung type cho field không có trong định nghĩa
 declare module "hls.js" {
@@ -22,11 +31,48 @@ declare module "hls.js" {
   }
 }
 
+export type PauseReason = "user" | "quality-switch" | "overlay" | "unknown";
+
+type TimedOverlay = {
+  /** thời điểm bắt đầu (giây) */
+  start: number;
+  /** thời điểm kết thúc (giây) – nếu không truyền mà có durationSec thì end = start + durationSec */
+  end?: number;
+  /** hiển thị trong X giây kể từ start (tuỳ chọn, nếu có sẽ tính end = start + durationSec) */
+  durationSec?: number;
+  /** nội dung overlay (truyền thẻ div/ReactNode từ ngoài vào) */
+  content:
+    | ReactNode
+    | ((api: {
+        close: () => void;
+        video: HTMLVideoElement | null;
+      }) => ReactNode);
+  /** style/position tuỳ chọn */
+  className?: string;
+  style?: CSSProperties;
+  /** id tuỳ chọn */
+  id?: string;
+  pauseOnShow?: boolean; // 🔵 NEW
+  // Có hiển thị nền mờ không (mặc định true)
+  backdrop?: boolean;
+};
+
 type Props = {
   src: string;
   poster?: string;
   /** Link .vtt bên ngoài (Cloudinary raw) */
   urlVtt?: string;
+  onPause?: (info: {
+    currentTime: number;
+    duration: number;
+    reason: PauseReason;
+  }) => void;
+  onResume?: (info: {
+    pausedForMs: number;
+    reason: PauseReason;
+    resumedAt: number;
+  }) => void;
+  timedOverlays?: TimedOverlay[];
 };
 
 type PlyrQualityOption = {
@@ -46,7 +92,14 @@ type ExtendedPlyrOptions = Plyr.Options & {
 type PlyrWithQuality = Plyr & { quality: number };
 type PlyrWithLanguage = Plyr & { language: string };
 
-export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
+export default function YouTubeStylePlayer({
+  src,
+  poster,
+  urlVtt,
+  onPause,
+  onResume,
+  timedOverlays = [],
+}: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const trackRef = useRef<HTMLTrackElement | null>(null);
   const hlsRef = useRef<Hls | null>(null);
@@ -55,6 +108,78 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
   const [vttBlobUrl, setVttBlobUrl] = useState<string | null>(null);
   const vttObjectUrlRef = useRef<string | null>(null);
   const [vttBuster, setVttBuster] = useState(0);
+  const pauseReasonRef = useRef<PauseReason | null>(null);
+  const ignoreFirstQualityChangeRef = useRef(true);
+  const seekingRef = useRef(false);
+  const lastSeekTsRef = useRef(0);
+  const pauseTimerRef = useRef<number | null>(null);
+  const PAUSE_SEEK_GRACE = 400; // ms: khoảng “ân hạn” sau khi seek
+  const pendingPauseReasonRef = useRef<PauseReason | null>(null);
+  const pausePendingRef = useRef(false);
+  const lastPauseTsRef = useRef(0);
+  const pausedSinceRef = useRef<number | null>(null);
+  const lastPauseReasonCommittedRef = useRef<PauseReason | null>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
+  const pausedByOverlayRef = useRef<Set<string>>(new Set());
+  const [plyrContainerEl, setPlyrContainerEl] = useState<HTMLElement | null>(
+    null,
+  );
+
+  const getOverlayEnd = (ov: TimedOverlay) =>
+    typeof ov.end === "number"
+      ? ov.end
+      : typeof ov.durationSec === "number"
+        ? ov.start + ov.durationSec
+        : undefined;
+
+  const activeOverlays = useMemo(() => {
+    return (timedOverlays ?? []).filter((ov) => {
+      const end = getOverlayEnd(ov);
+      const isActive =
+        end == null
+          ? currentTime >= ov.start
+          : currentTime >= ov.start && currentTime < end;
+      if (!isActive) return false;
+      // bỏ qua overlay đã đóng
+      const id = ov.id ?? "";
+      if (id && dismissedIds.has(id)) return false;
+      return true;
+    });
+  }, [timedOverlays, currentTime, dismissedIds]);
+
+  const closeOverlay = useCallback((idOrIdx: string) => {
+    setDismissedIds((prev) => {
+      const next = new Set(prev);
+      next.add(idOrIdx);
+      return next;
+    });
+    const v = videoRef.current;
+    if (v && v.paused) v.play().catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+
+    // gỡ cờ những overlay không còn active
+    const activeKeys = new Set(
+      activeOverlays.map((ov, idx) => String(ov.id ?? idx)),
+    );
+    [...pausedByOverlayRef.current].forEach((k) => {
+      if (!activeKeys.has(k)) pausedByOverlayRef.current.delete(k);
+    });
+
+    activeOverlays.forEach((ov, idx) => {
+      if (!ov.pauseOnShow) return;
+      const key = String(ov.id ?? idx);
+      if (pausedByOverlayRef.current.has(key)) return;
+      // đánh dấu reason để handlePause ghi nhận là 'overlay'
+      pauseReasonRef.current = "overlay";
+      v.pause();
+      pausedByOverlayRef.current.add(key);
+    });
+  }, [activeOverlays]);
 
   // Bật đúng track ngoài sau khi track đã load
   const onTrackLoad = () => {
@@ -187,11 +312,28 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
               forced: true,
               onChange: (q: number) => {
                 const v = videoRef.current!;
+
+                if (ignoreFirstQualityChangeRef.current) {
+                  ignoreFirstQualityChangeRef.current = false;
+                  // sync UI nếu cần
+                  try {
+                    (plyrRef.current as PlyrWithQuality | null)!.quality =
+                      q || 0;
+                  } catch {}
+                  return;
+                }
+
                 const t = v.currentTime;
                 const wasPaused = v.paused;
 
                 setSwitching(true);
-                v.pause();
+                if (!wasPaused) {
+                  pauseReasonRef.current = "quality-switch";
+                  v.pause(); // sẽ phát sinh 'pause'
+                } else {
+                  // đang paused sẵn → KHÔNG gắn cờ để tránh rò rỉ sang lần pause của user
+                  pauseReasonRef.current = null;
+                }
 
                 let targetIdx = -1;
                 if (q === 0) {
@@ -223,6 +365,11 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
 
           plyr = new PlyrCtor(video, options) as Plyr;
           plyrRef.current = plyr;
+
+          const container = (plyr as Plyr)?.elements?.container as
+            | HTMLElement
+            | undefined;
+          setPlyrContainerEl(container ?? video.parentElement ?? null);
 
           plyr.on?.("ready", () => {
             try {
@@ -290,7 +437,10 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
           storage: { enabled: false },
         }) as Plyr;
         plyrRef.current = plyr;
-
+        const containerFallback = (plyr as Plyr)?.elements?.container as
+          | HTMLElement
+          | undefined;
+        setPlyrContainerEl(containerFallback ?? video.parentElement ?? null);
         plyr.on?.("ready", () => {
           try {
             if (preferExternal) {
@@ -327,7 +477,10 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
           storage: { enabled: false },
         }) as Plyr;
         plyrRef.current = plyr;
-
+        const containerSafari = (plyr as Plyr)?.elements?.container as
+          | HTMLElement
+          | undefined;
+        setPlyrContainerEl(containerSafari ?? video.parentElement ?? null);
         if (preferExternal) {
           const tr = trackRef.current;
           if (tr && tr.readyState === 2) onTrackLoad();
@@ -350,8 +503,140 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
       plyrRef.current?.destroy();
       hlsRef.current = null;
       plyrRef.current = null;
+      setPlyrContainerEl(null);
     };
   }, [src, urlVtt]);
+
+  // Xử lý sự kiện pause
+  const handlePause = useCallback(() => {
+    if (!onPause) return;
+    const v = videoRef.current;
+    if (!v) return;
+
+    const now = Date.now();
+
+    // 🚫 Nếu 2 lần pause cách nhau < 300ms → coi như double-tap gesture, bỏ qua
+    if (now - lastPauseTsRef.current < 300) {
+      lastPauseTsRef.current = now;
+      pendingPauseReasonRef.current = null;
+      return;
+    }
+    lastPauseTsRef.current = now;
+
+    // ✅ Lấy reason "ép buộc" (quality-switch) nếu có
+    const forcedNow = pauseReasonRef.current as
+      | "quality-switch"
+      | "user"
+      | "unknown"
+      | null;
+    pauseReasonRef.current = null;
+    if (forcedNow) pendingPauseReasonRef.current = forcedNow;
+
+    if (pausePendingRef.current) return;
+    pausePendingRef.current = true;
+
+    pauseTimerRef.current = window.setTimeout(() => {
+      pauseTimerRef.current = null;
+      pausePendingRef.current = false;
+
+      const withinSeekWindow =
+        Date.now() - lastSeekTsRef.current < PAUSE_SEEK_GRACE;
+      const forced = pendingPauseReasonRef.current;
+      pendingPauseReasonRef.current = null;
+
+      if (!forced && (seekingRef.current || withinSeekWindow)) return;
+
+      pausedSinceRef.current = Date.now();
+      lastPauseReasonCommittedRef.current = forced ?? "user";
+
+      onPause({
+        currentTime: v.currentTime,
+        duration: Number.isFinite(v.duration) ? v.duration : 0,
+        reason: forced ?? "user",
+      });
+    }, 80);
+  }, [onPause]);
+
+  const handleResume = useCallback(() => {
+    const v = videoRef.current;
+    if (!v || !onResume) return;
+
+    // Nếu pause đang “pending” (chưa commit), huỷ pending luôn → coi như không có pause
+    if (pauseTimerRef.current) {
+      clearTimeout(pauseTimerRef.current);
+      pauseTimerRef.current = null;
+      pausePendingRef.current = false;
+      pendingPauseReasonRef.current = null;
+      pausedSinceRef.current = null;
+      lastPauseReasonCommittedRef.current = null;
+      return;
+    }
+
+    const startedAt = pausedSinceRef.current;
+    if (!startedAt) return; // chưa có pause commit trước đó → bỏ qua
+
+    const pausedForMs = Math.round(Date.now() - startedAt);
+    const reason = lastPauseReasonCommittedRef.current ?? "unknown";
+
+    // reset mốc
+    pausedSinceRef.current = null;
+    lastPauseReasonCommittedRef.current = null;
+
+    onResume({
+      pausedForMs,
+      reason,
+      resumedAt: v.currentTime,
+    });
+  }, [onResume]);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    // dùng 'playing' để chắc chắn đã tiếp tục decode khung hình
+    v.addEventListener("playing", handleResume);
+    return () => v.removeEventListener("playing", handleResume);
+  }, [handleResume]);
+
+  useEffect(() => {
+    return () => {
+      if (pauseTimerRef.current) {
+        clearTimeout(pauseTimerRef.current);
+        pauseTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const fn = () => handlePause();
+    v.addEventListener("pause", fn);
+    return () => v.removeEventListener("pause", fn);
+  }, [handlePause]);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+
+    const onSeeking = () => {
+      seekingRef.current = true;
+      lastSeekTsRef.current = Date.now();
+    };
+    const onSeeked = () => {
+      lastSeekTsRef.current = Date.now();
+      // thả cờ ở tick kế tiếp để cover trường hợp pause -> seeking
+      setTimeout(() => {
+        seekingRef.current = false;
+      }, 0);
+    };
+
+    v.addEventListener("seeking", onSeeking);
+    v.addEventListener("seeked", onSeeked);
+    return () => {
+      v.removeEventListener("seeking", onSeeking);
+      v.removeEventListener("seeked", onSeeked);
+    };
+  }, []);
 
   // Đảm bảo lắng nghe sự kiện load/error trực tiếp trên phần tử <track>
   useEffect(() => {
@@ -434,6 +719,14 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
     };
   }, [src, urlVtt]);
 
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const onTimeUpdate = () => setCurrentTime(v.currentTime || 0);
+    v.addEventListener("timeupdate", onTimeUpdate);
+    return () => v.removeEventListener("timeupdate", onTimeUpdate);
+  }, []);
+
   return (
     <div className="w-full max-w-[1200px] mx-auto">
       <div className={`${styles.player} relative w-full`}>
@@ -475,6 +768,71 @@ export default function YouTubeStylePlayer({ src, poster, urlVtt }: Props) {
             </div>
           </div>
         )}
+        {/* ✅ Overlays theo thời gian */}
+        {/* Nền mờ nếu có bất kỳ overlay nào bật backdrop (mặc định true) */}
+        {plyrContainerEl &&
+          activeOverlays.length > 0 &&
+          createPortal(
+            <>
+              {/* (Tuỳ chọn) Nền mờ */}
+              {activeOverlays.some((o) => o.backdrop !== false) && (
+                <div
+                  className="absolute inset-0 z-[65] bg-black/35 pointer-events-auto"
+                  onPointerDown={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                  onWheel={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                />
+              )}
+
+              {/* 👇 Lớp mask luôn có để nuốt click ra ngoài nội dung */}
+              <div
+                className="absolute inset-0 z-[66] pointer-events-auto"
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+                onWheel={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+              />
+
+              {/* 👇 Vùng đặt nội dung overlay (không chặn con) */}
+              <div className="absolute inset-0 z-[70] pointer-events-none">
+                {activeOverlays.map((ov, idx) => {
+                  const key = String(ov.id ?? idx);
+                  const node =
+                    typeof ov.content === "function"
+                      ? ov.content({
+                          close: () => closeOverlay(key),
+                          video: videoRef.current,
+                        })
+                      : ov.content;
+
+                  return (
+                    <div key={key} className={ov.className} style={ov.style}>
+                      {/* Chỉ nội dung quiz mới nhận sự kiện */}
+                      <div className="pointer-events-auto h-11/12">{node}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>,
+            plyrContainerEl,
+          )}
       </div>
     </div>
   );
