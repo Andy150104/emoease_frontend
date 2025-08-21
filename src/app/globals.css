@@ -29,6 +29,7 @@
 @theme {
   --color-bgContrast: #f9f9f9;
   --breakpoint-xxl: 2600px;
+  --breakpoint-xs: 400px;
 }
 
 @layer theme {
