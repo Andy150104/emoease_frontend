@@ -23,7 +23,7 @@ export function buildRules(xmlColumn: XmlColumn): Rule[] {
               return Promise.resolve();
             }
             return Promise.reject(
-              new Error(`${xmlColumn.name} does not match ${fieldToMatch}`),
+              new Error(`${xmlColumn.name} không khớp ${fieldToMatch}`),
             );
           },
         });

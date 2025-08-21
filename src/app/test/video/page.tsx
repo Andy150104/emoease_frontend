@@ -20,12 +20,11 @@ export default function VideoPage() {
     console.log("Paused:", info);
     // TODO: gọi API lưu progress, analytics, v.v...
   };
-  
 
-const makeOverlayClose = (id: string, close: () => void) => () => {
-  console.log(`overlay ${id} close clicked`);
-  close();
-};
+  const makeOverlayClose = (id: string, close: () => void) => () => {
+    console.log(`overlay ${id} close clicked`);
+    close();
+  };
 
   return (
     <main className="p-5">
