@@ -1,4 +1,4 @@
-export const revalidate = 120; // ISR: regen mỗi 60s
+export const dynamic = "force-static";
 
 import { Metadata } from "next";
 import RegisterPage from "./Client";

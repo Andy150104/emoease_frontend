@@ -56,6 +56,10 @@ export default function LoginPage() {
   }, []);
 
   useEffect(() => {
+    router.prefetch("/Register"); // tải sẵn chunk của trang Register
+  }, [router]);
+
+  useEffect(() => {
     const onPageShow = (e: PageTransitionEvent) => {
       const nav = performance.getEntriesByType("navigation")[0] as
         | PerformanceNavigationTiming
@@ -82,13 +86,13 @@ export default function LoginPage() {
     requestAnimationFrame(() => {
       // Dừng animation đang chạy (nếu có) rồi set tức thời vị trí start
       wipeApi.stop();
-      wipeApi.set({ y: 100 }); // <-- KHÔNG có immediate ở đây
+      wipeApi.set({ y: -100 }); // <-- KHÔNG có immediate ở đây
 
       requestAnimationFrame(() => {
         wipeApi.start({
           to: [
             { y: 0, config: { duration: 700, easing: easings.easeOutCubic } },
-            { y: -100, config: { duration: 550, easing: easings.easeInCubic } },
+            { y: 100, config: { duration: 550, easing: easings.easeInCubic } },
           ],
           onRest: () => setShowWipe(false),
         });
@@ -238,41 +242,44 @@ export default function LoginPage() {
           className="fixed inset-0 z-[2147483647] pointer-events-none"
           style={{
             transform: wipeStyles.y.to((v) => `translate3d(0, ${v}%, 0)`),
+            opacity: wipeStyles.y.to([100, 0, -100], [0, 1, 0]), // fade in/out
           }}
         >
-          {/* Wipe Sheet nâng cấp */}
-          <div className="relative h-dvh w-full overflow-hidden rounded-t-[80px] shadow-[0_-20px_60px_rgba(16,185,129,.35)]">
-            {/* Gradient nền chính (có thể đổi màu cho hợp brand) */}
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-500" />
-
-            {/* Lưới chấm mờ để có chiều sâu */}
+          <div className="relative h-dvh w-full overflow-hidden rounded-b-[80px] shadow-[0_20px_60px_rgba(16,185,129,.35)]">
+            {/* Gradient động */}
             <div
-              className="absolute inset-0 opacity-20"
+              className="absolute inset-0 bg-[length:300%_300%] animate-gradient-flow 
+                          bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-500"
+            />
+
+            {/* Overlay cinematic */}
+            <div className="absolute inset-0 bg-black/10 mix-blend-overlay" />
+
+            {/* Lưới chấm parallax */}
+            <div
+              className="absolute inset-0 opacity-25 animate-slow-move"
               style={{
                 backgroundImage:
-                  "radial-gradient(rgba(255,255,255,.55) 1px, transparent 1px)",
+                  "radial-gradient(rgba(255,255,255,.4) 1px, transparent 1px)",
                 backgroundSize: "22px 22px",
-                backgroundPosition: "0 0",
               }}
             />
 
-            {/* Viền sáng ở mép trên (tạo cảm giác kính) */}
-            <div className="absolute inset-x-0 top-0 h-24 bg-white/40 [mask-image:linear-gradient(to_bottom,white,transparent)]" />
-
-            {/* Dải "shine" chạy chéo qua khi trượt */}
+            {/* Shine nhiều lớp */}
             <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute inset-y-0 -left-1/3 w-1/2 rotate-6 bg-white/10 blur-3xl animate-wipe-shine" />
+              <div className="absolute inset-y-0 -left-1/3 w-1/2 rotate-6 bg-white/10 blur-2xl animate-wipe-shine" />
+              <div className="absolute inset-y-0 left-1/4 w-1/3 rotate-12 bg-white/5 blur-3xl animate-wipe-shine delay-200" />
             </div>
 
-            {/* Mép trên uốn lượn (wave) */}
+            {/* Wave động */}
             <svg
-              className="absolute -top-10 left-0 w-full h-24 text-white/50"
+              className="absolute -bottom-10 left-0 w-full h-24 text-white/40 animate-wave"
               viewBox="0 0 1440 320"
               preserveAspectRatio="none"
             >
               <path
                 fill="currentColor"
-                d="M0,320L120,288C240,256,480,192,720,170.7C960,149,1200,171,1320,181.3L1440,192L1440,0L1320,0C1200,0,960,0,720,0C480,0,240,0,120,0L0,0Z"
+                d="M0,0L120,32C240,64,480,128,720,149.3C960,171,1200,149,1320,138.7L1440,128L1440,320L1320,320C1200,320,960,320,720,320C480,320,240,320,120,320L0,320Z"
               />
             </svg>
           </div>
