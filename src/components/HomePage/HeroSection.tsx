@@ -1,18 +1,11 @@
 // src/components/HeroSection.tsx
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import girlImage from "EmoEase/assets/HeroSectionImage.png";
 import { FiCalendar, FiMail, FiBarChart } from "react-icons/fi";
 
 export default function HeroSection() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  if (!mounted) return null;
-
   return (
     <section className="relative bg-[#49BBBD] dark:bg-[#1a4a4c] overflow-hidden min-h-[60vh] lg:min-h-[70vh] xl:min-h-[80vh] 2xl:min-h-[90vh] md:min-h-[60vh] max-h-[800px]">
       <div className="max-w-[2000px] mx-auto px-6 flex flex-col md:flex-row items-center">
