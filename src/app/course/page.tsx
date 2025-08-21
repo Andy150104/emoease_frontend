@@ -1,9 +1,8 @@
 export const dynamic = "force-static";
 
 import { Metadata } from "next";
-import LoginPage from "./Client";
 export const metadata: Metadata = {
-  title: "EmoEase – Đăng nhập",
+  title: "EmoEase – Khóa học",
   description:
     "Đăng nhập vào EmoEase để tiếp tục hành trình chăm sóc tinh thần của bạn.",
   openGraph: {
@@ -36,5 +35,5 @@ export const metadata: Metadata = {
   },
 };
 export default function Page() {
-  return <LoginPage />;
+  return;
 }

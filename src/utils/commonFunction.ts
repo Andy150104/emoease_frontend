@@ -105,3 +105,15 @@ export function enumToTranslatedOptions<
       };
     });
 }
+
+export function safeDecodeJwt(token?: string | null) {
+  try {
+    if (!token) return null;
+    const [, payload] = token.split(".");
+    if (!payload) return null;
+    const json = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}

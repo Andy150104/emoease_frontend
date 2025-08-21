@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Form, Segmented } from "antd";
+import { Button, Form, Segmented, Tooltip } from "antd";
 import Image from "next/image";
 import { useSpring, useTrail, animated, easings } from "@react-spring/web";
 import BaseControlTextField from "EmoEase/components/BaseControl/BasecontrolTextField";
@@ -16,10 +16,11 @@ import Loading from "EmoEase/components/Loading/Loading";
 import { useLoadingStore } from "EmoEase/stores/Loading/LoadingStore";
 import { Lobster } from "next/font/google";
 import "./styles/login.styles.css";
+import { FiArrowLeft } from "react-icons/fi";
 
 const xmlColumns = {
   email: { id: "email", name: "Email", rules: "required" },
-  password: { id: "password", name: "Password", rules: "required" },
+  password: { id: "password", name: "Mật khẩu", rules: "required" },
 } as const;
 
 type LoginFormValues = { email: string; password: string };
@@ -188,6 +189,7 @@ export default function LoginPage() {
             ]}
             className="auth-segmented"
           />
+          <div className="mt-2 flex justify-center"></div>
         </div>
 
         {/* Heading thay đổi theo tab */}
@@ -210,7 +212,7 @@ export default function LoginPage() {
                   xmlColumn={xmlColumns[key]}
                   maxlength={50}
                   placeholder={
-                    key === "email" ? "Enter your Email" : "Enter your Password"
+                    key === "email" ? "Nhập email" : "Nhập mật khẩu"
                   }
                   type={key === "password" ? "password" : undefined}
                 />
@@ -288,8 +290,53 @@ export default function LoginPage() {
     </animated.div>
   );
 
+  const backButton = () => {
+    sessionStorage.removeItem("authMountOnce");
+    router.push("test/Navbar/home");
+  };
+
   return (
     <>
+      {/* Back floating button */}
+      <div
+        className="fixed left-3 top-3 md:left-6 md:top-6 z-50"
+        style={{
+          left: "calc(env(safe-area-inset-left, 0px) + 12px)",
+          top: "calc(env(safe-area-inset-top, 0px) + 12px)",
+        }}
+      >
+        <Tooltip title="Esc để quay lại" placement="right">
+          <Button
+            onClick={backButton}
+            shape="round"
+            size="large"
+            aria-label="Quay lại"
+            className={[
+              "group !inline-flex !items-center gap-2 !px-3 sm:!px-4 !h-10 md:!h-11",
+              "relative rounded-full overflow-hidden",
+              "bg-white/70 dark:bg-slate-900/60 backdrop-blur-md",
+              "ring-1 ring-black/5 dark:ring-white/10 shadow-lg hover:shadow-xl",
+              "transition-all duration-200 active:scale-[0.98]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/60",
+              "before:absolute before:inset-0 before:rounded-full",
+              "before:bg-gradient-to-r before:from-teal-400/20 before:via-cyan-400/20 before:to-blue-400/20",
+              "before:opacity-0 hover:before:opacity-100 before:transition-opacity",
+            ].join(" ")}
+            icon={
+              <FiArrowLeft
+                className="h-[18px] w-[18px] md:h-5 md:w-5 text-slate-700 dark:text-slate-200
+                     transition-transform duration-200 motion-safe:group-hover:-translate-x-0.5"
+              />
+            }
+          >
+            {/* Ẩn label ở mobile để gọn gàng, hiện từ sm trở lên */}
+            <span className="hidden sm:inline text-[13px] md:text-sm font-medium text-slate-700 dark:text-slate-200">
+              Quay lại Trang Chủ
+            </span>
+          </Button>
+        </Tooltip>
+      </div>
+
       <div className="flex flex-col md:flex-row min-h-screen">
         {showWipe && ShowSwipeEffect}
         <Loading />

@@ -1,6 +1,7 @@
 // File: src/components/Footer.jsx
 import React from "react";
 import Image from "next/image";
+import logoImg from "EmoEase/assets/Flearning.png";
 
 export default function Footer() {
   return (
@@ -10,7 +11,7 @@ export default function Footer() {
         <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between mb-12">
           <div className="flex items-center mb-8 lg:mb-0">
             <Image
-              src="/assets/Flearning.png"
+              src={logoImg}
               alt="TOTC logo"
               width={40} // bắt buộc
               height={40} // bắt buộc
@@ -28,11 +29,13 @@ export default function Footer() {
             </h3>
             <form className="flex flex-col sm:flex-row items-stretch sm:items-center">
               <input
+                suppressHydrationWarning
                 type="email"
                 placeholder="Your Email"
                 className="flex-grow px-4 py-3 rounded-l-md bg-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-400"
               />
               <button
+                suppressHydrationWarning
                 type="submit"
                 className="mt-3 sm:mt-0 sm:ml-3 px-6 py-3 rounded-md bg-gradient-to-r from-teal-400 to-blue-500 text-white font-medium hover:opacity-90 transition-opacity"
               >

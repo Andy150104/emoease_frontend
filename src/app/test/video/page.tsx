@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "antd";
+import UserMenu from "EmoEase/components/Navbar/UserMenu";
 import VideoPlayer, { PauseReason } from "EmoEase/components/Video/VideoPlayer";
 
 export default function VideoPage() {
@@ -11,7 +12,7 @@ export default function VideoPage() {
     // "https://cdn.bitmovin.com/content/assets/sintel/hls/playlist.m3u8";
     "https://res.cloudinary.com/dbfokyruf/video/upload/sp_auto:subtitles_((code_vi-VN;file_Hng-Trm---Ngc-2-Hy--Em-Qun-Official-MV.vi-VN.vtt))/v1754995566/Hng-Trm---Ngc-2-Hy--Em-Qun-Official-MV.m3u8";
   const vttUrl =
-    "https://res.cloudinary.com/dbfokyruf/raw/upload/v1754995569/Hng-Trm---Ngc-2-Hy--Em-Qun-Official-MV.vi-VN.vtt";
+    "https://res.cloudinary.com/ddb7mdg1x/raw/upload/v1755793793/edusmart/subtitles/edusmart-test-001.vtt";
   const handlePause = (info: {
     currentTime: number;
     duration: number;
@@ -28,6 +29,7 @@ export default function VideoPage() {
 
   return (
     <main className="p-5">
+      <UserMenu />
       <h1 className="mb-5 text-xl font-semibold">Xem Video Ngrok 1</h1>
       <VideoPlayer
         src={hlsUrl}

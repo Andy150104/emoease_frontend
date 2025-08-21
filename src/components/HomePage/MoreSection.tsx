@@ -1,5 +1,6 @@
 // src/components/HomePage/MoreSection.tsx
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import studentPNG from "EmoEase/assets/student.png";
 import teacherPNG from "EmoEase/assets/teacher.png";
@@ -7,6 +8,11 @@ import { FiAward, FiGrid, FiUsers } from "react-icons/fi";
 import girlImage from "EmoEase/assets/HeroSectionImage.png";
 
 export default function MoreSection() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) return null;
   return (
     <>
       <section className="container mx-auto px-6 mt-32">
