@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
       "gratisography.com",
       "media.istockphoto.com",
       "res.cloudinary.com",
+      "i.pravatar.cc",
     ],
   },
   compiler: {

@@ -5,7 +5,7 @@ import RegisterPage from "./Client";
 export const metadata: Metadata = {
   title: "EmoEase – Đăng ký",
   description:
-    "Đăng nhập vào EmoEase để tiếp tục hành trình chăm sóc tinh thần của bạn.",
+    "Đăng kí vào EmoEase để tiếp tục hành trình chăm sóc tinh thần của bạn.",
   openGraph: {
     title: "EmoEase",
     description: "EmoEase",

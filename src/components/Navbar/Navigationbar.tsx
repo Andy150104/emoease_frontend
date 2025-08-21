@@ -6,6 +6,9 @@ import { useSpring, useTransition, animated } from "@react-spring/web";
 import { ThemeSwitch } from "../Themes/Theme";
 import { usePathname, useRouter } from "next/navigation";
 import { Kaushan_Script } from "next/font/google";
+// import { useAuthStore } from "EmoEase/stores/Auth/AuthStore";
+import UserMenu from "./UserMenu";
+import "@ant-design/v5-patch-for-react-19";
 
 const kaushan = Kaushan_Script({
   subsets: ["latin"],
@@ -15,6 +18,12 @@ const kaushan = Kaushan_Script({
 
 export default function Navigationbar() {
   const [isOpen, setIsOpen] = useState(false);
+  // const { token, logout } = useAuthStore();
+  // const isAuthed = Boolean(token);
+
+  // Temp
+  const isAuthed = true; // For testing purposes, remove later
+
   const [showNav, setShowNav] = useState(true);
   const lastScrollY = useRef(0);
   const navRef = useRef<HTMLElement>(null);
@@ -100,6 +109,48 @@ export default function Navigationbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const linksRef = useRef<HTMLDivElement>(null);
+  const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+
+  // 3) HÀM đo lại underline (giữ nguyên như cậu đang có):
+  const recalcUnderline = React.useCallback(() => {
+    const el = linkRefs.current[currentKey];
+    const wrap = linksRef.current;
+    if (!el || !wrap) return;
+
+    const elRect = el.getBoundingClientRect();
+    const wrapRect = wrap.getBoundingClientRect();
+    const x = elRect.left - wrapRect.left;
+    const w = elRect.width;
+
+    api.start({
+      to: async (next) => {
+        await next({ width: 0, x: x + w / 2, immediate: true });
+        await next({ x, width: w });
+      },
+    });
+  }, [currentKey, api]);
+
+  // 4) Re-calc khi mount / resize / fonts:
+  useLayoutEffect(() => {
+    recalcUnderline();
+    const ro = new ResizeObserver(recalcUnderline);
+    if (linksRef.current) ro.observe(linksRef.current);
+    window.addEventListener("resize", recalcUnderline);
+    document.fonts?.ready?.then(() => recalcUnderline());
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", recalcUnderline);
+    };
+  }, [recalcUnderline, isAuthed, showNav]);
+
+  const setLinkRef = React.useCallback(
+    (key: string) => (el: HTMLAnchorElement | null) => {
+      linkRefs.current[key] = el;
+    },
+    [],
+  );
+
   useEffect(() => {
     if (!navRef.current) return;
     const navHeight = navRef.current.getBoundingClientRect().height;
@@ -124,6 +175,7 @@ export default function Navigationbar() {
 
   return (
     <nav
+      suppressHydrationWarning
       onMouseEnter={() => setShowNav(true)}
       ref={navRef}
       className={`fixed top-0 left-0 w-full z-50 bg-[#49BBBD] dark:bg-[#1a4a4c] text-white p-4 transform transition-transform duration-300 ${
@@ -144,11 +196,15 @@ export default function Navigationbar() {
               FLearning
             </span>
           </div>
-          <div className="hidden md:flex flex-1 justify-center items-center relative mx-20">
+          <div
+            ref={linksRef}
+            className="hidden xl:flex flex-1 justify-center items-center relative mx-20"
+          >
             {menuItems.slice(0, 5).map((item) => {
               const isActive = item.key === currentKey;
               return (
                 <a
+                  ref={setLinkRef(item.key)}
                   key={item.key}
                   href={item.href}
                   data-key={item.key}
@@ -164,31 +220,35 @@ export default function Navigationbar() {
               );
             })}
             <animated.div
-              className="absolute bottom-0 left-0 h-0.5 bg-blue-500 rounded"
-              style={{
-                left: 0,
-                width: underline.width,
-                transform: underline.x.to((x) => `translate3d(${x}px, 0, 0)`),
-              }}
+              className="absolute bottom-0 left-0 h-0.5 bg-blue-500 rounded pointer-events-none"
+              style={{ left: underline.x, width: underline.width }}
             />
           </div>
-          <div className="hidden md:flex items-center space-x-3 ml-8">
-            <ThemeSwitch />
+          {isAuthed ? (
+            <div className="hidden xl:block">
+              <UserMenu />
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center space-x-3 ml-8">
+              <ThemeSwitch />
+              <button
+                onClick={() => router.push("/Login")}
+                className="flex items-center justify-center h-12 px-6 border-2 border-white text-white font-medium text-base whitespace-nowrap rounded-full transition-all duration-300 hover:bg-white hover:text-[#49BBBD] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white "
+              >
+                Đăng nhập
+              </button>
+              <button
+                onClick={() => router.push("/Signup")}
+                className="flex items-center justify-center h-12 px-6 bg-gradient-to-r from-[#5da38f] to-[#4a8a7a] text-white font-medium text-base whitespace-nowrap rounded-full shadow-lg transition-all duration-300 hover:from-[#4a8a7a] hover:to-[#5da38f] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5da38f]"
+              >
+                Đăng Ký
+              </button>
+            </div>
+          )}
+          {/* Hamburger menu for mobile view */}
+          <div className="xl:hidden">
             <button
-              onClick={() => router.push("/Login")}
-              className="flex items-center justify-center h-12 px-6 border-2 border-white text-white font-medium text-base whitespace-nowrap rounded-full transition-all duration-300 hover:bg-white hover:text-[#49BBBD] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white "
-            >
-              Đăng nhập
-            </button>
-            <button
-              onClick={() => router.push("/Signup")}
-              className="flex items-center justify-center h-12 px-6 bg-gradient-to-r from-[#5da38f] to-[#4a8a7a] text-white font-medium text-base whitespace-nowrap rounded-full shadow-lg transition-all duration-300 hover:from-[#4a8a7a] hover:to-[#5da38f] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5da38f]"
-            >
-              Đăng Ký
-            </button>
-          </div>
-          <div className="md:hidden">
-            <button
+              suppressHydrationWarning
               onClick={() => setIsOpen(!isOpen)}
               className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:text-white hover:bg-gray-700"
             >
@@ -226,48 +286,163 @@ export default function Navigationbar() {
         </div>
       </div>
       {isOpen && (
-        <div className="md:hidden bg-gray-900 px-4 py-3">
-          <div className="flex justify-center mb-2">
-            <ThemeSwitch />
-          </div>
-          {transitions((style, item) => {
-            const isActive = item.key === currentKey;
-            if (item.button) {
-              const btnProps = {
-                className:
-                  item.type === "link"
-                    ? `p-0 text-base transition-colors duration-200 ${isActive ? "text-green-200 font-semibold" : "text-green-400 hover:text-green-200"}`
-                    : `w-full text-base transition-colors duration-300 ${isActive ? "bg-green-600 font-semibold" : "bg-[#73b4a1] hover:bg-[#5da38f]"} `,
-                onClick: () => {
-                  closeMenu();
-                  router.push(item.key === "login" ? "/Login" : "/Signup");
-                },
-              };
-              return (
-                <animated.div key={item.key} style={style} className="mb-2">
-                  <Button
-                    type={item.type === "link" ? "link" : "primary"}
-                    {...btnProps}
+        <div className="xl:hidden px-3 py-4">
+          <div
+            className="
+        rounded-2xl border shadow-xl backdrop-blur-md
+        bg-white/80 dark:bg-slate-900/80
+        border-slate-200/70 dark:border-slate-700/60
+        max-h-[70vh] overflow-auto overscroll-contain
+      "
+          >
+            {/* Header tài khoản + ThemeSwitch (nếu đã đăng nhập) */}
+            {isAuthed ? (
+              <>
+                <div className="flex items-center justify-between p-4">
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src="https://i.pravatar.cc/100?img=3"
+                      alt="Avatar"
+                      width={40}
+                      height={40}
+                      className="rounded-full"
+                    />
+                    <div className="leading-tight">
+                      <div className="text-slate-900 dark:text-white font-semibold">
+                        Duy Anh Trần
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">
+                        @duyanh15104
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Switch nằm trong “chip” để đồng bộ 2 theme */}
+                  <div
+                    className="rounded-lg px-2 py-1 ring-1
+                            bg-slate-100 dark:bg-slate-800
+                            ring-slate-200 dark:ring-slate-700"
                   >
-                    {item.label}
-                  </Button>
-                </animated.div>
-              );
-            }
-            return (
-              <animated.div key={item.key} style={style} className="mb-2">
-                <button
-                  onClick={() => {
-                    closeMenu();
-                    router.push(item.href!);
-                  }}
-                  className={`block text-base py-1 transition ${isActive ? "text-white font-semibold" : "text-gray-300 hover:text-gray-400"}`}
-                >
-                  {item.label}
-                </button>
-              </animated.div>
-            );
-          })}
+                    <ThemeSwitch />
+                  </div>
+                </div>
+                <div className="h-px bg-slate-200 dark:bg-slate-800" />
+              </>
+            ) : (
+              <div className="flex justify-center p-3">
+                <ThemeSwitch />
+              </div>
+            )}
+
+            {/* Danh sách điều hướng */}
+            <div className="px-2 py-2">
+              {transitions((style, item) => {
+                const isActive = item.key === currentKey;
+
+                // Ẩn nút Login/Signup khi đã đăng nhập
+                if (isAuthed && item.button) return null;
+
+                if (item.button) {
+                  // UI nút khi chưa đăng nhập (giữ nguyên logic)
+                  const btnProps = {
+                    className:
+                      item.type === "link"
+                        ? `p-0 text-base transition-colors duration-200
+                      ${
+                        isActive
+                          ? "text-emerald-400 font-semibold"
+                          : "text-emerald-500 hover:text-emerald-400"
+                      }`
+                        : `w-full text-base transition-colors duration-200
+                      ${
+                        isActive
+                          ? "bg-emerald-600 font-semibold"
+                          : "bg-emerald-500 hover:bg-emerald-600"
+                      } text-white rounded-xl`,
+                    onClick: () => {
+                      closeMenu();
+                      router.push(item.key === "login" ? "/Login" : "/Signup");
+                    },
+                  };
+                  return (
+                    <animated.div key={item.key} style={style} className="mb-2">
+                      <Button
+                        type={item.type === "link" ? "link" : "primary"}
+                        {...btnProps}
+                      >
+                        {item.label}
+                      </Button>
+                    </animated.div>
+                  );
+                }
+
+                // Link thường
+                return (
+                  <animated.div key={item.key} style={style} className="mb-1.5">
+                    <button
+                      onClick={() => {
+                        closeMenu();
+                        router.push(item.href!);
+                      }}
+                      className={[
+                        "w-full text-left px-3 py-2 rounded-lg transition-colors",
+                        "!text-slate-700 dark:text-slate-300",
+                        "hover:!bg-slate-100 dark:hover:bg-slate-800/60",
+                        isActive &&
+                          "bg-slate-100 dark:bg-slate-800 !text-slate-900 dark:text-white " +
+                            "font-semibold ring-1 ring-slate-200 dark:ring-slate-700 shadow-sm",
+                      ].join(" ")}
+                    >
+                      {item.label}
+                    </button>
+                  </animated.div>
+                );
+              })}
+            </div>
+
+            {/* Action nhóm cuối khi đã đăng nhập */}
+            {isAuthed && (
+              <>
+                <div className="h-px bg-slate-200 dark:bg-slate-800 my-3" />
+                <div className="grid grid-cols-3 gap-2 p-3">
+                  <button
+                    onClick={() => {
+                      closeMenu();
+                      router.push("/account");
+                    }}
+                    className="h-10 rounded-full px-4 text-sm font-medium
+                         !text-slate-700 dark:!text-slate-200
+                         border border-slate-300 dark:border-slate-700
+                         hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                  >
+                    Tài khoản
+                  </button>
+                  <button
+                    onClick={() => {
+                      closeMenu();
+                      router.push("/settings");
+                    }}
+                    className="h-10 rounded-full px-4 text-sm font-medium
+                         !text-slate-700 dark:!text-slate-200
+                         border border-slate-300 dark:border-slate-700
+                         hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                  >
+                    Cài đặt
+                  </button>
+                  <button
+                    onClick={() => {
+                      closeMenu();
+                      // TODO: gọi logout() khi nối lại store
+                    }}
+                    className="h-10 rounded-full px-4 text-sm font-semibold text-white
+                         bg-rose-500 hover:bg-rose-600 shadow-sm transition"
+                  >
+                    Đăng xuất
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
     </nav>
