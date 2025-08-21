@@ -19,7 +19,12 @@ import "./styles/login.styles.css";
 
 const xmlColumns = {
   email: { id: "email", name: "Email", rules: "required" },
-  password: { id: "password", name: "Password", rules: "required" },
+  password: { id: "password", name: "Mật khẩu", rules: "required" },
+  confirmPassword: {
+    id: "confirmPassword",
+    name: "Mật khẩu xác nhận",
+    rules: "required|confirm_password:password",
+  },
 } as const;
 
 type LoginFormValues = { email: string; password: string };
@@ -28,18 +33,26 @@ const lobster = Lobster({
   weight: "400",
   subsets: ["latin"],
 });
-
-export default function LoginPage() {
+// const getAuthSeen = () => {
+//   if (typeof window === "undefined") return false; // đang SSR
+//   try {
+//     return window.sessionStorage.getItem("authMountOnce") === "1";
+//   } catch {
+//     return false; // chặn mọi lỗi truy cập Storage
+//   }
+// };
+export default function RegisterPage() {
   const messageApi = useNotification();
   const [form] = Form.useForm<LoginFormValues>();
   const login = useAuthStore((state) => state.login);
   const router = useRouter();
   const [showForm, setShowForm] = useState<boolean>(false);
-  const [activeKey, setActiveKey] = useState<"login" | "register">("login");
-  const [skipMountAnim, setSkipMountAnim] = useState(false);
+  const [activeKey, setActiveKey] = useState<"login" | "register">("register");
+  const [skipMountAnim, setSkipMountAnim] = useState<boolean>(false);
   const [showFormBySwipeRun, setShowFormBySwipeRun] = useState<boolean>(true);
   const [showWipe, setShowWipe] = useState(false);
   const [wipeStyles, wipeApi] = useSpring<{ y: number }>(() => ({ y: 100 }));
+
   const didRunRef = useRef(false);
 
   useEffect(() => {
@@ -53,19 +66,6 @@ export default function LoginPage() {
       await setShowForm(true);
     };
     SetForm();
-  }, []);
-
-  useEffect(() => {
-    const onPageShow = (e: PageTransitionEvent) => {
-      const nav = performance.getEntriesByType("navigation")[0] as
-        | PerformanceNavigationTiming
-        | undefined;
-      if (e.persisted || nav?.type === "reload") {
-        sessionStorage.removeItem("authMountOnce");
-      }
-    };
-    window.addEventListener("pageshow", onPageShow);
-    return () => window.removeEventListener("pageshow", onPageShow);
   }, []);
 
   useEffect(() => {
@@ -125,11 +125,11 @@ export default function LoginPage() {
     transform: showForm ? "scale(1)" : "scale(0.8)",
     immediate: skipMountAnim,
     config: { mass: 1, tension: 280, friction: 60 },
-    delay: 300,
+    delay: 100,
   });
 
   // 2) Trail cho các input field
-  const fieldKeys = ["email", "password"] as const;
+  const fieldKeys = ["email", "password", "confirmPassword"] as const;
   const trail = useTrail(showForm ? fieldKeys.length : 0, {
     from: { opacity: 0, transform: "translate3d(0,20px,0)" },
     to: { opacity: 1, transform: "translate3d(0,0,0)" },
@@ -138,10 +138,7 @@ export default function LoginPage() {
   });
 
   const FormCard = (
-    <animated.div
-      style={mountSprings}
-      className="relative w-full max-w-md isolate"
-    >
+    <animated.div style={mountSprings} className="relative w-full max-w-md">
       <BubbleBackground />
       <div className="relative z-10 bg-white bg-opacity-90 dark:bg-gray-800 dark:bg-opacity-90 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8">
         {/* <h2
@@ -157,10 +154,11 @@ export default function LoginPage() {
               const v = val as "login" | "register";
               if (v !== activeKey) {
                 setActiveKey(v);
-                sessionStorage.setItem("authMountOnce", "1");
                 setTimeout(() => {
+                  sessionStorage.removeItem("authMountOnce");
+                  sessionStorage.setItem("authMountOnce", "1");
                   const target = v === "login" ? "/Login" : "/Register";
-                  router.push(target, { scroll: false });
+                  router.push(target);
                 }, 220);
               }
             }}
@@ -189,9 +187,9 @@ export default function LoginPage() {
         {/* Heading thay đổi theo tab */}
         <div
           className={`${lobster.className} flex justify-center items-center h-full
-              text-black text-2xl md:text-3xl font-semibold my-6 dark:text-white`}
+              text-black text-2xl md:text-3xl font-semibold my-6 dark:text-white transition-all`}
         >
-          Đăng Nhập ngay
+          Đăng kí tài khoản mới
         </div>
         <Form<LoginFormValues>
           form={form}
@@ -208,7 +206,11 @@ export default function LoginPage() {
                   placeholder={
                     key === "email" ? "Enter your Email" : "Enter your Password"
                   }
-                  type={key === "password" ? "password" : undefined}
+                  type={
+                    key === "password" || key === "confirmPassword"
+                      ? "password"
+                      : undefined
+                  }
                 />
               </animated.div>
             );
@@ -285,6 +287,7 @@ export default function LoginPage() {
     <>
       <div className="flex flex-col md:flex-row min-h-screen">
         {showWipe && ShowSwipeEffect}
+        {/* Right: form card */}
         <Loading />
         {/* Left: background + mobile form */}
         <div className="relative flex-1 h-screen md:h-auto overflow-hidden">

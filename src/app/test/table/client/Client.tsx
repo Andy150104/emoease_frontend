@@ -90,6 +90,7 @@ const TableClientPage: React.FC = () => {
         dataIndex: "stock",
         key: "stock",
         responsive: ["lg"], // chỉ hiển thị khi ở lg
+        width: "100px",
         sorter: (a, b) => a.stock - b.stock,
       },
       {
@@ -126,6 +127,7 @@ const TableClientPage: React.FC = () => {
         title: "Nổi bật",
         dataIndex: "isFeatured",
         key: "isFeatured",
+        width: "fit-content",
         filters: [
           { text: "Featured", value: "true" },
           { text: "Normal", value: "false" },
