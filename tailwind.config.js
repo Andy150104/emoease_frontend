@@ -16,6 +16,7 @@ module.exports = {
         "1/4": "25%",
       },
       screens: {
+        'xs': '400px',
         // tên tuỳ bạn, ở đây dùng 'xxl'
         xxl: "2200px",
       },

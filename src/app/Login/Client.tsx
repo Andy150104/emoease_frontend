@@ -355,7 +355,7 @@ export default function LoginPage() {
           <div className="absolute inset-0 bg-gradient-to-tr from-teal-400 via-cyan-300 to-blue-300 opacity-50 dark:opacity-40" />
           <div className="absolute bottom-8 left-6 md:bottom-12 md:left-12 text-white z-10">
             <p
-              className={`text-3xl sm:text-4xl md:text-5xl font-extrabold drop-shadow-2xl`}
+              className={`hidden xs:block text-3xl sm:text-4xl md:text-5xl font-extrabold drop-shadow-2xl !m-2 lg:m-4`}
             >
               FLearning
             </p>
