@@ -15,7 +15,7 @@ import { useNotification } from "EmoEase/Provider/NotificationProvider";
 import Loading from "EmoEase/components/Loading/Loading";
 import { useLoadingStore } from "EmoEase/stores/Loading/LoadingStore";
 import { Lobster } from "next/font/google";
-import "./styles/login.styles.css";
+import "./styles/register.styles.css";
 
 const xmlColumns = {
   email: { id: "email", name: "Email", rules: "required" },
@@ -67,6 +67,10 @@ export default function RegisterPage() {
     };
     SetForm();
   }, []);
+
+  useEffect(() => {
+    router.prefetch("/Login"); // tải sẵn chunk của trang Login
+  }, [router]);
 
   useEffect(() => {
     const seen =
