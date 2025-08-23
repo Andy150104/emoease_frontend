@@ -236,7 +236,7 @@ export default function CourseListPage() {
               width={288}
               breakpoint="xl"
               collapsedWidth={0}
-              className="hidden lg:block !bg-transparent !px-0"
+              className="hidden lg:block !bg-transparent !px-0 !transition-all !will-change-[width]"
               style={{ position: "sticky", top: 96, alignSelf: "flex-start" }}
             >
               <div className="rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-[#0b1220] shadow-sm dark:shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)] p-5 h-screen">
@@ -282,7 +282,7 @@ export default function CourseListPage() {
                 <Divider className="my-2" />
 
                 {/* Groups */}
-                <div className="max-h-[calc(100vh-300px)] overflow-auto pr-1 divide-y divide-gray-100 [&>section]:py-3">
+                <div className="divide-y divide-gray-100 [&>section]:py-3">
                   <FilterContent groups={filterGroups} />
                 </div>
 
