@@ -1,7 +1,7 @@
-export const dynamic = "force-static";
+export const revalidate = 120;
 
 import { Metadata } from "next";
-import CourseListPage from "./Client";
+import CourseDetailUI from "./Client";
 export const metadata: Metadata = {
   title: "EmoEase – Khóa học",
   description:
@@ -36,5 +36,5 @@ export const metadata: Metadata = {
   },
 };
 export default function Page() {
-  return <CourseListPage />;
+  return <CourseDetailUI />;
 }

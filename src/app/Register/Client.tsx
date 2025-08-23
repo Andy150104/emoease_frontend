@@ -208,9 +208,7 @@ export default function RegisterPage() {
                 <BaseControlTextField
                   xmlColumn={xmlColumns[key]}
                   maxlength={50}
-                  placeholder={
-                    key === "email" ? "Nhập email" : "Nhập mật khẩu"
-                  }
+                  placeholder={key === "email" ? "Nhập email" : "Nhập mật khẩu"}
                   type={
                     key === "password" || key === "confirmPassword"
                       ? "password"

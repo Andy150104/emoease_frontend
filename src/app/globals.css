@@ -30,6 +30,8 @@
   --color-bgContrast: #f9f9f9;
   --breakpoint-xxl: 2600px;
   --breakpoint-xs: 400px;
+  --breakpoint-size-1500: 1500px;
+  --breakpoint-size-1800: 1800px;
 }
 
 @layer theme {

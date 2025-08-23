@@ -17,7 +17,7 @@ export default function MoreSection() {
     <>
       <section className="container mx-auto px-6 mt-32">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-32" data-speed="0.8">
+        <div className="text-center max-w-3xl mx-auto mb-16" data-speed="0.9">
           <p className="text-4xl md:text-5xl font-bold mb-6 gsap-text-zoom">
             <span className="text-teal-500 dark:text-teal-400">FLearning</span>
             <span className="text-gray-700 dark:text-gray-300"> là gì ?</span>
