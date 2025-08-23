@@ -9,7 +9,9 @@ export function AntdThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ConfigProvider
+      key={isDarkMode ? "dark" : "light"}
       theme={{
+        cssVar: true,
         algorithm: isDarkMode
           ? antdTheme.darkAlgorithm
           : antdTheme.defaultAlgorithm,

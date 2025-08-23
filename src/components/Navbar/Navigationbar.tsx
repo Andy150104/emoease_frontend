@@ -33,7 +33,7 @@ export default function Navigationbar() {
 
   const menuItems = [
     { key: "home", label: "Trang chủ", href: "/test/Navbar/home" },
-    { key: "jobs", label: "Công việc", href: "/test/Navbar/jobs" },
+    { key: "jobs", label: "Khóa học", href: "/course" },
     { key: "contact", label: "Liên hệ chúng tôi", href: "/contact" },
     { key: "match", label: "Công việc phù hợp cho bạn", href: "/my-job" },
     { key: "quiz", label: "Quiz", href: "/quiz" },

@@ -87,9 +87,9 @@ const FeatureSection: React.FC = () => {
               ))}
             </div>
           </div>
-          <div className="bg-white dark:bg-gray-900 h-[50px]"></div>
+          <div className="bg-white dark:bg-gray-900 h-[30px]"></div>
         </section>
-        <div className="mt-32 overflow-hidden">
+        <div className="mt-72 overflow-hidden">
           <MoreSection />
         </div>
         {/* Enhanced spacer section */}
