@@ -29,51 +29,75 @@ const UserMenu = () => {
     bodyTop: "",
     bodyPosition: "",
     bodyWidth: "",
+    htmlScrollBehavior: "",
   });
 
   // Khóa cuộn kiểu fixed-body (chặn mọi nguồn cuộn)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const body = document.body;
-    const html = document.documentElement;
+useEffect(() => {
+  if (typeof window === "undefined") return;
+  const body = document.body;
+  const html = document.documentElement;
 
-    if (open) {
-      prevRef.current = {
-        bodyOverflow: body.style.overflow,
-        bodyPaddingRight: body.style.paddingRight,
-        htmlOverflow: html.style.overflow,
-        bodyTop: body.style.top,
-        bodyPosition: body.style.position,
-        bodyWidth: body.style.width,
-      };
-      const gap = window.innerWidth - document.documentElement.clientWidth;
-      if (gap > 0) body.style.paddingRight = `${gap}px`;
-
-      scrollYRef.current = window.scrollY;
-      html.style.overflow = "hidden";
-      body.style.overflow = "hidden";
-      body.style.position = "fixed";
-      body.style.top = `-${scrollYRef.current}px`;
-      body.style.width = "100%";
-    } else {
-      html.style.overflow = prevRef.current.htmlOverflow || "";
-      body.style.overflow = prevRef.current.bodyOverflow || "";
-      body.style.paddingRight = prevRef.current.bodyPaddingRight || "";
-      body.style.position = prevRef.current.bodyPosition || "";
-      body.style.top = prevRef.current.bodyTop || "";
-      body.style.width = prevRef.current.bodyWidth || "";
-      if (scrollYRef.current) window.scrollTo(0, scrollYRef.current);
-    }
-
-    return () => {
-      html.style.overflow = prevRef.current.htmlOverflow || "";
-      body.style.overflow = prevRef.current.bodyOverflow || "";
-      body.style.paddingRight = prevRef.current.bodyPaddingRight || "";
-      body.style.position = prevRef.current.bodyPosition || "";
-      body.style.top = prevRef.current.bodyTop || "";
-      body.style.width = prevRef.current.bodyWidth || "";
+  if (open) {
+    // Lưu style trước khi khóa
+    prevRef.current = {
+      bodyOverflow: body.style.overflow,
+      bodyPaddingRight: body.style.paddingRight,
+      htmlOverflow: html.style.overflow,
+      bodyTop: body.style.top,
+      bodyPosition: body.style.position,
+      bodyWidth: body.style.width,
+      htmlScrollBehavior: html.style.scrollBehavior, // lưu scroll-behavior
     };
-  }, [open]);
+
+    // Bù thanh cuộn ngang dọc để tránh "nhảy" layout
+    const gap = window.innerWidth - document.documentElement.clientWidth;
+    if (gap > 0) body.style.paddingRight = `${gap}px`;
+
+    // Lưu vị trí cuộn hiện tại rồi cuộn lên đầu trang
+    scrollYRef.current = window.scrollY;
+    html.style.scrollBehavior = "auto"; // đảm bảo nhảy tức thì
+    window.scrollTo(0, 0);
+
+    // Khóa cuộn (giữ trang ở top)
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = "0";          // QUAN TRỌNG: để = 0 (không dùng -scrollY)
+    body.style.left = "0";
+    body.style.right = "0";
+    body.style.width = "100%";
+  } else {
+    // Mở khóa & phục hồi style
+    html.style.overflow = prevRef.current.htmlOverflow || "";
+    body.style.overflow = prevRef.current.bodyOverflow || "";
+    body.style.paddingRight = prevRef.current.bodyPaddingRight || "";
+    body.style.position = prevRef.current.bodyPosition || "";
+    body.style.top = prevRef.current.bodyTop || "";
+    body.style.left = "";
+    body.style.right = "";
+    body.style.width = prevRef.current.bodyWidth || "";
+
+    // Phục hồi hành vi cuộn & trả về vị trí cũ
+    html.style.scrollBehavior = prevRef.current.htmlScrollBehavior || "";
+    if (typeof scrollYRef.current === "number") {
+      window.scrollTo(0, scrollYRef.current);
+    }
+  }
+
+  return () => {
+    // Cleanup an toàn nếu component unmount khi đang mở
+    html.style.overflow = prevRef.current.htmlOverflow || "";
+    body.style.overflow = prevRef.current.bodyOverflow || "";
+    body.style.paddingRight = prevRef.current.bodyPaddingRight || "";
+    body.style.position = prevRef.current.bodyPosition || "";
+    body.style.top = prevRef.current.bodyTop || "";
+    body.style.left = "";
+    body.style.right = "";
+    body.style.width = prevRef.current.bodyWidth || "";
+    html.style.scrollBehavior = prevRef.current.htmlScrollBehavior || "";
+  };
+}, [open]);
 
   const items: MenuProps["items"] = [
     {
@@ -177,7 +201,7 @@ const UserMenu = () => {
       onOpenChange={setOpen}
       trigger={["click"]}
       placement="bottomRight"
-      getPopupContainer={() => document.body}
+      getPopupContainer={() => document.documentElement}
       popupRender={(
         menu, // bo góc + overflow ẩn
       ) => <div style={{ borderRadius: 8, overflow: "hidden" }}>{menu}</div>}

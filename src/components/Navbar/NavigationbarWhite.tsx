@@ -71,7 +71,7 @@ export default function Navigationbar() {
   }, [currentKey, showNav, api]);
 
   useEffect(() => {
-    const onScroll = () => setElevated(window.scrollY > 4); // >2px coi như đã cuộn
+    const onScroll = () => setElevated(window.scrollY > 10); // >2px coi như đã cuộn
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
