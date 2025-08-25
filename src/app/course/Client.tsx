@@ -234,7 +234,7 @@ export default function CourseListPage() {
             {/* SIDEBAR (LG+) */}
             <Sider
               width={288}
-              breakpoint="xl"
+              breakpoint="xxl"
               collapsedWidth={0}
               className="hidden lg:block !bg-transparent !px-0 !transition-all !will-change-[width]"
               style={{ position: "sticky", top: 96, alignSelf: "flex-start" }}
@@ -344,7 +344,7 @@ export default function CourseListPage() {
               </div>
 
               {/* Grid cards */}
-              <div className="mx-0 sm:mx-2 lg:mx-0">
+              <div className="lg:mx-0">
                 <Row
                   gutter={[
                     { xs: 20, sm: 16, md: 24, lg: 0, xl: 0 }, // ngang
@@ -353,7 +353,7 @@ export default function CourseListPage() {
                 >
                   {courses.map((c, idx) => (
                     <Col key={idx} xs={24} sm={12} xl={8}>
-                      <div className="h-full xs:ml-2">
+                      <div className="h-full xs:ml-4">
                         <CourseCard {...c} />
                       </div>
                     </Col>

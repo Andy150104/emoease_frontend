@@ -97,6 +97,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
               src={imageUrl}
               alt={title}
               fill
+              loading="lazy"
               style={{ objectFit: "cover" }}
             />
           </div>
