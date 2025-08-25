@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
+    "get-openapi": "bash get-openapi-service.sh",
     "gen": "swagger-typescript-api generate -p openapi.json -o src/api -n api.ts -T axios",
     "gen-payment": "swagger-typescript-api generate -p openapi-payment-service.json -o src/api -n api-payment-service.ts -T axios",
     "gen-profile": "swagger-typescript-api generate -p openapi-profile-service.json -o src/api -n api-profile-service.ts -T axios",
