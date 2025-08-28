@@ -1,0 +1,4 @@
+[
+  {"key": "payment-service", "url": "https://api.emoease.vn/payment-service/swagger/v1/swagger.json"},
+  {"key": "profile-service", "url": "https://api.emoease.vn/profile-service/swagger/v1/swagger.json"}
+]
