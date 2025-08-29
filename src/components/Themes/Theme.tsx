@@ -47,7 +47,10 @@ export const ThemeSwitch: React.FC<ThemeToggleButtonProps> = ({
       <Button
         ref={ref as React.Ref<HTMLButtonElement>}
         size={size}
-        onClick={toggleSwitchTheme}
+        onClick={(e) => {
+          e.preventDefault();
+          toggleSwitchTheme();
+        }}
         className={[
           "transition-colors duration-200 !px-4 !py-1",
           square ? "!rounded-none" : "!rounded-md",

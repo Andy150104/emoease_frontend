@@ -12,7 +12,9 @@
   "paths": {
     "/patients/created": {
       "get": {
-        "tags": ["Dashboard"],
+        "tags": [
+          "Dashboard"
+        ],
         "summary": "Get Created Patient Profiles",
         "description": "Get Created Patient Profiles",
         "operationId": "GetPatientProfilesCreated",
@@ -78,7 +80,9 @@
     },
     "/doctors/{id}": {
       "put": {
-        "tags": ["DoctorProfiles"],
+        "tags": [
+          "DoctorProfiles"
+        ],
         "summary": "Update Doctor Profile",
         "description": "Update Doctor Profile",
         "operationId": "UpdateDoctorProfile",
@@ -137,7 +141,9 @@
         }
       },
       "get": {
-        "tags": ["DoctorProfiles"],
+        "tags": [
+          "DoctorProfiles"
+        ],
         "summary": "Get Doctor Profile",
         "description": "Get Doctor Profile",
         "operationId": "GetDoctorProfile",
@@ -178,7 +184,9 @@
     },
     "/doctors/specialties": {
       "get": {
-        "tags": ["DoctorProfiles"],
+        "tags": [
+          "DoctorProfiles"
+        ],
         "summary": "Get Doctor Profiles by Specialties",
         "description": "Get Doctor Profiles by Specialties",
         "operationId": "GetDoctorsBySpecialities",
@@ -236,7 +244,9 @@
     },
     "/doctors": {
       "get": {
-        "tags": ["DoctorProfiles"],
+        "tags": [
+          "DoctorProfiles"
+        ],
         "summary": "Get All Doctor Profiles",
         "description": "Get All Doctor Profiles",
         "operationId": "GetAllDoctorProfiles",
@@ -344,7 +354,9 @@
     },
     "/doctor-profiles": {
       "post": {
-        "tags": ["DoctorProfiles"],
+        "tags": [
+          "DoctorProfiles"
+        ],
         "summary": "Create Doctor Profile",
         "description": "Create Doctor Profile",
         "operationId": "CreateDoctorProfile",
@@ -384,7 +396,9 @@
     },
     "/mental-disorders": {
       "get": {
-        "tags": ["MentalDisorders"],
+        "tags": [
+          "MentalDisorders"
+        ],
         "summary": "Get All Mental Disorders",
         "description": "Get All Mental Disorders",
         "operationId": "GetAllMentalDisorders",
@@ -444,7 +458,9 @@
     },
     "/patients/{id}": {
       "put": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Update Patient Profile",
         "description": "Update Patient Profile",
         "operationId": "UpdatePatientProfile",
@@ -503,7 +519,9 @@
         }
       },
       "get": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Get Patient Profile",
         "description": "Get Patient Profile",
         "operationId": "GetPatientProfile",
@@ -544,7 +562,9 @@
     },
     "/patients/medical-record": {
       "put": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Update Medical Record",
         "description": "Update Medical Record",
         "operationId": "UpdateMedicalRecord",
@@ -592,7 +612,9 @@
         }
       },
       "post": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Add Medical Record",
         "description": "Add Medical Record",
         "operationId": "AddMedicalRecord",
@@ -632,7 +654,9 @@
     },
     "/patients/medical-history": {
       "put": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Update Medical History",
         "description": "Update Medical History",
         "operationId": "UpdateMedicalHistory",
@@ -680,7 +704,9 @@
         }
       },
       "post": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Add Medical History",
         "description": "Add Medical History",
         "operationId": "AddMedicalHistory",
@@ -720,7 +746,9 @@
     },
     "/patients/total": {
       "get": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Get Total Patient Profiles",
         "description": "GetTotalPatientProfile",
         "operationId": "GetTotalPatientProfile",
@@ -778,7 +806,9 @@
     },
     "/profiles/get-by-event": {
       "get": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Get patient profile by event",
         "description": "Get patient profile by event",
         "operationId": "GetPatientProfileByEvent",
@@ -823,7 +853,9 @@
     },
     "/medical-records/{medicalRecordId}": {
       "get": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Get MedicalRecord",
         "description": "Get MedicalRecord",
         "operationId": "GetMedicalRecordById",
@@ -864,7 +896,9 @@
     },
     "/patients/{patientId}/medical-history": {
       "get": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Get MedicalHistory By PatientId",
         "description": "Get MedicalHistory By PatientId",
         "operationId": "GetMedicalHistoryByPatientId",
@@ -905,7 +939,9 @@
     },
     "/industries/{industryId}/jobs": {
       "get": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Get all jobs by IndustryId",
         "description": "Get all jobs by IndustryId",
         "operationId": "GetJobByIndustryId",
@@ -946,7 +982,9 @@
     },
     "/patients": {
       "get": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Get All Patient Profiles",
         "description": "Get All Patient Profiles",
         "operationId": "GetAllPatientProfiles",
@@ -1049,7 +1087,9 @@
         }
       },
       "post": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Create Patient Profile",
         "description": "Create Patient Profile",
         "operationId": "CreatePatientProfile",
@@ -1089,7 +1129,9 @@
     },
     "/medical-records": {
       "get": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Get All Medical Records",
         "description": "Returns paginated list of medical records based on optional filters.",
         "operationId": "GetAllMedicalRecords",
@@ -1195,7 +1237,9 @@
     },
     "/industries": {
       "get": {
-        "tags": ["PatientProfiles"],
+        "tags": [
+          "PatientProfiles"
+        ],
         "summary": "Get all industries",
         "description": "Get all industries",
         "operationId": "GetAllIndustries",
@@ -1279,7 +1323,9 @@
     },
     "/physical-symptoms": {
       "get": {
-        "tags": ["PhysicalSymptoms"],
+        "tags": [
+          "PhysicalSymptoms"
+        ],
         "summary": "GetAllPhysicalSymptoms",
         "description": "GetAllPhysicalSymptoms",
         "operationId": "GetAllPhysicalSymptoms",
@@ -1345,9 +1391,30 @@
         }
       }
     },
+    "/": {
+      "get": {
+        "tags": [
+          "Profile.API"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/specialties": {
       "get": {
-        "tags": ["Specialties"],
+        "tags": [
+          "Specialties"
+        ],
         "summary": "Get All Specialties",
         "description": "Get All Specialties",
         "operationId": "GetAllSpecialties",
@@ -1397,7 +1464,9 @@
     },
     "/specific-mental-disorders": {
       "get": {
-        "tags": ["SpecificMentalDisorders"],
+        "tags": [
+          "SpecificMentalDisorders"
+        ],
         "summary": "GetAllSpecificMentalDisorders",
         "description": "GetAllSpecificMentalDisorders",
         "operationId": "GetAllSpecificMentalDisorders",
@@ -2275,7 +2344,10 @@
         "additionalProperties": false
       },
       "MedicalRecordStatus": {
-        "enum": ["Processing", "Done"],
+        "enum": [
+          "Processing",
+          "Done"
+        ],
         "type": "string"
       },
       "MentalDisorderDto": {
@@ -2327,7 +2399,12 @@
         "additionalProperties": false
       },
       "PersonalityTrait": {
-        "enum": ["None", "Introversion", "Extroversion", "Adaptability"],
+        "enum": [
+          "None",
+          "Introversion",
+          "Extroversion",
+          "Adaptability"
+        ],
         "type": "string"
       },
       "PhysicalSymptomDto": {
@@ -2403,7 +2480,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": {}
+        "additionalProperties": { }
       },
       "SimplifiedPatientProfileDto": {
         "type": "object",
@@ -2722,7 +2799,11 @@
         "additionalProperties": false
       },
       "UserGender": {
-        "enum": ["Male", "Female", "Else"],
+        "enum": [
+          "Male",
+          "Female",
+          "Else"
+        ],
         "type": "string"
       }
     },
@@ -2737,7 +2818,7 @@
   },
   "security": [
     {
-      "Bearer": []
+      "Bearer": [ ]
     }
   ]
 }

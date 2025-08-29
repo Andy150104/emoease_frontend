@@ -10,49 +10,11 @@
     }
   ],
   "paths": {
-    "/payments/vnpay/booking": {
-      "post": {
-        "tags": ["Booking Payments"],
-        "summary": "Create VnPay CallBack Url For Booking",
-        "description": "Create VnPay CallBack Url For Booking",
-        "operationId": "CreateVnPayCallBackUrlForBooking",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateVnPayCallBackUrlForBookingRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateVnPayCallBackUrlForBookingResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/payments": {
       "get": {
-        "tags": ["Dashboard"],
+        "tags": [
+          "Dashboard"
+        ],
         "summary": "Get All Payments",
         "description": "Get All Payments",
         "operationId": "GetAllPayments",
@@ -140,7 +102,9 @@
     },
     "/payments/daily-revenue": {
       "get": {
-        "tags": ["Dashboard"],
+        "tags": [
+          "Dashboard"
+        ],
         "summary": "Get Daily Revenue",
         "description": "Get Daily Revenue",
         "operationId": "GetDailyRevenue",
@@ -190,7 +154,9 @@
     },
     "/payments/revenue": {
       "get": {
-        "tags": ["Dashboard"],
+        "tags": [
+          "Dashboard"
+        ],
         "summary": "Get Revenue",
         "description": "Get Revenue",
         "operationId": "GetRevenue",
@@ -238,9 +204,511 @@
         }
       }
     },
-    "/payments/callback": {
+    "/payments/payos/cancel": {
+      "post": {
+        "tags": [
+          "PayOS Payments"
+        ],
+        "summary": "Cancel Payment Link",
+        "description": "Cancels a specific payment link with optional cancellation reason",
+        "operationId": "CancelPaymentLink",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelPaymentLinkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelPaymentLinkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/booking": {
+      "post": {
+        "tags": [
+          "PayOS Payments"
+        ],
+        "summary": "Create PayOS CallBack Url For Booking",
+        "description": "Create PayOS CallBack Url For Booking",
+        "operationId": "CreatePayOSCallBackUrlForBooking",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePayOSCallBackUrlForBookingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePayOSCallBackUrlForBookingResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/subscription": {
+      "post": {
+        "tags": [
+          "PayOS Payments"
+        ],
+        "summary": "Create PayOS CallBack Url For Subscription",
+        "description": "Create PayOS CallBack Url For Subscription",
+        "operationId": "CreatePayOSCallBackUrlForSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePayOSCallBackUrlForSubscriptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePayOSCallBackUrlForSubscriptionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/upgrade-subscription": {
+      "post": {
+        "tags": [
+          "PayOS Payments"
+        ],
+        "summary": "Create PayOS CallBack Url For Upgrade Subscription",
+        "description": "Create PayOS CallBack Url For Upgrade Subscription",
+        "operationId": "CreatePayOSCallBackUrlForUpgradeSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePayOSCallBackUrlForUpgradeSubscriptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePayOSCallBackUrlForUpgradeSubscriptionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/link-information/{paymentCode}": {
       "get": {
-        "tags": ["Payments"],
+        "tags": [
+          "PayOS Payments"
+        ],
+        "summary": "Get Payment Link Information",
+        "description": "Retrieves information about a specific payment link",
+        "operationId": "GetPaymentLinkInformation",
+        "parameters": [
+          {
+            "name": "paymentCode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/confirm-webhook": {
+      "post": {
+        "tags": [
+          "PayOS Payments"
+        ],
+        "summary": "Confirm PayOS Webhook URL",
+        "description": "Confirms the PayOS webhook URL for receiving payment notifications",
+        "operationId": "ConfirmPayOSWebhook",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/payos/webhook": {
+      "post": {
+        "tags": [
+          "PayOS Payments"
+        ],
+        "summary": "Process PayOS Webhook",
+        "description": "Processes incoming PayOS webhook notifications for payment status updates",
+        "operationId": "ProcessPayOSWebhook",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/payments/payos/link-information/cancel": {
+      "post": {
+        "tags": [
+          "PayOS Payments Version 2"
+        ],
+        "summary": "Cancel Payment Link",
+        "description": "Cancels a specific payment link with optional cancellation reason",
+        "operationId": "CancelPaymentLink v2",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelPaymentLinkV2Request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelPaymentLinkV2Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/payments/payos/upgrade-subscription": {
+      "post": {
+        "tags": [
+          "PayOS Payments Version 2"
+        ],
+        "summary": "Create PayOS CallBack Url For Upgrade Subscription",
+        "description": "Create PayOS CallBack Url For Upgrade Subscription",
+        "operationId": "CreatePayOSCallBackUrlForUpgradeSubscription v2",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePayOSCallBackUrlForUpgradeSubscriptionV2Request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePayOSCallBackUrlForUpgradeSubscriptionV2Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/me/payments/payos/{paymentCode}/link-information": {
+      "get": {
+        "tags": [
+          "PayOS Payments Version 2"
+        ],
+        "summary": "Get Payment Link Information",
+        "description": "Retrieves information about a specific payment link",
+        "operationId": "GetPaymentLinkInformation v2",
+        "parameters": [
+          {
+            "name": "paymentCode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/vnpay/booking": {
+      "post": {
+        "tags": [
+          "VnPay Payments"
+        ],
+        "summary": "Create VnPay CallBack Url For Booking",
+        "description": "Create VnPay CallBack Url For Booking",
+        "operationId": "CreateVnPayCallBackUrlForBooking",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVnPayCallBackUrlForBookingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateVnPayCallBackUrlForBookingResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/vnpay/subscription": {
+      "post": {
+        "tags": [
+          "VnPay Payments"
+        ],
+        "summary": "Create VnPay CallBack Url For Subscription",
+        "description": "Create VnPay CallBack Url For Subscription",
+        "operationId": "CreateVnPayCallBackUrlForSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVnPayCallBackUrlForSubscriptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateVnPayCallBackUrlForSubscriptionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/vnpay/subscription/upgrade": {
+      "post": {
+        "tags": [
+          "VnPay Payments"
+        ],
+        "summary": "Create VnPay CallBack Url For Upgrade Subscription",
+        "description": "Create VnPay CallBack Url For Upgrade Subscription",
+        "operationId": "CreateVnPayCallBackUrlForUpgradeSubscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVnPayCallBackUrlForUpgradeSubscriptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateVnPayCallBackUrlForUpgradeSubscriptionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/vnpay/callback": {
+      "get": {
+        "tags": [
+          "VnPay Payments"
+        ],
         "summary": "Handle VnPay Callback",
         "description": "VnPay Callback Endpoint",
         "operationId": "VnPayCallback",
@@ -297,326 +765,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/VnPayCallbackResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/payments/payos/cancel": {
-      "post": {
-        "tags": ["PayOS Payments"],
-        "summary": "Cancel Payment Link",
-        "description": "Cancels a specific payment link with optional cancellation reason",
-        "operationId": "CancelPaymentLink",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CancelPaymentLinkRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CancelPaymentLinkResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/payments/payos/booking": {
-      "post": {
-        "tags": ["PayOS Payments"],
-        "summary": "Create PayOS CallBack Url For Booking",
-        "description": "Create PayOS CallBack Url For Booking",
-        "operationId": "CreatePayOSCallBackUrlForBooking",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePayOSCallBackUrlForBookingRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreatePayOSCallBackUrlForBookingResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/payments/payos/subscription": {
-      "post": {
-        "tags": ["PayOS Payments"],
-        "summary": "Create PayOS CallBack Url For Subscription",
-        "description": "Create PayOS CallBack Url For Subscription",
-        "operationId": "CreatePayOSCallBackUrlForSubscription",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePayOSCallBackUrlForSubscriptionRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreatePayOSCallBackUrlForSubscriptionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/payments/payos/upgrade-subscription": {
-      "post": {
-        "tags": ["PayOS Payments"],
-        "summary": "Create PayOS CallBack Url For Upgrade Subscription",
-        "description": "Create PayOS CallBack Url For Upgrade Subscription",
-        "operationId": "CreatePayOSCallBackUrlForUpgradeSubscription",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePayOSCallBackUrlForUpgradeSubscriptionRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreatePayOSCallBackUrlForUpgradeSubscriptionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/payments/payos/link-information/{paymentCode}": {
-      "get": {
-        "tags": ["PayOS Payments"],
-        "summary": "Get Payment Link Information",
-        "description": "Retrieves information about a specific payment link",
-        "operationId": "GetPaymentLinkInformation",
-        "parameters": [
-          {
-            "name": "paymentCode",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/payments/payos/confirm-webhook": {
-      "post": {
-        "tags": ["PayOS Payments"],
-        "summary": "Confirm PayOS Webhook URL",
-        "description": "Confirms the PayOS webhook URL for receiving payment notifications",
-        "operationId": "ConfirmPayOSWebhook",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/payments/payos/webhook": {
-      "post": {
-        "tags": ["PayOS Payments"],
-        "summary": "Process PayOS Webhook",
-        "description": "Processes incoming PayOS webhook notifications for payment status updates",
-        "operationId": "ProcessPayOSWebhook",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/payments/vnpay/subscription": {
-      "post": {
-        "tags": ["Subscription Payments"],
-        "summary": "Create VnPay CallBack Url For Subscription",
-        "description": "Create VnPay CallBack Url For Subscription",
-        "operationId": "CreateVnPayCallBackUrlForSubscription",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateVnPayCallBackUrlForSubscriptionRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateVnPayCallBackUrlForSubscriptionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/payments/vnpay/subscription/upgrade": {
-      "post": {
-        "tags": ["Upgrade Subscription Payments"],
-        "summary": "Create VnPay CallBack Url For Upgrade Subscription",
-        "description": "Create VnPay CallBack Url For Upgrade Subscription",
-        "operationId": "CreateVnPayCallBackUrlForUpgradeSubscription",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateVnPayCallBackUrlForUpgradeSubscriptionRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateVnPayCallBackUrlForUpgradeSubscriptionResponse"
                 }
               }
             }
@@ -770,6 +918,33 @@
         },
         "additionalProperties": false
       },
+      "CancelPaymentLinkV2Request": {
+        "type": "object",
+        "properties": {
+          "paymentCode": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "cancellationReason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CancelPaymentLinkV2Response": {
+        "type": "object",
+        "properties": {
+          "paymentInfo": {
+            "$ref": "#/components/schemas/PaymentLinkInformation"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "CreatePayOSCallBackUrlForBookingRequest": {
         "type": "object",
         "properties": {
@@ -818,6 +993,25 @@
         "additionalProperties": false
       },
       "CreatePayOSCallBackUrlForUpgradeSubscriptionResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreatePayOSCallBackUrlForUpgradeSubscriptionV2Request": {
+        "type": "object",
+        "properties": {
+          "upgradeSubscription": {
+            "$ref": "#/components/schemas/UpgradeSubscriptionDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreatePayOSCallBackUrlForUpgradeSubscriptionV2Response": {
         "type": "object",
         "properties": {
           "url": {
@@ -1060,15 +1254,27 @@
         "additionalProperties": false
       },
       "PaymentMethodName": {
-        "enum": ["VNPay", "PayOS"],
+        "enum": [
+          "VNPay",
+          "PayOS"
+        ],
         "type": "string"
       },
       "PaymentStatus": {
-        "enum": ["Pending", "Completed", "Failed", "Cancelled"],
+        "enum": [
+          "Pending",
+          "Completed",
+          "Failed",
+          "Cancelled"
+        ],
         "type": "string"
       },
       "PaymentType": {
-        "enum": ["BuySubscription", "Booking", "UpgradeSubscription"],
+        "enum": [
+          "BuySubscription",
+          "Booking",
+          "UpgradeSubscription"
+        ],
         "type": "string"
       },
       "ProblemDetails": {
@@ -1096,7 +1302,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": {}
+        "additionalProperties": { }
       },
       "Transaction": {
         "type": "object",
@@ -1222,7 +1428,7 @@
   },
   "security": [
     {
-      "Bearer": []
+      "Bearer": [ ]
     }
   ]
 }
