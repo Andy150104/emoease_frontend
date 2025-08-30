@@ -1,14 +1,23 @@
 'use client';
 import { FC, useEffect, useRef } from 'react';
 import { StepTransition } from 'EmoEase/components/Animation/StepTransition';
-import CreateCourseLayout from './components/CreateCourseLayout';
-import CreateCourseProvider from './components/CreateCourseProvider';
-import CourseInformation from './components/CourseInformation';
-import Curriculum from './components/Curriculum';
-import CourseContent from './components/CourseContent';
-import Pricing from './components/Pricing';
-import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
 import { Form } from 'antd';
+
+// Layout and Provider
+import CreateCourseLayout from './components/common/CreateCourseLayout';
+import CreateCourseProvider from './components/common/CreateCourseProvider';
+
+// Step Components
+import CourseInformation from './components/steps/CourseInformation';
+import Curriculum from './components/steps/Curriculum';
+import CourseContent from './components/steps/CourseContent';
+import Pricing from './components/steps/Pricing';
+
+// Store
+import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
+
+// Constants
+import { COURSE_CREATION_STEPS } from './constants/steps';
 
 const CreateCoursePageContent: FC = () => {
     const { currentStep, courseInformation } = useCreateCourseStore();
@@ -19,13 +28,14 @@ const CreateCoursePageContent: FC = () => {
     useEffect(() => {
         if (prevStepRef.current !== currentStep) {
             const container = document.getElementById('create-course-content');
-            // Heuristic: if previous focus was near bottom, scroll to top; otherwise to container
+            
             const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
             const toContainer = () => container?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             const active = document.activeElement as HTMLElement | null;
             const viewportH = window.innerHeight;
             const activeBottom = active ? active.getBoundingClientRect().bottom : 0;
+            
             if (activeBottom > viewportH * 0.7) {
                 toTop();
             } else {
@@ -37,6 +47,12 @@ const CreateCoursePageContent: FC = () => {
     }, [currentStep]);
 
     const renderStep = () => {
+        const currentStepData = COURSE_CREATION_STEPS[currentStep];
+        
+        if (!currentStepData) {
+            return <div className="text-center py-8">Step not found</div>;
+        }
+
         switch (currentStep) {
             case 0:
                 return <CourseInformation />;
@@ -47,14 +63,19 @@ const CreateCoursePageContent: FC = () => {
             case 3:
                 return <Pricing />;
             default:
-                return <div>Step not found</div>;
+                return <div className="text-center py-8">Step not found</div>;
         }
     };
 
     return (
         <CreateCourseLayout>
             <div className="min-h-screen">
-                <Form form={form} layout="vertical" initialValues={courseInformation}>
+                <Form 
+                    form={form} 
+                    layout="vertical" 
+                    initialValues={courseInformation}
+                    className="space-y-6"
+                >
                     <StepTransition item={currentStep}>
                         {renderStep()}
                     </StepTransition>
