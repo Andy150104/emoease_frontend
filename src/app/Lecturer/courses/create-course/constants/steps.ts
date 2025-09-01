@@ -40,6 +40,7 @@ export const COURSE_CREATION_STEPS: CourseCreationStep[] = [
         isRequired: true,
         isCompleted: false,
     },
+
     {
         id: 4,
         title: 'Xuất bản',
@@ -55,6 +56,7 @@ export const STEP_NAMES = {
     CURRICULUM: 'Curriculum',
     COURSE_CONTENT: 'CourseContent',
     PRICING: 'Pricing',
+
     PUBLISH: 'Publish',
 } as const;
 

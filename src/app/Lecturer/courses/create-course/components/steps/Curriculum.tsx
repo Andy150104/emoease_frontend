@@ -33,6 +33,8 @@ const Curriculum: FC = () => {
     const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const isInitialLoadRef = useRef(true);
 
+
+
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,25 +45,21 @@ const Curriculum: FC = () => {
     const lastNotificationRef = useRef<string>('');
 
     const showDebouncedNotification = useCallback((type: 'success' | 'error' | 'warning', content: string, delay: number = 1000) => {
-        // Prevent duplicate notifications
         if (lastNotificationRef.current === content) {
-            return;
+            return; // Prevent duplicate notifications
         }
 
-        // Clear previous timeout
         if (notificationTimeoutRef.current) {
             clearTimeout(notificationTimeoutRef.current);
         }
 
-        // Set new timeout for notification
+        lastNotificationRef.current = content;
+
         notificationTimeoutRef.current = setTimeout(() => {
             message[type](content);
-            lastNotificationRef.current = content;
-
-            // Clear the last notification after some time to allow future notifications
             setTimeout(() => {
                 lastNotificationRef.current = '';
-            }, 5000);
+            }, 2000); // Reset after 2 seconds to allow future messages
         }, delay);
     }, []);
 
@@ -114,6 +112,16 @@ const Curriculum: FC = () => {
             const savedData = localStorage.getItem(AUTO_SAVE_KEY);
             if (savedData) {
                 const parsedData = JSON.parse(savedData);
+                const savedTimestamp = new Date(parsedData.timestamp);
+                const now = new Date();
+                const diffMinutes = (now.getTime() - savedTimestamp.getTime()) / (1000 * 60);
+
+                if (diffMinutes > 10) {
+                    localStorage.removeItem(AUTO_SAVE_KEY);
+                    showDebouncedNotification('warning', 'Dữ liệu đã lưu đã quá 10 phút và đã bị xóa.', 1000);
+                    return false;
+                }
+
                 const { timestamp, ...curriculumData } = parsedData;
                 delete curriculumData.version;
                 delete curriculumData.formStep;
@@ -145,13 +153,9 @@ const Curriculum: FC = () => {
 
     // Load saved data on component mount
     useEffect(() => {
-        const hasRestoredData = loadFromLocalStorage();
-        isInitialLoadRef.current = false;
-
-        if (!hasRestoredData) {
-            setTimeout(() => {
-                isInitialLoadRef.current = false;
-            }, 100);
+        if (isInitialLoadRef.current) {
+            const hasRestoredData = loadFromLocalStorage();
+            isInitialLoadRef.current = false;
         }
     }, [loadFromLocalStorage]);
 
@@ -238,21 +242,23 @@ const Curriculum: FC = () => {
 
         // Clear saved data on successful submission
         localStorage.removeItem(AUTO_SAVE_KEY);
-        setCurrentStep(2);
         const container = document.getElementById('create-course-content');
-        setTimeout(() => {
-            if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            else window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 50);
+        if (container) {
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        setCurrentStep(2);
     };
 
     const handleBack = () => {
+        const container = document.getElementById('create-course-content');
+        if (container) {
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
         setCurrentStep(0);
-        setTimeout(() => {
-            const container = document.getElementById('create-course-content');
-            if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            else window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 50);
     };
 
     // Auto-save status component
@@ -294,593 +300,147 @@ const Curriculum: FC = () => {
     };
 
     return (
-        <div className="space-y-6 max-w-5xl mx-auto px-4">
-            {/* Enhanced Header with Progress */}
+        <ConfigProvider
+            theme={{
+                algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+                token: {
+                    colorText: isDarkMode ? "#E5E7EB" : "#1F2937",
+                    colorTextPlaceholder: isDarkMode ? "#9CA3AF" : "#6B7280",
+                    colorBgContainer: isDarkMode ? "#374151" : "#FFFFFF",
+                    colorBorder: isDarkMode ? "#4B5563" : "#D1D5DB",
+                },
+            }}
+        >
             <FadeInUp>
-                <div className="bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-md">
-                    {/* Breadcrumb */}
-                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
-                        <span>Tạo khóa học</span>
-                        <span>›</span>
-                        <button 
-                            onClick={() => {
-                                if (curriculum.modules.length > 0) {
-                                    if (confirm('Bạn có chắc chắn muốn quay lại bước Thông tin cơ bản? Dữ liệu hiện tại sẽ được lưu tự động.')) {
-                                        setCurrentStep(0);
-                                    }
-                                } else {
-                                    setCurrentStep(0);
-                                }
-                            }}
-                            className="text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium cursor-pointer transition-colors underline-offset-2 hover:underline"
-                        >
-                            Thông tin cơ bản
-                        </button>
-                        <span>›</span>
-                        <span className="text-emerald-600 dark:text-emerald-400 font-medium cursor-default">Giáo trình</span>
+                {/* Header */}
+                <div className="flex justify-between items-start mb-8">
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Giáo trình khóa học</h2>
+                        <p className="text-gray-500 dark:text-gray-400 mt-1">Xây dựng chương trình học chi tiết và có cấu trúc.</p>
+                    </div>
+                    <AutoSaveStatus />
+                </div>
+
+                {/* Module List */}
+                <div className="mb-8">
+                    <div className="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Danh sách chương ({curriculum.modules.length})</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">Tổ chức và chỉnh sửa các chương học của bạn.</p>
+                        </div>
+                        <Button type="primary" icon={<FaPlus />} onClick={handleOpenModal} size="large">Thêm chương mới</Button>
                     </div>
 
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                        <div className="flex-1">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="relative">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
-                                        2
+                    <div className="space-y-4">
+                        {curriculum.modules.map((module, index) => (
+                            <FadeInOnScrollSpring key={module.id}>
+                                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden transition-shadow hover:shadow-md">
+                                    <div
+                                        className="flex items-center justify-between p-4 cursor-pointer bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50"
+                                        onClick={() => toggleModuleExpansion(module.id)}
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <span className="font-bold text-gray-600 dark:text-gray-400">{index + 1}</span>
+                                            <div>
+                                                <h4 className="font-semibold text-gray-800 dark:text-gray-200">{module.title}</h4>
+                                                <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    <span><FaClock className="inline mr-1" />{module.duration} phút</span>
+                                                    <span><FaGraduationCap className="inline mr-1" />{module.learningObjectives.length} mục tiêu</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <Button type="text" danger icon={<FaTrash />} onClick={(e) => { e.stopPropagation(); removeModule(module.id); }} />
+                                            {module.isExpanded ? <FaChevronUp /> : <FaChevronDown />}
+                                        </div>
                                     </div>
-                                    <div className="absolute -top-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
-                                        <FaBook className="text-white text-xs" />
-                                    </div>
+                                    {module.isExpanded && (
+                                        <div className="p-6 border-t border-gray-200 dark:border-gray-700 space-y-6">
+                                            <Input addonBefore="Tên chương" value={module.title} onChange={(e) => handleUpdateModule(module.id, 'title', e.target.value)} />
+                                            <Input.TextArea addonBefore="Mô tả" value={module.description} onChange={(e) => handleUpdateModule(module.id, 'description', e.target.value)} rows={3} />
+                                            <InputNumber addonBefore="Thời lượng (phút)" value={module.duration} onChange={(value) => handleUpdateModule(module.id, 'duration', value || 0)} min={0} className="w-full" />
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mục tiêu học tập</label>
+                                                {module.learningObjectives.map((obj, i) => (
+                                                    <div key={i} className="flex items-center gap-2 mb-2">
+                                                        <Input value={obj} onChange={(e) => handleUpdateObjective(module.id, module.learningObjectives, i, e.target.value)} />
+                                                        {module.learningObjectives.length > 1 && <Button icon={<FaTrash />} onClick={() => handleRemoveObjective(module.id, module.learningObjectives, i)} danger />}
+                                                    </div>
+                                                ))}
+                                                <Button type="dashed" onClick={() => handleAddObjective(module.id, module.learningObjectives)} icon={<FaPlus />}>Thêm mục tiêu</Button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                                <div>
-                                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1">
-                                        Giáo trình khóa học
-                                    </h2>
-                                    <p className="text-gray-600 dark:text-gray-300 text-lg">
-                                        Xây dựng chương trình học chi tiết và có cấu trúc
-                                    </p>
-                                </div>
+                            </FadeInOnScrollSpring>
+                        ))}
+                        {curriculum.modules.length === 0 && (
+                            <div className="text-center py-12 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
+                                <FaBook className="mx-auto text-4xl text-gray-400 dark:text-gray-500 mb-4" />
+                                <h4 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Chưa có chương nào</h4>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Bắt đầu bằng cách thêm chương đầu tiên cho khóa học của bạn.</p>
                             </div>
-
-                            {/* Enhanced Progress Bar */}
-                            <div className="relative">
-                                <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-3 mb-3 overflow-hidden">
-                                    <div className="bg-gradient-to-r from-emerald-500 to-green-600 h-3 rounded-full transition-all duration-500 shadow-sm" style={{ width: '40%' }}>
-                                        <div className="h-full bg-white/20 animate-pulse"></div>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                                    <span>Bước 2 của 5</span>
-                                    <span>40% hoàn thành</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col items-end gap-3">
-                            <div className="flex items-center gap-3">
-                                <div className="text-right">
-                                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                                        {curriculum.modules.length}
-                                    </div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                                        chương đã tạo
-                                    </div>
-                                </div>
-                                {curriculum.modules.length > 0 && (
-                                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                                        <FaCheck className="text-white text-xs" />
-                                    </div>
-                                )}
-                            </div>
-                            
-                            <AutoSaveStatus />
-                            {lastSaved && (
-                                <Button
-                                    type="text"
-                                    size="small"
-                                    icon={<FaTrash />}
-                                    onClick={clearSavedData}
-                                    className="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
-                                    title="Xóa dữ liệu đã lưu"
-                                >
-                                    Xóa bản nháp
-                                </Button>
-                            )}
-                            
-                            {/* Quick stats */}
-                            <div className="flex gap-2">
-                                {['Chương', 'Bài học', 'Thời lượng', 'Mức độ'].map((stat) => (
-                                    <div key={stat} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs text-gray-600 dark:text-gray-400">
-                                        {stat}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        )}
                     </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-between items-center mt-12 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <Button icon={<FaArrowLeft />} onClick={handleBack} size="large">Quay lại</Button>
+                    <Button type="primary" icon={<FaArrowRight />} onClick={handleNext} size="large">Tiếp theo: Thêm nội dung</Button>
                 </div>
             </FadeInUp>
 
-            <ConfigProvider
-                theme={{
-                    algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-                    token: {
-                        colorText: isDarkMode ? "#FFFFFF" : "#000000",
-                        colorTextPlaceholder: isDarkMode ? "#9CA3AF" : "#6B7280",
-                        colorBgContainer: isDarkMode ? "#374151" : "#FFFFFF",
-                        colorBorder: isDarkMode ? "#4B5563" : "#D1D5DB",
-                        colorBorderSecondary: isDarkMode ? "#4B5563" : "#E5E7EB",
-                    },
-                    components: {
-                        Input: {
-                            colorText: isDarkMode ? "#FFFFFF" : "#000000",
-                            colorTextPlaceholder: isDarkMode ? "#9CA3AF" : "#6B7280",
-                            colorBgContainer: isDarkMode ? "#374151" : "#FFFFFF",
-                            colorBorder: isDarkMode ? "#4B5563" : "#D1D5DB",
-                            activeBorderColor: isDarkMode ? "#60A5FA" : "#3B82F6",
-                            hoverBorderColor: isDarkMode ? "#60A5FA" : "#3B82F6",
-                        },
-                        InputNumber: {
-                            colorText: isDarkMode ? "#FFFFFF" : "#000000",
-                            colorTextPlaceholder: isDarkMode ? "#9CA3AF" : "#6B7280",
-                            colorBgContainer: isDarkMode ? "#374151" : "#FFFFFF",
-                            colorBorder: isDarkMode ? "#4B5563" : "#D1D5DB",
-                            activeBorderColor: isDarkMode ? "#60A5FA" : "#3B82F6",
-                            hoverBorderColor: isDarkMode ? "#60A5FA" : "#3B82F6",
-                        },
-                        Button: {
-                            colorText: isDarkMode ? "#FFFFFF" : "#000000",
-                            colorBgContainer: isDarkMode ? "#374151" : "#FFFFFF",
-                            colorBorder: isDarkMode ? "#4B5563" : "#D1D5DB",
-                        },
-                        Collapse: {
-                            colorText: isDarkMode ? "#FFFFFF" : "#000000",
-                            colorBgContainer: isDarkMode ? "#374151" : "#FFFFFF",
-                            colorBorder: isDarkMode ? "#4B5563" : "#D1D5DB",
-                        },
-                        Modal: {
-                            colorText: isDarkMode ? "#FFFFFF" : "#000000",
-                            colorBgContainer: isDarkMode ? "#374151" : "#FFFFFF",
-                            colorBorder: isDarkMode ? "#4B5563" : "#D1D5DB",
-                            colorBgElevated: isDarkMode ? "#374151" : "#FFFFFF",
-                            colorBgMask: isDarkMode ? "rgba(0, 0, 0, 0.7)" : "rgba(0, 0, 0, 0.45)",
-                        },
-                        Form: {
-                            labelColor: isDarkMode ? "#FFFFFF" : "#000000",
-                            labelFontSize: 14,
-                        }
-                    }
-                }}
+            {/* Add Chapter Modal */}
+            <Modal
+                title="Thêm chương mới"
+                open={isModalOpen}
+                onCancel={handleCloseModal}
+                footer={[
+                    <Button key="back" onClick={handleCloseModal} size="large">Hủy</Button>,
+                    <Button key="submit" type="primary" loading={isSubmitting} onClick={handleModalSubmit} size="large">Thêm chương</Button>,
+                ]}
+                width={600}
+                centered
             >
-                <div className="space-y-8">
-                    {/* Enhanced Add New Module Section */}
-                    <FadeInUp delay={100}>
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl flex items-center justify-center shadow-md">
-                                    <FaGraduationCap className="text-lg" />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Quản lý chương học</h3>
-                                    <p className="text-gray-600 dark:text-gray-400">Tạo và tổ chức cấu trúc học tập</p>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-center">
-                                <Button
-                                    type="primary"
-                                    icon={<FaPlus />}
-                                    onClick={handleOpenModal}
-                                    size="middle"
-                                    className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 border-0 px-6 py-2 h-auto font-semibold shadow-md hover:shadow-lg transition-all duration-200 rounded-lg"
-                                >
-                                    Thêm chương mới
-                                </Button>
-                            </div>
-                        </div>
-                    </FadeInUp>
-
-                    {/* Enhanced Existing Modules Section */}
-                    {curriculum.modules.length > 0 && (
-                        <FadeInUp delay={200}>
-                            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
-                                <div className="flex items-center gap-4 mb-6">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl flex items-center justify-center shadow-md">
-                                        <FaBook className="text-lg" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                                            Danh sách chương ({curriculum.modules.length})
-                                        </h3>
-                                        <p className="text-gray-600 dark:text-gray-400">Quản lý và chỉnh sửa các chương học</p>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    {curriculum.modules.map((module, index) => (
-                                        <FadeInOnScrollSpring key={module.id}>
-                                            <div className="bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-300 hover:shadow-lg">
-                                                <div
-                                                    className="flex items-center justify-between p-6 cursor-pointer hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 dark:hover:from-emerald-900/20 dark:hover:to-green-900/20 transition-all duration-300"
-                                                    onClick={() => toggleModuleExpansion(module.id)}
-                                                >
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 text-white rounded-xl font-bold text-lg shadow-md">
-                                                            {index + 1}
-                                                        </div>
-                                                        <div>
-                                                            <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{module.title}</h4>
-                                                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                                                                <div className="flex items-center gap-1">
-                                                                    <FaClock className="text-xs" />
-                                                                    <span>{module.duration} phút</span>
-                                                                </div>
-                                                                <div className="flex items-center gap-1">
-                                                                    <FaGraduationCap className="text-xs" />
-                                                                    <span>{module.learningObjectives.length} mục tiêu</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center gap-3">
-                                                        <Button
-                                                            type="text"
-                                                            danger
-                                                            icon={<FaTrash />}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                removeModule(module.id);
-                                                            }}
-                                                            className="hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg"
-                                                            title="Xóa chương"
-                                                        />
-                                                        <div className="text-xs px-2 py-1 rounded-full border ml-2 select-none">
-                                                            {module.isOptional ? 'Tùy chọn' : 'Bắt buộc'}
-                                                        </div>
-                                                        {module.difficulty && (
-                                                            <div className="text-xs px-2 py-1 rounded-full border ml-2 select-none">
-                                                                {module.difficulty === 'easy' ? 'Dễ' : module.difficulty === 'medium' ? 'Trung bình' : 'Khó'}
-                                                            </div>
-                                                        )}
-                                                        <div className="text-emerald-600 dark:text-emerald-400">
-                                                            {module.isExpanded ? <FaChevronUp className="text-lg" /> : <FaChevronDown className="text-lg" />}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                        {module.isExpanded && (
-                                            <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900">
-                                                <div className="space-y-4">
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                                            Tên chương
-                                                        </label>
-                                                        <Input
-                                                            value={module.title}
-                                                            onChange={(e) => handleUpdateModule(module.id, 'title', e.target.value)}
-                                                            className="rounded-lg"
-                                                        />
-                                                    </div>
-
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        <div>
-                                                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                                                Mô tả
-                                                            </label>
-                                                            <Input.TextArea
-                                                                value={module.description}
-                                                                onChange={(e) => handleUpdateModule(module.id, 'description', e.target.value)}
-                                                                rows={3}
-                                                                className="rounded-lg"
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                                                Thời lượng (phút)
-                                                            </label>
-                                                            <Input
-                                                                type="number"
-                                                                value={module.duration}
-                                                                onChange={(e) => handleUpdateModule(module.id, 'duration', parseInt(e.target.value) || 0)}
-                                                                className="rounded-lg"
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                                            Mục tiêu học tập
-                                                        </label>
-                                                        {module.learningObjectives.map((objective, objIndex) => (
-                                                            <div key={objIndex} className="flex gap-2 mb-2">
-                                                                <Input
-                                                                    value={objective}
-                                                                    onChange={(e) => handleUpdateObjective(module.id, module.learningObjectives, objIndex, e.target.value)}
-                                                                    placeholder={`Mục tiêu ${objIndex + 1}`}
-                                                                    className="rounded-lg"
-                                                                />
-                                                                {module.learningObjectives.length > 1 && (
-                                                                    <Button
-                                                                        type="text"
-                                                                        danger
-                                                                        icon={<FaTrash />}
-                                                                        onClick={() => handleRemoveObjective(module.id, module.learningObjectives, objIndex)}
-                                                                    />
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                        <Button
-                                                            type="dashed"
-                                                            icon={<FaPlus />}
-                                                            onClick={() => handleAddObjective(module.id, module.learningObjectives)}
-                                                            className="mt-2"
-                                                        >
-                                                            Thêm mục tiêu
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                            </div>
-                                            </FadeInOnScrollSpring>
-                                    ))}
-                                </div>
-                            </div>
-                        </FadeInUp>
-                    )}
-
-                    {/* Enhanced Navigation Section */}
-                    <FadeInUp delay={300}>
-                        <div className="bg-gradient-to-r from-white to-emerald-50 dark:from-gray-800 dark:to-emerald-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-md">
-                            <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl flex items-center justify-center shadow-md">
-                                            <FaCheck className="text-lg" />
-                                        </div>
-                                        <div>
-                                            <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                                                Bước 2 của 5: Giáo trình khóa học
-                                            </div>
-                                            <div className="text-gray-600 dark:text-gray-400">
-                                                Xây dựng cấu trúc bài học và mục tiêu học tập
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-                                        <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                                            <FaCheck className="text-white text-xs" />
-                                        </div>
-                                        <span>Dữ liệu được tự động lưu an toàn trong quá trình nhập</span>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row gap-4">
-                                    <button
-                                        type="button"
-                                        className="group inline-flex items-center gap-2 px-6 py-2.5 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 shadow-sm hover:shadow-md whitespace-nowrap"
-                                        onClick={handleBack}
-                                    >
-                                        <FaArrowLeft className="text-xs transition-transform duration-200 ease-in-out group-hover:-translate-x-0.5" />
-                                        <span>Quay lại</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white px-8 py-2.5 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap"
-                                        onClick={handleNext}
-                                    >
-                                        <span>Tiếp theo: Thêm nội dung</span>
-                                        <FaArrowRight className="text-xs transition-transform duration-200 ease-in-out group-hover:translate-x-0.5" />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </FadeInUp>
-                </div>
-
-                {/* Add Chapter Modal */}
-                <Modal
-                    title={
-                        <div className="text-lg font-semibold text-gray-900 dark:text-white">
-                            Thêm chương mới
-                        </div>
-                    }
-                    open={isModalOpen}
-                    onCancel={handleCloseModal}
-                    footer={null}
-                    width={600}
-                    centered
-                    className="curriculum-modal"
-                    maskClosable={true}
-                    keyboard={true}
-                    styles={{
-                        body: {
-                            backgroundColor: isDarkMode ? '#374151' : '#ffffff',
-                            color: isDarkMode ? '#ffffff' : '#000000'
-                        },
-                        header: {
-                            backgroundColor: isDarkMode ? '#374151' : '#ffffff',
-                            borderBottom: `1px solid ${isDarkMode ? '#4B5563' : '#E5E7EB'}`
-                        }
-                    }}
-                >
-                    <Form
-                        form={modalForm}
-                        layout="vertical"
-                        onFinish={handleModalSubmit}
-                        className="mt-6"
-                        initialValues={{
-                            duration: undefined,
-                            learningObjectives: [''],
-                            isOptional: false,
-                            difficulty: 'easy'
-                        }}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                                e.preventDefault();
-                                handleModalSubmit();
-                            }
-                        }}
-                    >
-                        <Form.Item
-                            name="title"
-                            label={<span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Tên chương</span>}
-                            rules={[
-                                { required: true, message: 'Vui lòng nhập tên chương!' },
-
-                                { max: 100, message: 'Tên chương không được vượt quá 100 ký tự!' }
-                            ]}
-                        >
-                            <Input
-                                placeholder="VD: Giới thiệu về React"
-                                size="large"
-                                className="rounded-lg"
-                                maxLength={100}
-                            />
+                <Form form={modalForm} layout="vertical" onFinish={handleModalSubmit} className="mt-6">
+                    <Form.Item name="title" label="Tên chương" rules={[{ required: true, message: 'Vui lòng nhập tên chương!' }, { max: 100, message: 'Tên không quá 100 ký tự!' }]}>
+                        <Input placeholder="VD: Giới thiệu về React" size="large" />
+                    </Form.Item>
+                    <div className="grid grid-cols-2 gap-4">
+                        <Form.Item name="duration" label="Thời lượng (phút)" rules={[{ required: true, message: 'Vui lòng nhập thời lượng!' }, { type: 'number', min: 1, message: 'Thời lượng phải lớn hơn 0!' }]}>
+                            <InputNumber placeholder="60" size="large" className="w-full" />
                         </Form.Item>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Form.Item
-                                name="isOptional"
-                                valuePropName="checked"
-                                label={<span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Chương tùy chọn</span>}
-                            >
-                                <input type="checkbox" className="w-5 h-5" />
-                            </Form.Item>
-                            <Form.Item
-                                name="difficulty"
-                                label={<span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Mức độ</span>}
-                            >
-                                <select className="w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3">
-                                    <option value="easy">Dễ</option>
-                                    <option value="medium">Trung bình</option>
-                                    <option value="hard">Khó</option>
-                                </select>
-                            </Form.Item>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Form.Item
-                                name="duration"
-                                label={<span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Thời lượng (phút)</span>}
-                                rules={[
-                                    { required: true, message: 'Vui lòng nhập thời lượng!' },
-                                    {
-                                        validator: (_, value) => {
-                                            if (!value) {
-                                                return Promise.reject(new Error('Vui lòng nhập thời lượng!'));
-                                            }
-                                            if (value < 1) {
-                                                return Promise.reject(new Error('Thời lượng phải lớn hơn 0!'));
-                                            }
-                                            if (value > 600) {
-                                                return Promise.reject(new Error('Thời lượng không được vượt quá 600 phút!'));
-                                            }
-                                            return Promise.resolve();
-                                        }
-                                    }
-                                ]}
-                            >
-                                <InputNumber
-                                    placeholder="60"
-                                    size="large"
-                                    className="rounded-lg w-full"
-                                    min={1}
-                                    max={600}
-                                    precision={0}
-                                    controls={true}
-                                    keyboard={true}
-                                />
-                            </Form.Item>
-
-                            <div></div>
-                        </div>
-
-                        <Form.Item
-                            name="description"
-                            label={<span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Mô tả chương</span>}
-                            rules={[
-                                { max: 500, message: 'Mô tả không được vượt quá 500 ký tự!' }
-                            ]}
-                        >
-                            <Input.TextArea
-                                placeholder="Mô tả chi tiết về nội dung chương học này"
-                                rows={3}
-                                className="rounded-lg"
-                                maxLength={500}
-                                showCount
-                            />
+                        <Form.Item name="difficulty" label="Mức độ" initialValue="easy">
+                            <select className="w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3">
+                                <option value="easy">Dễ</option>
+                                <option value="medium">Trung bình</option>
+                                <option value="hard">Khó</option>
+                            </select>
                         </Form.Item>
-
-                        <Form.List name="learningObjectives">
-                            {(fields, { add, remove }) => (
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                                        Mục tiêu học tập
-                                    </label>
-                                    {fields.map(({ key, name, ...restField }) => (
-                                        <div key={key} className="flex gap-2 mb-3">
-                                            <Form.Item
-                                                {...restField}
-                                                name={[name]}
-                                                className="flex-1 mb-0"
-                                                rules={[
-                                                    { required: true, message: 'Vui lòng nhập mục tiêu!' },
-                                                    { max: 200, message: 'Mục tiêu không được vượt quá 200 ký tự!' }
-                                                ]}
-                                            >
-                                                <Input
-                                                    placeholder={`Mục tiêu ${name + 1}`}
-                                                    className="rounded-lg"
-                                                    maxLength={200}
-                                                />
-                                            </Form.Item>
-                                            {fields.length > 1 && (
-                                                <Button
-                                                    type="text"
-                                                    danger
-                                                    icon={<FaTrash />}
-                                                    onClick={() => remove(name)}
-                                                    className="flex-shrink-0"
-                                                />
-                                            )}
-                                        </div>
-                                    ))}
-                                    <Button
-                                        type="dashed"
-                                        onClick={() => add()}
-                                        icon={<FaPlus />}
-                                        className="w-full mt-2"
-                                        disabled={fields.length >= 10}
-                                    >
-                                        Thêm mục tiêu {fields.length >= 10 && '(Tối đa 10 mục tiêu)'}
-                                    </Button>
-                                </div>
-                            )}
-                        </Form.List>
-
-                        <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
-                            <Button
-                                onClick={handleCloseModal}
-                                size="large"
-                                className="px-6"
-                                disabled={isSubmitting}
-                            >
-                                Hủy
-                            </Button>
-                            <Button
-                                type="primary"
-                                htmlType="submit"
-                                size="large"
-                                loading={isSubmitting}
-                                className="bg-blue-600 hover:bg-blue-700 px-6"
-                            >
-                                {isSubmitting ? 'Đang thêm...' : 'Thêm chương'}
-                            </Button>
-                        </div>
-                    </Form>
-                </Modal>
-            </ConfigProvider>
-        </div>
+                    </div>
+                    <Form.Item name="description" label="Mô tả chương" rules={[{ max: 500, message: 'Mô tả không quá 500 ký tự!' }]}>
+                        <Input.TextArea placeholder="Mô tả chi tiết về nội dung chương học này" rows={3} showCount maxLength={500} />
+                    </Form.Item>
+                    <Form.List name="learningObjectives" initialValue={['']}>
+                        {(fields, { add, remove }) => (
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Mục tiêu học tập</label>
+                                {fields.map(({ key, name, ...restField }) => (
+                                    <div key={key} className="flex items-center gap-2 mb-2">
+                                        <Form.Item {...restField} name={[name]} className="flex-1 mb-0" rules={[{ required: true, message: 'Vui lòng nhập mục tiêu!' }]}>
+                                            <Input placeholder={`Mục tiêu ${name + 1}`} />
+                                        </Form.Item>
+                                        {fields.length > 1 && <Button icon={<FaTrash />} onClick={() => remove(name)} danger />}
+                                    </div>
+                                ))}
+                                <Button type="dashed" onClick={() => add()} block icon={<FaPlus />}>Thêm mục tiêu</Button>
+                            </div>
+                        )}
+                    </Form.List>
+                </Form>
+            </Modal>
+        </ConfigProvider>
     );
 };
 

@@ -195,7 +195,7 @@ export const useCreateCourseStore = create<CreateCourseStore>()(
                             ...state.curriculum,
                             modules: [
                                 ...state.curriculum.modules,
-                                { ...module, id: Date.now().toString(), isExpanded: true }
+                                { ...module, id: Date.now().toString(), isExpanded: false }
                             ]
                         }
                     }),

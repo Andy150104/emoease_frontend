@@ -1,5 +1,5 @@
 'use client';
-import { FC, useState, useCallback, useEffect, useMemo } from 'react';
+import { FC, useState, useCallback, useMemo } from 'react';
 import { ConfigProvider, theme, message, Modal, Form, Input, Button, Upload, InputNumber, Collapse } from 'antd';
 import { useTheme } from 'EmoEase/Provider/ThemeProvider';
 import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
@@ -164,15 +164,6 @@ const CourseContent: FC = () => {
     }
   ];
 
-  const countByType = useCallback((moduleId: string) => {
-    const items = getModuleItems(moduleId);
-    return {
-      video: items.filter(i => i.type === ContentType.VIDEO).length,
-      quiz: items.filter(i => i.type === ContentType.QUIZ).length,
-      question: items.filter(i => i.type === ContentType.QUESTION).length,
-      file: items.filter(i => i.type === ContentType.FILE).length,
-    };
-  }, [getModuleItems]);
 
   // Handle content type selection
   const handleTypeSelection = useCallback((type: ContentType) => {
@@ -587,255 +578,106 @@ const CourseContent: FC = () => {
       theme={{
         algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: {
-          colorText: isDarkMode ? "#FFFFFF" : "#000000",
+          colorText: isDarkMode ? "#E5E7EB" : "#1F2937",
           colorTextPlaceholder: isDarkMode ? "#9CA3AF" : "#6B7280",
           colorBgContainer: isDarkMode ? "#374151" : "#FFFFFF",
           colorBorder: isDarkMode ? "#4B5563" : "#D1D5DB",
         }
       }}
     >
-      <div className="space-y-6 max-w-5xl mx-auto px-4">
-        {/* Enhanced Header with Progress */}
-        <FadeInUp>
-          <div className="bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-md">
-            {/* Breadcrumb */}
-            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
-              <span>Tạo khóa học</span>
-              <span>›</span>
-              <button 
-                onClick={() => {
-                  if (totalContentCount > 0) {
-                    if (confirm('Bạn có chắc chắn muốn quay lại bước Thông tin cơ bản? Dữ liệu hiện tại sẽ được lưu tự động.')) {
-                      setCurrentStep(0);
-                    }
-                  } else {
-                    setCurrentStep(0);
-                  }
-                }}
-                className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium cursor-pointer transition-colors underline-offset-2 hover:underline"
-              >
-                Thông tin cơ bản
-              </button>
-              <span>›</span>
-              <button 
-                onClick={() => {
-                  if (totalContentCount > 0) {
-                    if (confirm('Bạn có chắc chắn muốn quay lại bước Giáo trình? Dữ liệu hiện tại sẽ được lưu tự động.')) {
-                      setCurrentStep(1);
-                    }
-                  } else {
-                    setCurrentStep(1);
-                  }
-                }}
-                className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium cursor-pointer transition-colors underline-offset-2 hover:underline"
-              >
-                Giáo trình
-              </button>
-              <span>›</span>
-              <span className="text-indigo-600 dark:text-indigo-400 font-medium cursor-default">Nội dung bài học</span>
+      <FadeInUp>
+        {/* Header */}
+        <div className="flex justify-between items-start mb-8">
+            <div>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Nội dung khóa học</h2>
+                <p className="text-gray-500 dark:text-gray-400 mt-1">Thêm video, quiz, và tài liệu để hoàn thiện khóa học của bạn.</p>
             </div>
+        </div>
 
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              <div className="flex-1">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="relative">
-                    <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">
-                      3
-                    </div>
-                    <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                      <FaCheck className="text-white text-xs" />
-                    </div>
-                  </div>
-                  <div>
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1">
-                      Nội dung khóa học
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-300 text-lg">
-                      Thêm video, quiz, câu hỏi và tài liệu học tập để hoàn thiện khóa học
-                    </p>
-                  </div>
-                </div>
-
-                {/* Enhanced Progress Bar */}
-                <div className="relative">
-                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-3 mb-3 overflow-hidden">
-                    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 h-3 rounded-full transition-all duration-500 shadow-sm" style={{ width: '60%' }}>
-                      <div className="h-full bg-white/20 animate-pulse"></div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                    <span>Bước 3 của 5</span>
-                    <span>60% hoàn thành</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col items-end gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-gray-900 dark:text-white">{totalContentCount}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      nội dung đã thêm
-                    </div>
-                  </div>
-                  {totalContentCount > 0 && (
-                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                      <FaCheck className="text-white text-xs" />
-                    </div>
-                  )}
-                </div>
-                
-                {/* Quick stats */}
-                <div className="flex gap-2">
-                  {['Video', 'Quiz', 'Thảo luận', 'Tài liệu'].map((type) => (
-                    <div key={type} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs text-gray-600 dark:text-gray-400">
-                      {type}: 0
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </FadeInUp>
-
-        {/* Modules with per-module content */}
-        <FadeInUp delay={100}>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Thêm nội dung theo từng chương</h3>
-            </div>
-            <div className="space-y-6">
-              {curriculum.modules.length === 0 && (
-                <div className="text-gray-500 dark:text-gray-400">Chưa có chương nào. Hãy tạo chương ở bước 2.</div>
-              )}
-              {curriculum.modules.map((module) => {
+        {/* Modules Collapse */}
+        <div className="space-y-4">
+            {curriculum.modules.map((module) => {
                 const items = getModuleItems(module.id);
-                const summary = countByType(module.id);
                 return (
-                  <div key={module.id} className="border border-gray-200 dark:border-gray-700 rounded-xl">
-                    <div className="flex items-center justify-between p-4">
-                      <div>
-                        <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">{module.title}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2 mt-1">
-                          <span className="mr-1">{items.length} nội dung</span>
-                          <span className="px-2 py-0.5 rounded-full border border-red-200 text-red-600 bg-red-50 text-xs">Video: {summary.video}</span>
-                          <span className="px-2 py-0.5 rounded-full border border-emerald-200 text-emerald-600 bg-emerald-50 text-xs">Quiz: {summary.quiz}</span>
-                          <span className="px-2 py-0.5 rounded-full border border-blue-200 text-blue-600 bg-blue-50 text-xs">Thảo luận: {summary.question}</span>
-                          <span className="px-2 py-0.5 rounded-full border border-amber-200 text-amber-600 bg-amber-50 text-xs">Tài liệu: {summary.file}</span>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        {/* Inline quick add menu - toned to outline pills */}
-                        <button onClick={() => { setActiveModuleId(module.id); handleTypeSelection(ContentType.VIDEO); }} className="px-3 py-1.5 rounded-full text-red-600 border border-red-300 hover:bg-red-50">+ Video</button>
-                        <button onClick={() => { setActiveModuleId(module.id); handleTypeSelection(ContentType.QUIZ); }} className="px-3 py-1.5 rounded-full text-emerald-600 border border-emerald-300 hover:bg-emerald-50">+ Quiz</button>
-                        <button onClick={() => { setActiveModuleId(module.id); handleTypeSelection(ContentType.FILE); }} className="px-3 py-1.5 rounded-full text-amber-600 border border-amber-300 hover:bg-amber-50">+ Tài liệu</button>
-                        <button onClick={() => { setActiveModuleId(module.id); handleTypeSelection(ContentType.QUESTION); }} className="px-3 py-1.5 rounded-full text-blue-600 border border-blue-300 hover:bg-blue-50">+ Thảo luận</button>
-                      </div>
-                    </div>
-                    <div className="p-4 pt-0">
-                      {items.length === 0 ? (
-                        <div className="text-sm text-gray-500 dark:text-gray-400">Chưa có nội dung trong chương này.</div>
-                      ) : (
-                        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, module.id)}>
-                          <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
-                            <div className="space-y-3">
-                              {items.sort((a,b)=>a.order-b.order).map((it) => (
-                                <SortableContentItem key={it.id} item={it} moduleId={module.id} />
-                              ))}
+                    <div key={module.id} className="bg-white dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 transition-shadow hover:shadow-sm">
+                        <div className="p-4 flex justify-between items-center">
+                            <div>
+                                <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-200">{module.title}</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{items.length} nội dung</p>
                             </div>
-                          </SortableContext>
-                        </DndContext>
-                      )}
+                            <Button icon={<FaPlus />} onClick={() => { setActiveModuleId(module.id); setIsModalOpen(true); setSelectedType(null); }}>
+                                Thêm nội dung
+                            </Button>
+                        </div>
+                        <div className="px-4 pb-4">
+                            {items.length > 0 ? (
+                                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, module.id)}>
+                                    <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
+                                        <div className="space-y-2">
+                                            {items.sort((a,b)=>a.order-b.order).map((it) => (
+                                                <SortableContentItem key={it.id} item={it} moduleId={module.id} />
+                                            ))}
+                                        </div>
+                                    </SortableContext>
+                                </DndContext>
+                            ) : (
+                                <div className="text-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md">
+                                    <p className="text-gray-500 dark:text-gray-400">Chưa có nội dung nào. Bấm "Thêm nội dung" để bắt đầu.</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </FadeInUp>
+                )
+            })}
+        </div>
 
-        {/* Navigation */}
-        <FadeInUp delay={300}>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 rounded-lg flex items-center justify-center text-sm font-bold">
-                  ✓
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Bước 3 của 5: Nội dung khóa học
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {Object.values(contentByModule).reduce((acc, arr) => acc + (arr?.length || 0), 0) > 0 
-                      ? `Đã thêm ${Object.values(contentByModule).reduce((acc, arr) => acc + (arr?.length || 0), 0)} nội dung` 
-                      : 'Thêm nội dung để tiếp tục'
-                    }
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => { setCurrentStep(1); setTimeout(()=>{ const c=document.getElementById('create-course-content'); if(c) c.scrollIntoView({behavior:'smooth', block:'start'}); else window.scrollTo({top:0, behavior:'smooth'}); }, 50); }}
-                  className="inline-flex items-center gap-2 px-6 py-3 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 whitespace-nowrap"
-                >
-                  <FaArrowLeft />
-                  Quay lại
-                </button>
-                <button
-                  onClick={() => { setCurrentStep(3); setTimeout(()=>{ const c=document.getElementById('create-course-content'); if(c) c.scrollIntoView({behavior:'smooth', block:'start'}); else window.scrollTo({top:0, behavior:'smooth'}); }, 50); }}
-                  disabled={Object.values(contentByModule).reduce((acc, arr) => acc + (arr?.length || 0), 0) === 0}
-                  className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                >
-                  <span>Tiếp theo: Giá</span>
-                  <FaArrowRight />
-                </button>
-              </div>
-            </div>
-          </div>
-        </FadeInUp>
+        {/* Actions */}
+        <div className="flex justify-between items-center mt-12 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <Button icon={<FaArrowLeft />} onClick={() => {
+                const container = document.getElementById('create-course-content');
+                if (container) {
+                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+                setCurrentStep(1);
+            }} size="large">Quay lại</Button>
+            <Button type="primary" icon={<FaArrowRight />} onClick={() => {
+                const container = document.getElementById('create-course-content');
+                if (container) {
+                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+                setCurrentStep(3);
+            }} size="large" disabled={totalContentCount === 0}>
+                Tiếp theo: Giá & Khuyến mãi
+            </Button>
+        </div>
 
         {/* Modal for adding/editing content */}
         <Modal
-          title={null}
+          title={editingItem ? 'Chỉnh sửa nội dung' : 'Thêm nội dung mới'}
           open={isModalOpen}
-          onCancel={() => {
-            setIsModalOpen(false);
-            setEditingItem(null);
-            form.resetFields();
-          }}
+          onCancel={() => { setIsModalOpen(false); setEditingItem(null); form.resetFields(); setSelectedType(null); }}
           footer={null}
-          width={600}
-          className="top-8"
+          width={selectedType ? 600 : 800}
+          destroyOnHidden
         >
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleSubmitContent}
-          >
-            {renderModalContent()}
-            
-            <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <Button
-                onClick={() => {
-                  setIsModalOpen(false);
-                  setEditingItem(null);
-                  form.resetFields();
-                }}
-                className="px-6"
-              >
-                Hủy
-              </Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="px-6 bg-gradient-to-r from-purple-600 to-blue-600 border-none"
-              >
-                {editingItem ? 'Cập nhật' : 'Thêm nội dung'}
-              </Button>
-            </div>
-          </Form>
+            {!selectedType ? (
+                <div className="p-4">
+                    <h3 className="text-center text-lg font-semibold mb-6">Chọn loại nội dung bạn muốn thêm</h3>
+                    {renderContentTypeSelector()}
+                </div>
+            ) : (
+                <Form form={form} layout="vertical" onFinish={handleSubmitContent}>
+                    {renderModalContent()}
+                    <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <Button onClick={() => { setIsModalOpen(false); setEditingItem(null); form.resetFields(); setSelectedType(null); }}>Hủy</Button>
+                        <Button type="primary" htmlType="submit">{editingItem ? 'Cập nhật' : 'Thêm nội dung'}</Button>
+                    </div>
+                </Form>
+            )}
         </Modal>
 
         {/* Quiz Builder Modal */}
@@ -845,15 +687,11 @@ const CourseContent: FC = () => {
           onCancel={handleQuizCancel}
           footer={null}
           width={900}
-          className="top-8"
-          destroyOnClose
+          destroyOnHidden
         >
-          <QuizBuilder
-            onSave={handleQuizSave}
-            onCancel={handleQuizCancel}
-          />
+          <QuizBuilder onSave={handleQuizSave} onCancel={handleQuizCancel} />
         </Modal>
-      </div>
+      </FadeInUp>
     </ConfigProvider>
   );
 };

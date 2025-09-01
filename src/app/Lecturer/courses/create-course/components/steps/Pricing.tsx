@@ -15,12 +15,14 @@ type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 const Pricing: FC = () => {
     const { isDarkMode } = useTheme();
     const { pricing, updatePricing, setCurrentStep } = useCreateCourseStore();
-    const [form] = Form.useForm();
+    const form = Form.useFormInstance();
 
     const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
     const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const isInitialLoadRef = useRef(true);
+
+
 
     const saveToLocal = useCallback((values: any) => {
         try {
@@ -48,11 +50,21 @@ const Pricing: FC = () => {
             const saved = localStorage.getItem(AUTO_SAVE_KEY);
             if (saved) {
                 const parsed = JSON.parse(saved);
-                const { timestamp, version, formStep, ...data } = parsed;
-                if (data.discountStartDate) data.discountStartDate = dayjs(data.discountStartDate);
-                if (data.discountEndDate) data.discountEndDate = dayjs(data.discountEndDate);
-                form.setFieldsValue(data);
-                setLastSaved(new Date(parsed.timestamp));
+                const savedTimestamp = new Date(parsed.timestamp);
+                const now = new Date();
+                const diffMinutes = (now.getTime() - savedTimestamp.getTime()) / (1000 * 60);
+
+                if (diffMinutes > 10) {
+                    localStorage.removeItem(AUTO_SAVE_KEY);
+                    message.warning('Dữ liệu đã lưu đã quá 10 phút và đã bị xóa.');
+                } else {
+                    const { timestamp, version, formStep, ...data } = parsed;
+                    if (data.discountStartDate) data.discountStartDate = dayjs(data.discountStartDate);
+                    if (data.discountEndDate) data.discountEndDate = dayjs(data.discountEndDate);
+                    form.setFieldsValue(data);
+                    setLastSaved(new Date(parsed.timestamp));
+                    message.success('Đã khôi phục dữ liệu đã lưu trước đó');
+                }
             } else {
                 form.setFieldsValue({
                     basePrice: pricing.basePrice || undefined,
@@ -77,7 +89,15 @@ const Pricing: FC = () => {
         debouncedSave(form.getFieldsValue());
     }, [debouncedSave, form]);
 
-    const onBack = () => setCurrentStep(2);
+    const onBack = () => {
+        const container = document.getElementById('create-course-content');
+        if (container) {
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        setCurrentStep(2);
+    };
     const onNext = async () => {
         try {
             const values = await form.validateFields();
@@ -107,6 +127,12 @@ const Pricing: FC = () => {
                 showStrikethroughOriginal: !!values.showStrikethroughOriginal,
             });
             localStorage.removeItem(AUTO_SAVE_KEY);
+            const container = document.getElementById('create-course-content');
+            if (container) {
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
             setCurrentStep(4);
         } catch {
             const errorField = document.querySelector('.ant-form-item-has-error');
@@ -137,189 +163,90 @@ const Pricing: FC = () => {
     const CONTROL_HEIGHT = 56;
 
     return (
-        <div className="space-y-6 max-w-5xl mx-auto px-4">
-            <FadeInUp>{header}</FadeInUp>
+        <ConfigProvider
+            theme={{
+                algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+                token: {
+                    colorText: isDarkMode ? "#E5E7EB" : "#1F2937",
+                    colorTextPlaceholder: isDarkMode ? "#9CA3AF" : "#6B7280",
+                    colorBgContainer: isDarkMode ? "#374151" : "#FFFFFF",
+                    colorBorder: isDarkMode ? "#4B5563" : "#D1D5DB",
+                },
+            }}
+        >
+            <FadeInUp>
+                {/* Header */}
+                <div className="flex justify-between items-start mb-8">
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Giá & Khuyến mãi</h2>
+                        <p className="text-gray-500 dark:text-gray-400 mt-1">Thiết lập giá và các chương trình ưu đãi cho khóa học của bạn.</p>
+                    </div>
+                </div>
 
-            <ConfigProvider
-                theme={{
-                    algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-                    token: {
-                        colorText: isDarkMode ? '#FFFFFF' : '#000000',
-                        colorTextPlaceholder: isDarkMode ? '#9CA3AF' : '#6B7280',
-                        colorBgContainer: isDarkMode ? '#374151' : '#FFFFFF',
-                        colorBorder: isDarkMode ? '#4B5563' : '#D1D5DB',
-                        borderRadius: 10,
-                        fontSize: 16,
-                        fontSizeLG: 16,
-                        controlHeight: 48,
-                        controlHeightLG: 52,
-                    },
-                    components: {
-                        Form: { labelColor: isDarkMode ? '#FFFFFF' : '#000000', labelFontSize: 13 },
-                        Input: { controlHeightLG: 52 },
-                        InputNumber: { controlHeightLG: 52 },
-                        DatePicker: { controlHeightLG: 52 },
-                        Select: { controlHeightLG: 52 },
-                    },
-                }}
-            >
-                <Form form={form} layout="vertical" onValuesChange={onValuesChange}>
-                    <FadeInUp delay={100}>
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-amber-600 text-white rounded-xl flex items-center justify-center">
-                                    <FaDollarSign />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Giá gốc (VND)</h3>
-                                    <p className="text-gray-600 dark:text-gray-400">Giá bán trước khi áp dụng ưu đãi</p>
-                                </div>
-                            </div>
-                            <Form.Item name="basePrice" rules={[{ required: true, message: 'Vui lòng nhập giá gốc!' }]}> 
-                                <InputNumber
-                                    className="w-full"
-                                    min={0}
-                                    precision={0}
-                                    addonAfter="₫"
-                                    formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                    parser={parseCurrency as unknown as (displayValue: string | undefined) => number}
-                                    placeholder="VD: 499000"
-                                    size="large"
-                                    style={{ height: CONTROL_HEIGHT, fontSize: 16 }}
-                                />
+                <div>
+                    {/* Section 1: Base Price */}
+                    <div className="mb-8">
+                        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-1">Giá gốc</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Giá bán chính thức của khóa học.</p>
+                        <Form.Item name="basePrice" rules={[{ required: true, message: 'Vui lòng nhập giá gốc!' }]}>
+                            <InputNumber
+                                className="w-full"
+                                min={0}
+                                addonAfter="VND"
+                                formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                parser={(v) => v!.replace(/\s?VND|,/g, '')}
+                                placeholder="VD: 500,000"
+                                size="large"
+                            />
+                        </Form.Item>
+                    </div>
+
+                    <hr className="border-gray-200 dark:border-gray-700 my-8" />
+
+                    {/* Section 2: Discount */}
+                    <div className="mb-8">
+                        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-1">Chương trình giảm giá (Tùy chọn)</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Tạo ưu đãi hấp dẫn để thu hút học viên.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <Form.Item name="discountPrice" label="Giảm còn (VND)">
+                                <InputNumber className="w-full" min={0} addonAfter="VND" formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} parser={(v) => v!.replace(/\s?VND|,/g, '')} placeholder="VD: 299,000" size="large" />
+                            </Form.Item>
+                            <Form.Item name="discountStartDate" label="Ngày bắt đầu">
+                                <DatePicker className="w-full" size="large" format="YYYY-MM-DD" />
+                            </Form.Item>
+                            <Form.Item name="discountEndDate" label="Ngày kết thúc">
+                                <DatePicker className="w-full" size="large" format="YYYY-MM-DD" />
                             </Form.Item>
                         </div>
-                    </FadeInUp>
+                    </div>
 
-                    <FadeInUp delay={150}>
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 text-white rounded-xl flex items-center justify-center">
-                                    <FaPercent />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Giảm giá (tùy chọn)</h3>
-                                    <p className="text-gray-600 dark:text-gray-400">Thiết lập giá giảm và thời gian áp dụng</p>
-                                </div>
-                            </div>
+                    <hr className="border-gray-200 dark:border-gray-700 my-8" />
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <Form.Item name="discountPrice" label={<span className="text-sm">Giảm còn (VND)</span>}>
-                                    <InputNumber
-                                        className="w-full"
-                                        min={0}
-                                        precision={0}
-                                        addonAfter="₫"
-                                        formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                        parser={parseCurrency as unknown as (displayValue: string | undefined) => number}
-                                        placeholder="VD: 299000"
-                                        size="large"
-                                        style={{ height: CONTROL_HEIGHT, fontSize: 16 }}
-                                    />
-                                </Form.Item>
-                                <Form.Item shouldUpdate noStyle>
-                                    {() => (
-                                        <Form.Item name="discountStartDate" label={<span className="text-sm">Bắt đầu</span>}>
-                                            <DatePicker className="w-full" size="large" format="YYYY-MM-DD" style={{ height: CONTROL_HEIGHT }} disabled={!form.getFieldValue('discountPrice')} />
-                                        </Form.Item>
-                                    )}
-                                </Form.Item>
-                                <Form.Item shouldUpdate noStyle>
-                                    {() => (
-                                        <Form.Item name="discountEndDate" label={<span className="text-sm">Kết thúc</span>}>
-                                            <DatePicker className="w-full" size="large" format="YYYY-MM-DD" style={{ height: CONTROL_HEIGHT }} disabled={!form.getFieldValue('discountPrice')} />
-                                        </Form.Item>
-                                    )}
-                                </Form.Item>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <Form.Item name="maxDiscountQuantity" label={<span className="text-sm">Số lượt ưu đãi tối đa</span>}>
-                                    <InputNumber className="w-full" min={1} precision={0} placeholder="VD: 100" style={{ height: CONTROL_HEIGHT, fontSize: 16 }} disabled={!form.getFieldValue('discountPrice')} />
-                                </Form.Item>
-                                <Form.Item name="showStrikethroughOriginal" label={<span className="text-sm">Hiển thị gạch giá gốc khi giảm</span>} valuePropName="checked">
-                                    <Switch />
-                                </Form.Item>
-                            </div>
-                        </div>
-                    </FadeInUp>
-
-                    <FadeInUp delay={200}>
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-xl flex items-center justify-center">
-                                    <FaTicketAlt />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Mã giảm giá riêng (tùy chọn)</h3>
-                                    <p className="text-gray-600 dark:text-gray-400">Học viên nhập mã này để nhận ưu đãi khi thanh toán</p>
-                                </div>
-                            </div>
-                            <Form.Item name="privateCouponCode" label={<span className="text-sm">Mã giảm giá riêng (tùy chọn)</span>}>
-                                <Input placeholder="VD: CODE30, VIP123..." size="large" style={{ height: CONTROL_HEIGHT }} />
+                    {/* Section 3: Promotions */}
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-1">Cài đặt khuyến mãi khác</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Tùy chỉnh cách hiển thị và các mã giảm giá riêng.</p>
+                        <div className="space-y-6">
+                            <Form.Item name="privateCouponCode" label="Mã giảm giá riêng">
+                                <Input placeholder="VD: CODE2024" size="large" />
+                            </Form.Item>
+                            <Form.Item name="publicPromoMessage" label="Thông điệp ưu đãi công khai">
+                                <Input placeholder="VD: Giảm 50% chỉ trong tuần này!" size="large" />
+                            </Form.Item>
+                            <Form.Item name="showStrikethroughOriginal" label="Hiển thị giá gốc bị gạch bỏ" valuePropName="checked">
+                                <Switch />
                             </Form.Item>
                         </div>
-                    </FadeInUp>
+                    </div>
 
-                    <FadeInUp delay={250}>
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 space-y-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-600 text-white rounded-xl flex items-center justify-center">
-                                    <FaBullhorn />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Thông điệp ưu đãi (hiển thị công khai)</h3>
-                                </div>
-                            </div>
-                            <Form.Item name="publicPromoMessage">
-                                <Input placeholder="VD: Ưu đãi giá hơn hết tuần này!" size="large" />
-                            </Form.Item>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <Form.Item name="packageId" label={<span className="text-sm">Gán khóa học vào gói / combo</span>}>
-                                    <Select
-                                        placeholder="Không chọn"
-                                        options={[
-                                            { label: 'Không chọn', value: undefined },
-                                            { label: 'Combo Lập trình Web', value: 'web_combo' },
-                                            { label: 'Gói Frontend nâng cao', value: 'fe_advanced' },
-                                        ]}
-                                        size="large"
-                                        allowClear
-                                        style={{ height: CONTROL_HEIGHT }}
-                                    />
-                                </Form.Item>
-                                <Form.Item name="valueNote" label={<span className="text-sm">Ghi chú giá trị khóa học</span>}>
-                                    <Input placeholder="VD: Khóa học trị giá hơn 5 triệu, nay chỉ còn..." size="large" style={{ height: CONTROL_HEIGHT }} />
-                                </Form.Item>
-                            </div>
-                        </div>
-                    </FadeInUp>
-
-                    <FadeInUp delay={300}>
-                        <div className="bg-gradient-to-r from-white to-yellow-50 dark:from-gray-800 dark:to-yellow-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-md">
-                            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-amber-600 text-white rounded-xl flex items-center justify-center">
-                                        <FaCheck />
-                                    </div>
-                                    <div className="text-gray-700 dark:text-gray-300">Bước 4 của 5: Thiết lập giá</div>
-                                </div>
-                                <div className="flex gap-3">
-                                    <button type="button" onClick={onBack} className="inline-flex items-center gap-2 px-6 py-2.5 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-600 transition-all">
-                                        <FaArrowLeft className="text-xs" />
-                                        Quay lại
-                                    </button>
-                                    <button type="button" onClick={onNext} className="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white px-8 py-2.5 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all">
-                                        Tiếp theo: Xuất bản
-                                        <FaArrowRight className="text-xs transition-transform group-hover:translate-x-0.5" />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </FadeInUp>
-                </Form>
-            </ConfigProvider>
-        </div>
+                    {/* Actions */}
+                    <div className="flex justify-between items-center mt-12 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <Button icon={<FaArrowLeft />} onClick={onBack} size="large">Quay lại</Button>
+                        <Button type="primary" icon={<FaArrowRight />} onClick={onNext} size="large">Tiếp theo: Xuất bản</Button>
+                    </div>
+                </div>
+            </FadeInUp>
+        </ConfigProvider>
     );
 };
 

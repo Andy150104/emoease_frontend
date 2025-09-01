@@ -248,62 +248,64 @@ const BaseControlUploadImage: React.FC<ImageCropUploadProps> = ({
         getValueFromEvent={({ fileList }) => fileList}
         style={{ marginBottom: 0 }}
       >
-        {/** Khi không disabled: cho phép upload + edit */}
-        {!disabled ? (
-          <ImgCrop
-            showGrid={showGrid}
-            rotationSlider={rotationSlider}
-            aspectSlider={aspectSlider}
-            showReset={showReset}
-          >
-            <Upload
-              disabled={disabled}
-              id={fieldId}
-              action={uploadAction}
-              listType="picture-card"
-              beforeUpload={beforeUpload}
-              accept={accept}
-              fileList={fileList}
-              onChange={handleChange}
-              onPreview={previewHandler}
-              maxCount={maxCount}
-              itemRender={renderUploadItem}
-              showUploadList={{
-                showRemoveIcon: !disabled,
-                showPreviewIcon: true,
-                showDownloadIcon: !disabled,
-              }}
+        <div>
+          {/** Khi không disabled: cho phép upload + edit */}
+          {!disabled ? (
+            <ImgCrop
+              showGrid={showGrid}
+              rotationSlider={rotationSlider}
+              aspectSlider={aspectSlider}
+              showReset={showReset}
             >
-              {fileList.length < maxCount && <div>+ Upload</div>}
-            </Upload>
-          </ImgCrop>
-        ) : (
-          /** Khi disabled: chỉ hiển thị gallery ảnh để xem */
-          <AntdImage.PreviewGroup>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {fileList.map((file) => (
-                <AntdImage
-                  key={file.uid}
-                  width={100}
-                  src={file.url || file.thumbUrl}
-                  preview={{ mask: <></> }}
-                  style={{ border: "1px solid #f0f0f0", borderRadius: 4 }}
-                />
-              ))}
-            </div>
-          </AntdImage.PreviewGroup>
-        )}
+              <Upload
+                disabled={disabled}
+                id={fieldId}
+                action={uploadAction}
+                listType="picture-card"
+                beforeUpload={beforeUpload}
+                accept={accept}
+                fileList={fileList}
+                onChange={handleChange}
+                onPreview={previewHandler}
+                maxCount={maxCount}
+                itemRender={renderUploadItem}
+                showUploadList={{
+                  showRemoveIcon: !disabled,
+                  showPreviewIcon: true,
+                  showDownloadIcon: !disabled,
+                }}
+              >
+                {fileList.length < maxCount && <div>+ Upload</div>}
+              </Upload>
+            </ImgCrop>
+          ) : (
+            /** Khi disabled: chỉ hiển thị gallery ảnh để xem */
+            <AntdImage.PreviewGroup>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {fileList.map((file) => (
+                  <AntdImage
+                    key={file.uid}
+                    width={100}
+                    src={file.url || file.thumbUrl}
+                    preview={{ mask: <></> }}
+                    style={{ border: "1px solid #f0f0f0", borderRadius: 4 }}
+                  />
+                ))}
+              </div>
+            </AntdImage.PreviewGroup>
+          )}
 
-        {/** Modal preview vẫn giữ nguyên */}
-        <AntdImage
-          wrapperStyle={{ display: "none" }}
-          preview={{
-            visible: previewOpen,
-            src: previewImage,
-            onVisibleChange: (vis) => setPreviewOpen(vis),
-          }}
-          alt=""
-        />
+          {/** Modal preview vẫn giữ nguyên */}
+          <AntdImage
+            wrapperStyle={{ display: "none" }}
+            preview={{
+              visible: previewOpen,
+              src: previewImage,
+              onVisibleChange: (vis) => setPreviewOpen(vis),
+            }}
+            alt=""
+          />
+        </div>
       </Form.Item>
 
       <Modal

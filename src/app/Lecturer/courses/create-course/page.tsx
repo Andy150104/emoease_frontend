@@ -1,5 +1,5 @@
 'use client';
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect, useLayoutEffect, useRef } from 'react';
 import { StepTransition } from 'EmoEase/components/Animation/StepTransition';
 import { Form } from 'antd';
 
@@ -12,6 +12,8 @@ import CourseInformation from './components/steps/CourseInformation';
 import Curriculum from './components/steps/Curriculum';
 import CourseContent from './components/steps/CourseContent';
 import Pricing from './components/steps/Pricing';
+import Publish from './components/steps/Publish';
+
 
 // Store
 import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
@@ -24,31 +26,16 @@ const CreateCoursePageContent: FC = () => {
     const [form] = Form.useForm();
     const prevStepRef = useRef(currentStep);
 
-    // Auto scroll to top when step changes
+    // This effect is to track the previous step. Scrolling is handled in each component.
     useEffect(() => {
         if (prevStepRef.current !== currentStep) {
-            const container = document.getElementById('create-course-content');
-            
-            const toTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-            const toContainer = () => container?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-            const active = document.activeElement as HTMLElement | null;
-            const viewportH = window.innerHeight;
-            const activeBottom = active ? active.getBoundingClientRect().bottom : 0;
-            
-            if (activeBottom > viewportH * 0.7) {
-                toTop();
-            } else {
-                toContainer();
-            }
-
             prevStepRef.current = currentStep;
         }
     }, [currentStep]);
 
     const renderStep = () => {
         const currentStepData = COURSE_CREATION_STEPS[currentStep];
-        
+
         if (!currentStepData) {
             return <div className="text-center py-8">Step not found</div>;
         }
@@ -62,17 +49,20 @@ const CreateCoursePageContent: FC = () => {
                 return <CourseContent />;
             case 3:
                 return <Pricing />;
+            case 4:
+                return <Publish />;
             default:
                 return <div className="text-center py-8">Step not found</div>;
         }
     };
 
+
     return (
         <CreateCourseLayout>
-            <div className="min-h-screen">
-                <Form 
-                    form={form} 
-                    layout="vertical" 
+            <div id="create-course-content" className="min-h-screen">
+                <Form
+                    form={form}
+                    layout="vertical"
                     initialValues={courseInformation}
                     className="space-y-6"
                 >
