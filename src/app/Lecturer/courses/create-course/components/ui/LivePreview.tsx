@@ -58,8 +58,11 @@ const LivePreview: FC = () => {
         <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg space-y-2">
           <h2 className="font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2"><FaCheckCircle className="text-green-500"/><span>Bạn sẽ học được gì?</span></h2>
           <ul className="list-disc list-inside text-xs text-gray-600 dark:text-gray-400 space-y-1">
-            {(courseInformation.learningObjectives || '• Kỹ năng A\n• Kỹ năng B\n• Kỹ năng C').split('\n').map((obj, i) => (
-              <li key={i}>{obj.replace('•', '').trim()}</li>
+            {(courseInformation.learningObjectives && courseInformation.learningObjectives.length > 0
+              ? courseInformation.learningObjectives
+              : ['Kỹ năng A', 'Kỹ năng B', 'Kỹ năng C']
+            ).map((obj, i) => (
+              <li key={i}>{obj}</li>
             ))}
           </ul>
         </div>

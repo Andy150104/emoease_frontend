@@ -3,13 +3,23 @@ import { devtools } from 'zustand/middleware';
 
 export interface CourseInformation {
     title: string;
+    subtitle: string;
     description: string;
     detailedDescription: string;
-    learningObjectives: string;
-    targetAudience: string;
+    learningObjectives: string[];
+    targetAudience: string[];
+    requirements: string[];
     level: string;
     category: string;
+    subcategory: string;
+    tags: string[];
+    language: string;
+    subtitleLanguages: string[];
     coverImage?: File;
+    promoVideo?: File | string;
+    seoSlug: string;
+    metaTitle: string;
+    metaDescription: string;
 }
 
 export interface CurriculumModule {
@@ -92,12 +102,21 @@ const defaultInitialState: CreateCourseState = {
     currentStep: 0,
     courseInformation: {
         title: '',
+        subtitle: '',
         description: '',
         detailedDescription: '',
-        learningObjectives: '',
-        targetAudience: '',
-        level: 'Người mới',
-        category: 'Lập trình Java',
+        learningObjectives: [],
+        targetAudience: [],
+        requirements: [],
+        level: 'Beginner',
+        category: 'Java',
+        subcategory: '',
+        tags: [],
+        language: 'vi',
+        subtitleLanguages: [],
+        seoSlug: '',
+        metaTitle: '',
+        metaDescription: '',
     },
     curriculum: {
         modules: [],

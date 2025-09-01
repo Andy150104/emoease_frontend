@@ -88,37 +88,18 @@ const SmartInput: FC<SmartInputProps> = ({
   };
 
   const getOptimizationStatus = () => {
-    if (!validation || typeof value !== 'string') return null;
-    
-    if (validation.level === 'success') {
-      return {
-        color: 'text-green-600',
-        text: 'Tối ưu',
-        icon: '✓'
-      };
+    if (!validation) return null;
+
+    switch (validation.level) {
+        case 'success':
+            return { color: 'text-green-600', text: 'Tối ưu', icon: '✓' };
+        case 'warning':
+            return { color: 'text-yellow-600', text: 'Có thể cải thiện', icon: '⚠' };
+        case 'error':
+            return { color: 'text-red-600', text: 'Cần sửa', icon: '✗' };
+        default:
+            return { color: 'text-blue-600', text: 'Đang kiểm tra...', icon: '○' };
     }
-    
-    if (validation.level === 'warning') {
-      return {
-        color: 'text-yellow-600',
-        text: 'Có thể cải thiện',
-        icon: '⚠'
-      };
-    }
-    
-    if (validation.level === 'error') {
-      return {
-        color: 'text-red-600',
-        text: 'Cần sửa',
-        icon: '✗'
-      };
-    }
-    
-    return {
-      color: 'text-blue-600',
-      text: 'Đang kiểm tra...',
-      icon: '○'
-    };
   };
 
   const renderInput = () => {
@@ -188,13 +169,10 @@ const SmartInput: FC<SmartInputProps> = ({
       name={name}
       label={
         <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              {label}
-            </span>
-            {required && <span className="text-red-500">*</span>}
-          </div>
-          
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            {label}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </span>
           {showOptimizationTips && optimizationStatus && (
             <div className={`flex items-center gap-1 text-xs ${optimizationStatus.color}`}>
               <span>{optimizationStatus.icon}</span>
@@ -203,43 +181,22 @@ const SmartInput: FC<SmartInputProps> = ({
           )}
         </div>
       }
+      validateStatus={validation?.level}
+      help={
+        showValidationFeedback && validation && (isFocused || validation.level === 'error') && (
+            <ValidationFeedback
+                validation={validation}
+                showSuggestions={isFocused || validation.level !== 'success'}
+            />
+        )
+      }
       rules={[
-        ...(required ? [{ required: true, message: `Vui lòng nhập ${label.toLowerCase()}!` }] : []),
+        { required, message: `Vui lòng nhập ${label.toLowerCase()}!` },
         ...(minLength ? [{ min: minLength, message: `${label} phải có ít nhất ${minLength} ký tự!` }] : []),
         ...(maxLength ? [{ max: maxLength, message: `${label} không được vượt quá ${maxLength} ký tự!` }] : []),
-        ...rules
+        ...rules,
       ]}
-      extra={
-        <div className="space-y-2">
-          {extra}
-          
-          {/* Character count and optimization info */}
-          {(showCharacterCount || showOptimizationTips) && typeof value === 'string' && value.length > 0 && (
-            <div className="flex items-center justify-between text-xs">
-              {showCharacterCount && maxLength && (
-                <span className={getCharacterCountColor()}>
-                  {value.length}/{maxLength} ký tự
-                </span>
-              )}
-              
-              {showOptimizationTips && validation && validation.level === 'success' && (
-                <span className="text-green-600 flex items-center gap-1">
-                  <span>✓</span>
-                  <span>Tối ưu SEO</span>
-                </span>
-              )}
-            </div>
-          )}
-          
-          {/* Real-time validation feedback */}
-          {showValidationFeedback && validation && (isFocused || validation.level === 'error') && (
-            <ValidationFeedback 
-              validation={validation}
-              showSuggestions={isFocused || validation.level !== 'success'}
-            />
-          )}
-        </div>
-      }
+      extra={extra}
       className="mb-6"
     >
       {renderInput()}

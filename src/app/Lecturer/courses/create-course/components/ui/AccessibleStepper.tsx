@@ -1,8 +1,8 @@
 'use client';
-import { FC, useCallback, useRef, useEffect } from 'react';
+import { FC, useCallback, useRef } from 'react';
 import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
 import { useProgressTracking } from '../../hooks/useProgressTracking';
-import { FaCheck, FaExclamationTriangle, FaChevronRight } from 'react-icons/fa';
+import { FaCheck, FaExclamationTriangle, FaLock } from 'react-icons/fa';
 
 interface AccessibleStepperProps {
   className?: string;
@@ -137,6 +137,7 @@ const AccessibleStepper: FC<AccessibleStepperProps> = ({ className = '' }) => {
               >
                 {status === 'completed' ? <FaCheck className="text-white" size={12} /> :
                  status === 'warning' ? <FaExclamationTriangle className="text-white" size={12} /> :
+                 !isClickable ? <FaLock className="text-white" size={10} /> :
                  <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-white' : 'bg-gray-400 dark:bg-gray-200'}`} />
                 }
               </span>
@@ -148,12 +149,12 @@ const AccessibleStepper: FC<AccessibleStepperProps> = ({ className = '' }) => {
                 disabled={!isClickable}
                 aria-label={getStepAriaLabel(step, index, status)}
                 aria-current={isActive ? 'step' : undefined}
-                className={`w-full text-left p-1 rounded-md transition-colors ${isClickable ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : 'cursor-not-allowed opacity-60'} ${isActive ? 'bg-blue-50 dark:bg-blue-900/20' : ''} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                className={`w-full text-left p-2 rounded-md transition-all duration-200 ease-in-out ${isClickable ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : 'cursor-not-allowed opacity-50'} ${isActive ? 'bg-blue-50 dark:bg-blue-900/30 shadow-sm' : ''} focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-blue-500`}
               >
-                <h3 className={`font-semibold ${isActive ? 'text-blue-700 dark:text-blue-300' : 'text-gray-800 dark:text-gray-200'}`}>
+                <h3 className={`font-bold text-md ${isActive ? 'text-blue-800 dark:text-blue-300' : 'text-gray-900 dark:text-gray-100'}`}>
                   {step.stepName}
                 </h3>
-                <p className={`text-sm ${textClasses[status]}`}>
+                <p className={`text-sm font-medium ${textClasses[status]}`}>
                   {getStepStatusText(step, status)}
                 </p>
               </button>

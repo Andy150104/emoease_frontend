@@ -1,31 +1,19 @@
 'use client';
 import { FadeInUp } from 'EmoEase/components/Animation/FadeInUp';
-import CustomStepper from 'EmoEase/components/Stepper/BaseControlStepper';
 import AccessibleStepper from '../ui/AccessibleStepper';
-import DynamicProgressIndicator from '../ui/DynamicProgressIndicator';
 import LivePreview from '../ui/LivePreview';
-import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
 import { Button, ConfigProvider, theme } from 'antd';
 import { useTheme } from 'EmoEase/Provider/ThemeProvider';
 import { FC, ReactNode } from 'react';
+import ScrollToTopButton from 'EmoEase/components/Common/ScrollToTopButton';
 import { FaPaperPlane, FaSave } from 'react-icons/fa';
-
-// Constants
-import { COURSE_CREATION_STEPS } from '../../constants/steps';
 
 interface CreateCourseLayoutProps {
     children: ReactNode;
 }
 
 const CreateCourseLayout: FC<CreateCourseLayoutProps> = ({ children }) => {
-    const { currentStep } = useCreateCourseStore();
     const { isDarkMode } = useTheme();
-
-    // Transform steps data for stepper component
-    const stepperSteps = COURSE_CREATION_STEPS.map(step => ({
-        title: step.title,
-        description: step.description,
-    }));
 
     return (
         <div className="bg-gray-100 dark:bg-gray-900 min-h-screen w-full">
@@ -40,9 +28,9 @@ const CreateCourseLayout: FC<CreateCourseLayoutProps> = ({ children }) => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
                         {/* Left Sidebar: Stepper & Preview */}
-                        <div className="lg:col-span-3 lg:sticky top-24 space-y-8">
+                        <div className="xl:col-span-3 xl:sticky top-24 space-y-8">
                             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                                 <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Tiến độ</h2>
                                 <ConfigProvider
@@ -54,25 +42,26 @@ const CreateCourseLayout: FC<CreateCourseLayoutProps> = ({ children }) => {
                                 </ConfigProvider>
                             </div>
 
-                            <div className="hidden lg:block">
+                            <div className="hidden xl:block">
                                 <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Xem trước khóa học</h3>
                                 <LivePreview />
                             </div>
                         </div>
 
                         {/* Main Content */}
-                        <div className="lg:col-span-9 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                        <div className="xl:col-span-9 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                             {children}
                         </div>
 
                         {/* Live Preview (for mobile) */}
-                        <div className="lg:hidden mt-8">
+                        <div className="xl:hidden mt-8">
                             <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Xem trước khóa học</h3>
                             <LivePreview />
                         </div>
                     </div>
                 </div>
             </FadeInUp>
+            <ScrollToTopButton />
         </div>
     );
 };

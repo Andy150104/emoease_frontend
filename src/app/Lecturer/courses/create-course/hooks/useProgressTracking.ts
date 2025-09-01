@@ -36,29 +36,43 @@ export const useProgressTracking = () => {
   const stepProgressCalculations = useMemo(() => {
     // Step 0: Course Information
     const courseInfoProgress = (): StepProgress => {
-      const requiredFields = ['title', 'description', 'detailedDescription', 'learningObjectives', 'targetAudience', 'level', 'category', 'coverImage'];
+      const requiredFields = [
+        'title', 'subtitle', 'description', 'detailedDescription', 'learningObjectives',
+        'targetAudience', 'requirements', 'level', 'category', 'subcategory', 'tags',
+        'language', 'coverImage', 'promoVideo', 'seoSlug'
+      ];
       const completedFields: string[] = [];
       const warnings: string[] = [];
 
       // Check required fields
       if (courseInformation.title?.trim()) completedFields.push('title');
+      if (courseInformation.subtitle?.trim()) completedFields.push('subtitle');
       if (courseInformation.description?.trim()) completedFields.push('description');
       if (courseInformation.detailedDescription?.trim()) completedFields.push('detailedDescription');
-      if (courseInformation.learningObjectives?.trim()) completedFields.push('learningObjectives');
-      if (courseInformation.targetAudience?.trim()) completedFields.push('targetAudience');
+      if (courseInformation.learningObjectives?.length > 0) completedFields.push('learningObjectives');
+      if (courseInformation.targetAudience?.length > 0) completedFields.push('targetAudience');
+      if (courseInformation.requirements?.length > 0) completedFields.push('requirements');
       if (courseInformation.level) completedFields.push('level');
       if (courseInformation.category) completedFields.push('category');
+      if (courseInformation.subcategory) completedFields.push('subcategory');
+      if (courseInformation.tags?.length > 0) completedFields.push('tags');
+      if (courseInformation.language) completedFields.push('language');
       if (courseInformation.coverImage) completedFields.push('coverImage');
+      if (courseInformation.promoVideo) completedFields.push('promoVideo');
+      if (courseInformation.seoSlug) completedFields.push('seoSlug');
 
       // Quality warnings
-      if (courseInformation.title && courseInformation.title.length < 20) {
-        warnings.push('Tiêu đề nên có ít nhất 20 ký tự để tối ưu SEO');
+      if (courseInformation.title && courseInformation.title.length > 60) {
+        warnings.push('Tiêu đề nên dưới 60 ký tự để tối ưu SEO');
       }
-      if (courseInformation.description && courseInformation.description.length < 50) {
-        warnings.push('Mô tả ngắn nên có ít nhất 50 ký tự');
+      if (courseInformation.learningObjectives?.length < 4) {
+        warnings.push('Nên có ít nhất 4 mục tiêu học tập');
       }
-      if (courseInformation.detailedDescription && courseInformation.detailedDescription.length < 200) {
-        warnings.push('Mô tả chi tiết nên có ít nhất 200 ký tự để thu hút học viên');
+      if (courseInformation.requirements?.length < 2) {
+        warnings.push('Nên có ít nhất 2 yêu cầu cho khóa học');
+      }
+      if (courseInformation.tags?.length < 3) {
+        warnings.push('Nên có ít nhất 3 tags để tăng khả năng tìm kiếm');
       }
 
       const completionPercentage = (completedFields.length / requiredFields.length) * 100;

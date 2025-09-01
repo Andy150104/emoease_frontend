@@ -14,6 +14,29 @@ const AUTO_SAVE_DELAY = 2000; // 2 seconds
 // Save status types
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
+// Notification debouncing state (outside the component)
+let notificationTimeout: NodeJS.Timeout | null = null;
+let lastNotification: string = '';
+
+const showDebouncedNotification = (type: 'success' | 'error' | 'warning', content: string, delay: number = 1000) => {
+    if (lastNotification === content) {
+        return; // Prevent duplicate notifications
+    }
+
+    if (notificationTimeout) {
+        clearTimeout(notificationTimeout);
+    }
+
+    lastNotification = content;
+
+    notificationTimeout = setTimeout(() => {
+        message[type](content);
+        setTimeout(() => {
+            lastNotification = '';
+        }, 2000); // Reset after 2 seconds to allow future messages
+    }, delay);
+};
+
 const Curriculum: FC = () => {
     const {
         setCurrentStep,
@@ -33,35 +56,10 @@ const Curriculum: FC = () => {
     const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const isInitialLoadRef = useRef(true);
 
-
-
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [modalForm] = Form.useForm();
-
-    // Notification debouncing
-    const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const lastNotificationRef = useRef<string>('');
-
-    const showDebouncedNotification = useCallback((type: 'success' | 'error' | 'warning', content: string, delay: number = 1000) => {
-        if (lastNotificationRef.current === content) {
-            return; // Prevent duplicate notifications
-        }
-
-        if (notificationTimeoutRef.current) {
-            clearTimeout(notificationTimeoutRef.current);
-        }
-
-        lastNotificationRef.current = content;
-
-        notificationTimeoutRef.current = setTimeout(() => {
-            message[type](content);
-            setTimeout(() => {
-                lastNotificationRef.current = '';
-            }, 2000); // Reset after 2 seconds to allow future messages
-        }, delay);
-    }, []);
 
     // Auto-save functions
     const saveToLocalStorage = useCallback((curriculumData: Curriculum) => {
@@ -89,7 +87,7 @@ const Curriculum: FC = () => {
                 setSaveStatus('idle');
             }, 5000);
         }
-    }, [showDebouncedNotification]);
+    }, []);
 
     const debouncedSave = useCallback((curriculumData: Curriculum) => {
         if (saveTimeoutRef.current) {
@@ -137,7 +135,7 @@ const Curriculum: FC = () => {
             showDebouncedNotification('warning', 'Không thể khôi phục dữ liệu đã lưu', 1000);
         }
         return false;
-    }, [updateCurriculum, showDebouncedNotification]);
+    }, [updateCurriculum]);
 
     const clearSavedData = useCallback(() => {
         try {
@@ -149,7 +147,7 @@ const Curriculum: FC = () => {
             console.error('Failed to clear saved data:', error);
             showDebouncedNotification('error', 'Không thể xóa dữ liệu đã lưu', 1000);
         }
-    }, [showDebouncedNotification]);
+    }, []);
 
     // Load saved data on component mount
     useEffect(() => {
