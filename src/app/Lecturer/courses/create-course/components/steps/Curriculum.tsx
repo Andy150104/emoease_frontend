@@ -1,6 +1,6 @@
 'use client';
 import { FC, useEffect, useState, useCallback, useRef } from 'react';
-import { useCreateCourseStore, type Curriculum } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
+import { useCreateCourseStore, type Curriculum as CurriculumType } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
 import { useTheme } from 'EmoEase/Provider/ThemeProvider';
 import { ConfigProvider, Input, InputNumber, Button, message, theme, Modal, Form } from 'antd';
 import { FaArrowLeft, FaArrowRight, FaPlus, FaTrash, FaCheck, FaSpinner, FaChevronDown, FaChevronUp, FaBook, FaGraduationCap, FaClock } from 'react-icons/fa';
@@ -62,7 +62,7 @@ const Curriculum: FC = () => {
     const [modalForm] = Form.useForm();
 
     // Auto-save functions
-    const saveToLocalStorage = useCallback((curriculumData: Curriculum) => {
+    const saveToLocalStorage = useCallback((curriculumData: CurriculumType) => {
         try {
             const dataToSave = {
                 ...curriculumData,
@@ -89,7 +89,7 @@ const Curriculum: FC = () => {
         }
     }, []);
 
-    const debouncedSave = useCallback((curriculumData: Curriculum) => {
+    const debouncedSave = useCallback((curriculumData: CurriculumType) => {
         if (saveTimeoutRef.current) {
             clearTimeout(saveTimeoutRef.current);
         }
@@ -137,22 +137,12 @@ const Curriculum: FC = () => {
         return false;
     }, [updateCurriculum]);
 
-    const clearSavedData = useCallback(() => {
-        try {
-            localStorage.removeItem(AUTO_SAVE_KEY);
-            showDebouncedNotification('success', 'Đã xóa dữ liệu đã lưu', 500);
-            setLastSaved(null);
-            setSaveStatus('idle');
-        } catch (error) {
-            console.error('Failed to clear saved data:', error);
-            showDebouncedNotification('error', 'Không thể xóa dữ liệu đã lưu', 1000);
-        }
-    }, []);
+
 
     // Load saved data on component mount
     useEffect(() => {
         if (isInitialLoadRef.current) {
-            const hasRestoredData = loadFromLocalStorage();
+            loadFromLocalStorage();
             isInitialLoadRef.current = false;
         }
     }, [loadFromLocalStorage]);
@@ -355,7 +345,12 @@ const Curriculum: FC = () => {
                                     {module.isExpanded && (
                                         <div className="p-6 border-t border-gray-200 dark:border-gray-700 space-y-6">
                                             <Input addonBefore="Tên chương" value={module.title} onChange={(e) => handleUpdateModule(module.id, 'title', e.target.value)} />
-                                            <Input.TextArea addonBefore="Mô tả" value={module.description} onChange={(e) => handleUpdateModule(module.id, 'description', e.target.value)} rows={3} />
+                                            <div className="ant-input-group-wrapper">
+                                                <div className="ant-input-wrapper ant-input-group">
+                                                    <span className="ant-input-group-addon">Mô tả</span>
+                                                    <Input.TextArea value={module.description} onChange={(e) => handleUpdateModule(module.id, 'description', e.target.value)} rows={3} />
+                                                </div>
+                                            </div>
                                             <InputNumber addonBefore="Thời lượng (phút)" value={module.duration} onChange={(value) => handleUpdateModule(module.id, 'duration', value || 0)} min={0} className="w-full" />
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mục tiêu học tập</label>

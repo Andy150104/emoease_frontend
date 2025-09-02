@@ -85,7 +85,7 @@ const TagsSelector: FC<TagsSelectorProps> = ({
         notFoundContent={
           inputValue ? (
             <div className="p-2 text-center text-gray-500">
-              Nhấn Enter để thêm "{inputValue}" như tag mới
+              Nhấn Enter để thêm &quot;{inputValue}&quot; như tag mới
             </div>
           ) : (
             <div className="p-2 text-center text-gray-500">
@@ -94,7 +94,7 @@ const TagsSelector: FC<TagsSelectorProps> = ({
           )
         }
         tagRender={(props) => {
-          const { label, value: tagValue, closable, onClose } = props;
+          const { label, closable, onClose } = props;
           return (
             <Tag
               color="blue"

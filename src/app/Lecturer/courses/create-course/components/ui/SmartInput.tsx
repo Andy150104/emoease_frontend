@@ -1,6 +1,7 @@
 'use client';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { Input, InputNumber, Form } from 'antd';
+import type { Rule } from 'antd/es/form';
 import { useRealTimeValidation } from '../../hooks/useRealTimeValidation';
 import ValidationFeedback from './ValidationFeedback';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -25,10 +26,9 @@ interface SmartInputProps {
   formatter?: (value: string | undefined) => string;
   parser?: (value: string | undefined) => number;
   className?: string;
-  rules?: any[];
+  rules?: Rule[];
   extra?: React.ReactNode;
   showValidationFeedback?: boolean;
-  showCharacterCount?: boolean;
   showOptimizationTips?: boolean;
 }
 
@@ -55,18 +55,14 @@ const SmartInput: FC<SmartInputProps> = ({
   rules = [],
   extra,
   showValidationFeedback = true,
-  showCharacterCount = true,
   showOptimizationTips = true
 }) => {
   const { validateField, getValidation } = useRealTimeValidation();
-  const [value, setValue] = useState<string | number>('');
+
   const [isFocused, setIsFocused] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  
   const validation = getValidation(name);
 
   const handleChange = useCallback((newValue: string | number) => {
-    setValue(newValue);
     validateField(name, newValue, validationType);
   }, [name, validationType, validateField]);
 
@@ -77,15 +73,6 @@ const SmartInput: FC<SmartInputProps> = ({
   const handleBlur = useCallback(() => {
     setIsFocused(false);
   }, []);
-
-  const getCharacterCountColor = () => {
-    if (!maxLength || typeof value !== 'string') return 'text-gray-500';
-    
-    const percentage = (value.length / maxLength) * 100;
-    if (percentage >= 90) return 'text-red-500';
-    if (percentage >= 75) return 'text-yellow-500';
-    return 'text-gray-500';
-  };
 
   const getOptimizationStatus = () => {
     if (!validation) return null;
@@ -102,9 +89,14 @@ const SmartInput: FC<SmartInputProps> = ({
     }
   };
 
+
+  const getValidateStatus = (level: 'error' | 'warning' | 'success' | 'info' | undefined): 'error' | 'warning' | 'success' | undefined => {
+    if (level === 'info') return undefined;
+    return level;
+  };
+
   const renderInput = () => {
     const commonProps = {
-      placeholder,
       size,
       disabled,
       className: `${className} ${validation?.level === 'error' ? 'border-red-300' : validation?.level === 'success' ? 'border-green-300' : ''}`,
@@ -117,6 +109,7 @@ const SmartInput: FC<SmartInputProps> = ({
         return (
           <Input.TextArea
             {...commonProps}
+            placeholder={placeholder}
             rows={rows}
             maxLength={maxLength}
             showCount={showCount}
@@ -124,36 +117,42 @@ const SmartInput: FC<SmartInputProps> = ({
             autoSize={rows > 3 ? { minRows: rows, maxRows: rows + 2 } : false}
           />
         );
-      
+
       case 'number':
         return (
           <InputNumber
-            {...commonProps}
-            min={min}
-            max={max}
+            size={size}
+            disabled={disabled}
+            className={`${className} ${validation?.level === 'error' ? 'border-red-300' : validation?.level === 'success' ? 'border-green-300' : ''}`}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            min={min as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+            max={max as any} // eslint-disable-line @typescript-eslint/no-explicit-any
             precision={precision}
             formatter={formatter}
-            parser={parser}
+            parser={parser as any} // eslint-disable-line @typescript-eslint/no-explicit-any
             addonAfter={addonAfter}
             style={{ width: '100%' }}
             onChange={(val) => handleChange(val || 0)}
           />
         );
-      
+
       case 'password':
         return (
           <Input.Password
             {...commonProps}
+            placeholder={placeholder}
             maxLength={maxLength}
             onChange={(e) => handleChange(e.target.value)}
             iconRender={(visible) => (visible ? <FaEye /> : <FaEyeSlash />)}
           />
         );
-      
+
       default:
         return (
           <Input
             {...commonProps}
+            placeholder={placeholder}
             maxLength={maxLength}
             showCount={showCount}
             onChange={(e) => handleChange(e.target.value)}
@@ -181,7 +180,7 @@ const SmartInput: FC<SmartInputProps> = ({
           )}
         </div>
       }
-      validateStatus={validation?.level}
+      validateStatus={getValidateStatus(validation?.level)}
       help={
         showValidationFeedback && validation && (isFocused || validation.level === 'error') && (
             <ValidationFeedback

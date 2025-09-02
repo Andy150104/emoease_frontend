@@ -1,10 +1,10 @@
 'use client';
 import { FC, useState, useCallback, useMemo } from 'react';
-import { ConfigProvider, theme, message, Modal, Form, Input, Button, Upload, InputNumber, Collapse } from 'antd';
+import { ConfigProvider, theme, message, Modal, Form, Input, Button, Upload, InputNumber } from 'antd';
 import { useTheme } from 'EmoEase/Provider/ThemeProvider';
-import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
+import { useCreateCourseStore, CourseContentItem } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
 import { FadeInUp } from 'EmoEase/components/Animation/FadeInUp';
-import { FadeInOnScrollSpring } from 'EmoEase/components/Animation/FadeInOnScroll';
+
 import { QuizBuilder } from 'EmoEase/components/Common/QuizBuilder';
 import { 
   FaVideo, 
@@ -18,7 +18,6 @@ import {
   FaUpload,
   FaArrowRight,
   FaArrowLeft,
-  FaCheck,
   FaClock
 } from 'react-icons/fa';
 import {
@@ -49,26 +48,7 @@ enum ContentType {
   FILE = 'file'
 }
 
-// Content item interface
-interface ContentItem {
-  id: string;
-  type: ContentType;
-  title: string;
-  description?: string;
-  duration?: number;
-  file?: File;
-  url?: string;
-  quiz?: QuizData;
-  metadata?: Record<string, unknown>;
-  order: number;
-}
 
-// Quiz data interface
-interface QuizData {
-  questions: QuizQuestion[];
-  timeLimit?: number;
-  passingScore?: number;
-}
 
 interface QuizQuestion {
   id: string;
@@ -87,6 +67,7 @@ interface QuizSettings {
   allowRetake?: boolean;
 }
 
+
 const CourseContent: FC = () => {
   const { isDarkMode } = useTheme();
   const { setCurrentStep, curriculum, contentByModule, setModuleContent, addModuleContent, updateModuleContent, removeModuleContent } = useCreateCourseStore();
@@ -95,17 +76,17 @@ const CourseContent: FC = () => {
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
 
   // Keep store in sync when local list changes
-  const getModuleItems = useCallback((moduleId: string): ContentItem[] => {
-    return (contentByModule[moduleId] as unknown as ContentItem[]) || [];
+  const getModuleItems = useCallback((moduleId: string): CourseContentItem[] => {
+    return (contentByModule[moduleId] as CourseContentItem[]) || [];
   }, [contentByModule]);
 
   const totalContentCount = useMemo(() =>
-    Object.values(contentByModule).reduce((acc, arr) => acc + ((arr as unknown as ContentItem[])?.length || 0), 0)
+    Object.values(contentByModule).reduce((acc, arr) => acc + ((arr as CourseContentItem[])?.length || 0), 0)
   , [contentByModule]);
   const [selectedType, setSelectedType] = useState<ContentType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQuizBuilderOpen, setIsQuizBuilderOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<ContentItem | null>(null);
+  const [editingItem, setEditingItem] = useState<CourseContentItem | null>(null);
   const [form] = Form.useForm();
 
   // Drag and drop sensors
@@ -187,7 +168,7 @@ const CourseContent: FC = () => {
       const oldIndex = items.findIndex((item) => item.id === active.id);
       const newIndex = items.findIndex((item) => item.id === over?.id);
       const reorderedItems = arrayMove(items, oldIndex, newIndex).map((it, idx) => ({ ...it, order: idx }));
-      setModuleContent(moduleId, reorderedItems as unknown as any[]);
+      setModuleContent(moduleId, reorderedItems as CourseContentItem[]);
     }
   }, [getModuleItems, setModuleContent]);
 
@@ -196,7 +177,7 @@ const CourseContent: FC = () => {
     try {
       const values = await form.validateFields();
       const currentItems = activeModuleId ? getModuleItems(activeModuleId) : [];
-      const newItem: ContentItem = {
+      const newItem: CourseContentItem = {
         id: editingItem?.id || Date.now().toString(),
         type: selectedType!,
         title: values.title,
@@ -212,9 +193,9 @@ const CourseContent: FC = () => {
       }
 
       if (editingItem) {
-        updateModuleContent(activeModuleId, editingItem.id, newItem as unknown as any);
+        updateModuleContent(activeModuleId, editingItem.id, newItem);
       } else {
-        addModuleContent(activeModuleId, newItem as unknown as any);
+        addModuleContent(activeModuleId, newItem);
       }
 
       setIsModalOpen(false);
@@ -224,17 +205,17 @@ const CourseContent: FC = () => {
     } catch (error) {
       console.error('Validation failed:', error);
     }
-  }, [form, selectedType, editingItem, activeModuleId, addModuleContent, updateModuleContent]);
+  }, [form, selectedType, editingItem, activeModuleId, addModuleContent, updateModuleContent, getModuleItems]);
 
   // Handle quiz creation from QuizBuilder
   const handleQuizSave = useCallback((questions: QuizQuestion[], settings: QuizSettings) => {
-    const newQuiz: ContentItem = {
+    const newQuiz: CourseContentItem = {
       id: Date.now().toString(),
       type: ContentType.QUIZ,
       title: `Bài kiểm tra ${(() => {
         if (!activeModuleId) return 1;
         const items = getModuleItems(activeModuleId);
-        return items.filter((i: any) => i.type === ContentType.QUIZ).length + 1;
+        return items.filter((i: CourseContentItem) => i.type === ContentType.QUIZ).length + 1;
       })()}`,
       description: `Bài kiểm tra gồm ${questions.length} câu hỏi`,
       quiz: { questions, ...settings },
@@ -247,8 +228,8 @@ const CourseContent: FC = () => {
       return;
     }
     const items = getModuleItems(activeModuleId);
-    const next = [...items, newQuiz as unknown as any];
-    setModuleContent(activeModuleId, next as unknown as any[]);
+    const next = [...items, newQuiz];
+    setModuleContent(activeModuleId, next);
     setIsQuizBuilderOpen(false);
     setSelectedType(null);
     message.success('Bài kiểm tra đã được tạo thành công!');
@@ -273,9 +254,9 @@ const CourseContent: FC = () => {
   }, [removeModuleContent]);
 
   // Handle content editing
-  const handleEditContent = useCallback((moduleId: string, item: ContentItem) => {
+  const handleEditContent = useCallback((moduleId: string, item: CourseContentItem) => {
     setEditingItem(item);
-    setSelectedType(item.type);
+    setSelectedType(item.type as ContentType);
     setIsModalOpen(true);
     setActiveModuleId(moduleId);
     form.setFieldsValue(item);
@@ -354,7 +335,7 @@ const CourseContent: FC = () => {
   );
 
   // Sortable content item component
-  const SortableContentItem: FC<{ item: ContentItem; moduleId: string }> = ({ item, moduleId }) => {
+  const SortableContentItem: FC<{ item: CourseContentItem; moduleId: string }> = ({ item, moduleId }) => {
     const {
       attributes,
       listeners,
@@ -622,7 +603,7 @@ const CourseContent: FC = () => {
                                 </DndContext>
                             ) : (
                                 <div className="text-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md">
-                                    <p className="text-gray-500 dark:text-gray-400">Chưa có nội dung nào. Bấm "Thêm nội dung" để bắt đầu.</p>
+                                    <p className="text-gray-500 dark:text-gray-400">Chưa có nội dung nào. Bấm &quot;Thêm nội dung&quot; để bắt đầu.</p>
                                 </div>
                             )}
                         </div>

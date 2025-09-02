@@ -1,14 +1,14 @@
 'use client';
 import { FC, useEffect, useState, useCallback, useRef } from 'react';
 import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
-import BaseControlSelect from 'EmoEase/components/BaseControl/BaseControlSelect';
-import ControlledImageUploader from 'EmoEase/components/BaseControl/ControlledImageUploader';
-import { useTheme } from 'EmoEase/Provider/ThemeProvider';
-import { ConfigProvider, Form, Input, theme, message, Button } from 'antd';
 
-import { FaArrowRight, FaCheck, FaSpinner, FaTrash, FaInfoCircle, FaUser, FaTag } from 'react-icons/fa';
+import { useTheme } from 'EmoEase/Provider/ThemeProvider';
+import { ConfigProvider, Form, theme, message, Button } from 'antd';
+
+import { FaArrowRight, FaCheck, FaSpinner, FaTrash } from 'react-icons/fa';
 import { FadeInUp } from 'EmoEase/components/Animation/FadeInUp';
-import DynamicProgressIndicator from '../ui/DynamicProgressIndicator';
+
+import { CourseFormData } from '../../types';
 import BasicInfoSection from './course-information/BasicInfoSection';
 import DescriptionSection from './course-information/DescriptionSection';
 import ClassificationSection from './course-information/ClassificationSection';
@@ -44,17 +44,7 @@ const showDebouncedNotification = (type: 'success' | 'error' | 'warning', conten
     }, delay);
 };
 
-// Form data interface
-interface CourseFormData {
-    title?: string;
-    description?: string;
-    detailedDescription?: string;
-    learningObjectives?: string;
-    targetAudience?: string;
-    level?: string;
-    category?: string;
-    coverImage?: File | string;
-}
+
 
 const CourseInformation: FC = () => {
     const { updateCourseInformation, setCurrentStep } = useCreateCourseStore();
@@ -169,20 +159,6 @@ const CourseInformation: FC = () => {
         return false;
     }, [form, scrollToTop]);
 
-    const clearSavedData = useCallback(() => {
-        try {
-            localStorage.removeItem(AUTO_SAVE_KEY);
-            showDebouncedNotification('success', 'Đã xóa dữ liệu đã lưu', 500);
-            setLastSaved(null);
-            setSaveStatus('idle');
-            // Scroll to top after clearing data
-            scrollToTop();
-        } catch (error) {
-            console.error('Failed to clear saved data:', error);
-            showDebouncedNotification('error', 'Không thể xóa dữ liệu đã lưu', 1000);
-        }
-    }, [scrollToTop]);
-
     // Load saved data on component mount
     useEffect(() => {
         if (isInitialLoadRef.current) {
@@ -191,13 +167,13 @@ const CourseInformation: FC = () => {
         }
     }, [loadFromLocalStorage]);
 
-    // Watch for form changes and auto-save
-    const handleFormChange = useCallback(() => {
+    const allValues = Form.useWatch([], form);
+
+    useEffect(() => {
         if (!isInitialLoadRef.current) {
-            const formData = form.getFieldsValue();
-            debouncedSave(formData);
+            debouncedSave(allValues);
         }
-    }, [form, debouncedSave]);
+    }, [allValues, debouncedSave]);
 
     const handleNext = async () => {
         try {

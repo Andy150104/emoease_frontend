@@ -1,4 +1,5 @@
 import { CourseFormData } from '../types';
+import { Curriculum, Pricing, CourseContentItem } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
 
 export const validateCourseInformation = (data: Partial<CourseFormData>): string[] => {
     const errors: string[] = [];
@@ -27,12 +28,16 @@ export const validateCourseInformation = (data: Partial<CourseFormData>): string
         errors.push('Mô tả chi tiết không được vượt quá 2000 ký tự');
     }
 
-    if (!data.learningObjectives || data.learningObjectives.trim().length === 0) {
+    if (!data.learningObjectives || data.learningObjectives.length === 0) {
         errors.push('Mục tiêu học tập là bắt buộc');
     }
 
-    if (!data.targetAudience || data.targetAudience.trim().length === 0) {
+    if (!data.targetAudience || data.targetAudience.length === 0) {
         errors.push('Đối tượng học viên là bắt buộc');
+    }
+
+    if (!data.requirements || data.requirements.length === 0) {
+        errors.push('Yêu cầu khóa học là bắt buộc');
     }
 
     if (!data.level) {
@@ -50,21 +55,17 @@ export const validateCourseInformation = (data: Partial<CourseFormData>): string
     return errors;
 };
 
-export const validateCurriculum = (data: any): string[] => {
+export const validateCurriculum = (data: Partial<Curriculum>): string[] => {
     const errors: string[] = [];
 
-    if (!data.sections || data.sections.length === 0) {
-        errors.push('Khóa học phải có ít nhất một section');
+    if (!data.modules || data.modules.length === 0) {
+        errors.push('Khóa học phải có ít nhất một chương');
     }
 
-    if (data.sections) {
-        data.sections.forEach((section: any, index: number) => {
-            if (!section.title || section.title.trim().length === 0) {
-                errors.push(`Section ${index + 1}: Tiêu đề là bắt buộc`);
-            }
-
-            if (!section.lessons || section.lessons.length === 0) {
-                errors.push(`Section ${index + 1}: Phải có ít nhất một bài giảng`);
+    if (data.modules) {
+        data.modules.forEach((module, index: number) => {
+            if (!module.title || module.title.trim().length === 0) {
+                errors.push(`Chương ${index + 1}: Tiêu đề là bắt buộc`);
             }
         });
     }
@@ -72,52 +73,41 @@ export const validateCurriculum = (data: any): string[] => {
     return errors;
 };
 
-export const validateCourseContent = (data: any): string[] => {
+export const validateCourseContent = (data: Record<string, CourseContentItem[]>): string[] => {
     const errors: string[] = [];
+    const totalContent = Object.values(data).reduce((acc, val) => acc + val.length, 0);
 
-    if (!data.lessons || data.lessons.length === 0) {
-        errors.push('Khóa học phải có ít nhất một bài giảng');
-    }
-
-    if (data.lessons) {
-        data.lessons.forEach((lesson: any, index: number) => {
-            if (!lesson.title || lesson.title.trim().length === 0) {
-                errors.push(`Bài giảng ${index + 1}: Tiêu đề là bắt buộc`);
-            }
-
-            if (!lesson.content || lesson.content.trim().length === 0) {
-                errors.push(`Bài giảng ${index + 1}: Nội dung là bắt buộc`);
-            }
-        });
+    if (totalContent === 0) {
+        errors.push('Khóa học phải có ít nhất một nội dung');
     }
 
     return errors;
 };
 
-export const validatePricing = (data: any): string[] => {
+export const validatePricing = (data: Partial<Pricing>): string[] => {
     const errors: string[] = [];
 
-    if (data.price === undefined || data.price === null) {
+    if (data.basePrice === undefined || data.basePrice === null) {
         errors.push('Giá khóa học là bắt buộc');
     }
 
-    if (data.price !== undefined && data.price !== null && data.price < 0) {
-        errors.push('Giá khóa học không được âm');
+    if (data.basePrice !== undefined && data.basePrice !== null && data.basePrice <= 0) {
+        errors.push('Giá khóa học phải lớn hơn 0');
     }
 
     return errors;
 };
 
-export const isStepValid = (step: number, data: any): boolean => {
+export const isStepValid = (step: number, data: Partial<CourseFormData> | Partial<Curriculum> | Record<string, CourseContentItem[]> | Partial<Pricing>): boolean => {
     switch (step) {
         case 0:
-            return validateCourseInformation(data).length === 0;
+            return validateCourseInformation(data as Partial<CourseFormData>).length === 0;
         case 1:
-            return validateCurriculum(data).length === 0;
+            return validateCurriculum(data as Partial<Curriculum>).length === 0;
         case 2:
-            return validateCourseContent(data).length === 0;
+            return validateCourseContent(data as Record<string, CourseContentItem[]>).length === 0;
         case 3:
-            return validatePricing(data).length === 0;
+            return validatePricing(data as Partial<Pricing>).length === 0;
         default:
             return true;
     }

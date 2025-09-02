@@ -46,8 +46,8 @@ export const useCreateCourse = () => {
 
     // Validate current step
     const validateCurrentStep = useCallback(() => {
-        let currentData: any;
-        let validationFunction: (data: any) => string[];
+        let currentData: Partial<CourseFormData>;
+        let validationFunction: (data: Partial<CourseFormData>) => string[];
 
         switch (currentStep) {
             case 0:

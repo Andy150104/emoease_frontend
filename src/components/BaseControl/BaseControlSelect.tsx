@@ -12,6 +12,8 @@ interface BaseControlSelectProps {
   style?: React.CSSProperties;
   /** Nếu true thì bật chức năng search */
   isSearch?: boolean;
+  disabled?: boolean;
+  placeholder?: string;
 }
 
 const BaseControlSelect: React.FC<BaseControlSelectProps> = ({
@@ -22,6 +24,8 @@ const BaseControlSelect: React.FC<BaseControlSelectProps> = ({
   size = "middle",
   style = {},
   isSearch = false,
+  disabled = false,
+  placeholder,
 }) => {
   return (
     <Select
@@ -41,6 +45,8 @@ const BaseControlSelect: React.FC<BaseControlSelectProps> = ({
                 .includes(input.toLowerCase())
           : undefined
       }
+      disabled={disabled}
+      placeholder={placeholder}
     />
   );
 };

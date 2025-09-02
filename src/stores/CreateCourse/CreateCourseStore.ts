@@ -15,7 +15,7 @@ export interface CourseInformation {
     tags: string[];
     language: string;
     subtitleLanguages: string[];
-    coverImage?: File;
+    coverImage?: File | string;
     promoVideo?: File | string;
     seoSlug: string;
     metaTitle: string;

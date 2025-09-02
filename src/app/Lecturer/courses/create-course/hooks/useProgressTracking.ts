@@ -1,6 +1,6 @@
 'use client';
 import { useMemo } from 'react';
-import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
+import { useCreateCourseStore, CourseContentItem } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
 
 export interface StepProgress {
   stepId: number;
@@ -154,7 +154,7 @@ export const useProgressTracking = () => {
 
       // Quality checks
       const modulesWithoutContent = curriculum.modules.filter(module => 
-        !contentByModule[module.id] || (contentByModule[module.id] as any[]).length === 0
+        !contentByModule[module.id] || (contentByModule[module.id] as CourseContentItem[]).length === 0
       );
 
       if (modulesWithoutContent.length > 0) {
@@ -167,7 +167,7 @@ export const useProgressTracking = () => {
 
       // Check for video content
       const hasVideo = Object.values(contentByModule).some(moduleContent => 
-        Array.isArray(moduleContent) && moduleContent.some((content: any) => content.type === 'video')
+        Array.isArray(moduleContent) && moduleContent.some((content: CourseContentItem) => content.type === 'video')
       );
 
       if (!hasVideo) {

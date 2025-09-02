@@ -45,10 +45,7 @@ export interface ImageCropUploadProps {
   onPreview?: (file: UploadFile) => Promise<void>;
 }
 
-// Wrapper component to handle the fileList prop
-const UploadWrapper = ({ fileList, children }: { fileList: UploadFile[], children: React.ReactNode }) => {
-  return <div>{children}</div>;
-};
+
 
 const BaseControlUploadImage: React.FC<ImageCropUploadProps> = ({
   xmlColumn,
@@ -253,7 +250,6 @@ const BaseControlUploadImage: React.FC<ImageCropUploadProps> = ({
         getValueFromEvent={({ fileList }) => fileList}
         style={{ marginBottom: 0 }}
       >
-        <UploadWrapper fileList={fileList}>
           {/** Khi không disabled: cho phép upload + edit */}
           {!disabled ? (
             <ImgCrop
@@ -310,7 +306,6 @@ const BaseControlUploadImage: React.FC<ImageCropUploadProps> = ({
             }}
             alt=""
           />
-        </UploadWrapper>
       </Form.Item>
 
       <Modal

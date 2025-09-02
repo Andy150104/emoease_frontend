@@ -1,7 +1,7 @@
 'use client';
 import { FC, useCallback, useRef } from 'react';
 import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
-import { useProgressTracking } from '../../hooks/useProgressTracking';
+import { useProgressTracking, StepProgress } from '../../hooks/useProgressTracking';
 import { FaCheck, FaExclamationTriangle, FaLock } from 'react-icons/fa';
 
 interface AccessibleStepperProps {
@@ -13,6 +13,32 @@ const AccessibleStepper: FC<AccessibleStepperProps> = ({ className = '' }) => {
   const { stepProgress } = useProgressTracking();
   const stepRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
+  const handleStepClick = useCallback((stepIndex: number) => {
+    const step = stepProgress[stepIndex];
+    const isClickable = stepIndex <= currentStep || step.completionPercentage >= 80;
+
+    if (isClickable) {
+      setCurrentStep(stepIndex);
+      // Announce step change to screen readers
+      const announcement = `Đã chuyển đến ${step.stepName}. ${
+        step.isCompleted ? 'Đã hoàn thành.' :
+        `${Math.round(step.completionPercentage)}% hoàn thành.`
+      }`;
+
+      // Create temporary announcement element
+      const announcer = document.createElement('div');
+      announcer.setAttribute('aria-live', 'polite');
+      announcer.setAttribute('aria-atomic', 'true');
+      announcer.className = 'sr-only';
+      announcer.textContent = announcement;
+      document.body.appendChild(announcer);
+
+      setTimeout(() => {
+        document.body.removeChild(announcer);
+      }, 1000);
+    }
+  }, [currentStep, stepProgress, setCurrentStep]);
+
   // Handle keyboard navigation
   const handleKeyDown = useCallback((event: React.KeyboardEvent, stepIndex: number) => {
     switch (event.key) {
@@ -22,59 +48,33 @@ const AccessibleStepper: FC<AccessibleStepperProps> = ({ className = '' }) => {
         const prevIndex = stepIndex > 0 ? stepIndex - 1 : stepProgress.length - 1;
         stepRefs.current[prevIndex]?.focus();
         break;
-      
+
       case 'ArrowDown':
       case 'ArrowRight':
         event.preventDefault();
         const nextIndex = stepIndex < stepProgress.length - 1 ? stepIndex + 1 : 0;
         stepRefs.current[nextIndex]?.focus();
         break;
-      
+
       case 'Home':
         event.preventDefault();
         stepRefs.current[0]?.focus();
         break;
-      
+
       case 'End':
         event.preventDefault();
         stepRefs.current[stepProgress.length - 1]?.focus();
         break;
-      
+
       case 'Enter':
       case ' ':
         event.preventDefault();
         handleStepClick(stepIndex);
         break;
     }
-  }, [stepProgress.length]);
+  }, [stepProgress.length, handleStepClick]);
 
-  const handleStepClick = useCallback((stepIndex: number) => {
-    const step = stepProgress[stepIndex];
-    const isClickable = stepIndex <= currentStep || step.completionPercentage >= 80;
-    
-    if (isClickable) {
-      setCurrentStep(stepIndex);
-      // Announce step change to screen readers
-      const announcement = `Đã chuyển đến ${step.stepName}. ${
-        step.isCompleted ? 'Đã hoàn thành.' : 
-        `${Math.round(step.completionPercentage)}% hoàn thành.`
-      }`;
-      
-      // Create temporary announcement element
-      const announcer = document.createElement('div');
-      announcer.setAttribute('aria-live', 'polite');
-      announcer.setAttribute('aria-atomic', 'true');
-      announcer.className = 'sr-only';
-      announcer.textContent = announcement;
-      document.body.appendChild(announcer);
-      
-      setTimeout(() => {
-        document.body.removeChild(announcer);
-      }, 1000);
-    }
-  }, [currentStep, stepProgress, setCurrentStep]);
-
-  const getStepStatus = (step: any, index: number) => {
+  const getStepStatus = (step: StepProgress, index: number) => {
     if (index < currentStep) {
       return 'completed';
     }
@@ -85,7 +85,7 @@ const AccessibleStepper: FC<AccessibleStepperProps> = ({ className = '' }) => {
     return 'not-started';
   };
 
-  const getStepStatusText = (step: any, status: string) => {
+  const getStepStatusText = (step: StepProgress, status: string) => {
     switch (status) {
       case 'completed':
         return 'Đã hoàn thành';
@@ -99,7 +99,7 @@ const AccessibleStepper: FC<AccessibleStepperProps> = ({ className = '' }) => {
     }
   };
 
-  const getStepAriaLabel = (step: any, stepIndex: number, status: string) => {
+  const getStepAriaLabel = (step: StepProgress, stepIndex: number, status: string) => {
     const position = `Bước ${stepIndex + 1} của ${stepProgress.length}`;
     const statusText = getStepStatusText(step, status);
     const warnings = step.warnings.length > 0 ? `, ${step.warnings.length} gợi ý cải thiện` : '';

@@ -1,8 +1,8 @@
 'use client';
 import { FC, useState } from 'react';
 import { Upload, Button, Progress, Input, Typography, message } from 'antd';
-import { FaVideo, FaUpload, FaPlay, FaTrash, FaLink } from 'react-icons/fa';
-import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import { FaVideo, FaPlay, FaTrash, FaLink } from 'react-icons/fa';
+import type { UploadProps } from 'antd/es/upload/interface';
 
 const { Text } = Typography;
 const { Dragger } = Upload;
@@ -32,7 +32,7 @@ const VideoUploader: FC<VideoUploaderProps> = ({
   const [urlValue, setUrlValue] = useState('');
 
   const handleUpload: UploadProps['customRequest'] = (options) => {
-    const { file, onProgress, onSuccess, onError } = options;
+    const { file, onSuccess } = options;
     
     setIsUploading(true);
     setUploadProgress(0);

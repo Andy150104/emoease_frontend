@@ -1,5 +1,5 @@
 'use client';
-import { FC, useEffect, useLayoutEffect, useRef } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { StepTransition } from 'EmoEase/components/Animation/StepTransition';
 import { Form } from 'antd';
 

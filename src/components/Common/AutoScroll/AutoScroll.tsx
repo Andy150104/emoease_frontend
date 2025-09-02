@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { ReactNode, useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from 'react';
 
 interface AutoScrollProps {
   children: ReactNode;
@@ -21,7 +21,7 @@ export const AutoScroll = forwardRef<AutoScrollRef, AutoScrollProps>(function Au
 }, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
   const isHovered = useRef(false);
   const positionRef = useRef(0);
 
@@ -60,45 +60,49 @@ export const AutoScroll = forwardRef<AutoScrollRef, AutoScrollProps>(function Au
     scrollToTop,
   }));
 
-  const animate = () => {
+  const animate = useCallback(() => {
     if (!containerRef.current || !contentRef.current) return;
-    
-    if (isHovered.current && pauseOnHover) {
-      animationRef.current = requestAnimationFrame(animate);
-      return;
-    }
 
-    const container = containerRef.current;
-    const content = contentRef.current;
-    const containerSize = direction === 'up' || direction === 'down' 
-      ? container.clientHeight 
-      : container.clientWidth;
-    const contentSize = direction === 'up' || direction === 'down'
-      ? content.clientHeight
-      : content.clientWidth;
+    const animateLoop = () => {
+        if (isHovered.current && pauseOnHover) {
+            animationRef.current = requestAnimationFrame(animateLoop);
+            return;
+        }
 
-    if (contentSize <= containerSize) {
-      animationRef.current = requestAnimationFrame(animate);
-      return;
-    }
+        const container = containerRef.current!;
+        const content = contentRef.current!;
+        const containerSize = direction === 'up' || direction === 'down'
+            ? container.clientHeight
+            : container.clientWidth;
+        const contentSize = direction === 'up' || direction === 'down'
+            ? content.clientHeight
+            : content.clientWidth;
 
-    const isVertical = direction === 'up' || direction === 'down';
-    const isReverse = direction === 'up' || direction === 'left';
-    
-    positionRef.current += (isReverse ? -1 : 1) * (speed / 60);
+        if (contentSize <= containerSize) {
+            animationRef.current = requestAnimationFrame(animateLoop);
+            return;
+        }
 
-    if (positionRef.current > contentSize - containerSize) {
-      positionRef.current = 0;
-    } else if (positionRef.current < 0) {
-      positionRef.current = contentSize - containerSize;
-    }
+        const isVertical = direction === 'up' || direction === 'down';
+        const isReverse = direction === 'up' || direction === 'left';
 
-    content.style.transform = isVertical
-      ? `translateY(${-positionRef.current}px)`
-      : `translateX(${-positionRef.current}px)`;
+        positionRef.current += (isReverse ? -1 : 1) * (speed / 60);
 
-    animationRef.current = requestAnimationFrame(animate);
-  };
+        if (positionRef.current > contentSize - containerSize) {
+            positionRef.current = 0;
+        } else if (positionRef.current < 0) {
+            positionRef.current = contentSize - containerSize;
+        }
+
+        content.style.transform = isVertical
+            ? `translateY(${-positionRef.current}px)`
+            : `translateX(${-positionRef.current}px)`;
+
+        animationRef.current = requestAnimationFrame(animateLoop);
+    };
+
+    animationRef.current = requestAnimationFrame(animateLoop);
+}, [pauseOnHover, direction, speed]);
 
   useEffect(() => {
     // Start animation

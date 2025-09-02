@@ -5,6 +5,7 @@ import BaseControlSelect from 'EmoEase/components/BaseControl/BaseControlSelect'
 import TagsSelector from '../../ui/TagsSelector';
 
 const ClassificationSection: FC = () => {
+  const form = Form.useFormInstance();
   const [selectedCategory, setSelectedCategory] = useState<string>('');
 
   const categoryOptions = [
@@ -56,7 +57,7 @@ const ClassificationSection: FC = () => {
   const handleCategoryChange = (value: string) => {
     setSelectedCategory(value);
     // Reset subcategory when category changes
-    const form = Form.useFormInstance();
+
     form.setFieldValue('subcategory', undefined);
   };
 

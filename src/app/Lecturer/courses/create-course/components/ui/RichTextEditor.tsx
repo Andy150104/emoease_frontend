@@ -1,5 +1,5 @@
 'use client';
-import { FC, useCallback, useState, useEffect } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { useRealTimeValidation } from '../../hooks/useRealTimeValidation';
@@ -14,8 +14,6 @@ interface RichTextEditorProps {
   maxLength?: number;
   minHeight?: number;
   className?: string;
-  rules?: any[];
-  extra?: React.ReactNode;
   showValidationFeedback?: boolean;
   value?: string;
   onChange?: (value: string) => void;
@@ -30,8 +28,6 @@ const RichTextEditor: FC<RichTextEditorProps> = ({
   maxLength = 2000,
   minHeight = 200,
   className = '',
-  rules = [],
-  extra,
   showValidationFeedback = true,
   value = '',
   onChange
@@ -42,7 +38,8 @@ const RichTextEditor: FC<RichTextEditorProps> = ({
 
   const validation = getValidation(name);
 
-  const handleContentChange = (event: any, editor: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleContentChange = (_event: any, editor: any) => {
     const data = editor.getData();
     setEditorData(data);
     if (onChange) {
@@ -69,9 +66,13 @@ const RichTextEditor: FC<RichTextEditorProps> = ({
           {getPlainTextLength()}/{maxLength}
         </span>
       </label>
-      <div className="ck-editor-container">
+      <div className="ck-editor-container" style={{ minHeight: `${minHeight}px` }}>
         <CKEditor
-          editor={ClassicEditor}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          editor={ClassicEditor as any}
+          config={{
+            placeholder: placeholder,
+          }}
           data={value}
           onChange={handleContentChange}
           onFocus={() => setIsFocused(true)}

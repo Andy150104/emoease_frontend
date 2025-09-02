@@ -1,11 +1,12 @@
+import type { Curriculum, Pricing, CourseContentItem } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
 export interface CourseFormData {
     title?: string;
     subtitle?: string;
     description?: string;
     detailedDescription?: string;
-    learningObjectives?: string;
-    targetAudience?: string;
-    prerequisites?: string;
+    learningObjectives?: string[];
+    targetAudience?: string[];
+    requirements?: string[];
     whatYouWillGet?: string;
     level?: string;
     category?: string;
@@ -51,9 +52,9 @@ export interface CourseStep {
 export interface CreateCourseState {
     currentStep: number;
     courseInformation: Partial<CourseFormData>;
-    curriculum: any;
-    courseContent: any;
-    pricing: any;
+    curriculum: Curriculum;
+    courseContent: Record<string, CourseContentItem[]>;
+    pricing: Pricing;
     isSubmitting: boolean;
     errors: string[];
 }
@@ -61,9 +62,9 @@ export interface CreateCourseState {
 export interface CreateCourseActions {
     setCurrentStep: (step: number) => void;
     updateCourseInformation: (data: Partial<CourseFormData>) => void;
-    updateCurriculum: (data: any) => void;
-    updateCourseContent: (data: any) => void;
-    updatePricing: (data: any) => void;
+    updateCurriculum: (data: Partial<Curriculum>) => void;
+    updateCourseContent: (data: Record<string, CourseContentItem[]>) => void;
+    updatePricing: (data: Partial<Pricing>) => void;
     resetForm: () => void;
     submitCourse: () => Promise<void>;
 }

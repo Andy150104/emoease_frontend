@@ -5,10 +5,10 @@ export interface AutoSaveData {
     timestamp: string;
     version: string;
     formStep: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
-export const saveToLocalStorage = (formData: any, step: string): void => {
+export const saveToLocalStorage = (formData: Record<string, unknown>, step: string): void => {
     try {
         const filteredData = Object.entries(formData).reduce((acc, [key, value]) => {
             if (value !== undefined && value !== null && value !== '') {
@@ -30,11 +30,12 @@ export const saveToLocalStorage = (formData: any, step: string): void => {
     }
 };
 
-export const loadFromLocalStorage = (): any | null => {
+export const loadFromLocalStorage = (): Record<string, unknown> | null => {
     try {
         const savedData = localStorage.getItem(AUTO_SAVE_KEY);
         if (savedData) {
             const parsedData = JSON.parse(savedData);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { timestamp, version, formStep, ...formData } = parsedData;
             return formData;
         }
@@ -65,10 +66,10 @@ export const getLastSavedTime = (): Date | null => {
     return null;
 };
 
-export const createDebouncedSave = (callback: (data: any, step: string) => void) => {
+export const createDebouncedSave = (callback: (data: Record<string, unknown>, step: string) => void) => {
     let timeoutId: NodeJS.Timeout | null = null;
 
-    return (formData: any, step: string) => {
+    return (formData: Record<string, unknown>, step: string) => {
         if (timeoutId) {
             clearTimeout(timeoutId);
         }

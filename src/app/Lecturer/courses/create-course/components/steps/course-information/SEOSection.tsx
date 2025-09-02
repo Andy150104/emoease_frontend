@@ -28,7 +28,8 @@ const SEOSection: FC = () => {
           placeholder="Tiêu đề tối ưu cho công cụ tìm kiếm (để trống sẽ dùng tên khóa học)"
           maxLength={60}
           showCount
-          helpText="Tiêu đề này sẽ hiển thị trên kết quả tìm kiếm Google. Nên chứa từ khóa chính và hấp dẫn người dùng click."
+          extra="Tiêu đề này sẽ hiển thị trên kết quả tìm kiếm Google. Nên chứa từ khóa chính và hấp dẫn người dùng click."
+          validationType="title"
         />
 
         <SmartInput
@@ -39,7 +40,8 @@ const SEOSection: FC = () => {
           maxLength={160}
           rows={3}
           showCount
-          helpText="Mô tả này sẽ xuất hiện dưới tiêu đề trên Google. Nên chứa từ khóa và call-to-action rõ ràng."
+          extra="Mô tả này sẽ xuất hiện dưới tiêu đề trên Google. Nên chứa từ khóa và call-to-action rõ ràng."
+          validationType="description"
         />
 
         {/* SEO Preview */}

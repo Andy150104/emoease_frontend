@@ -1,7 +1,8 @@
 'use client';
+import Image from 'next/image';
 import { FC } from 'react';
 import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
-import { FaBook, FaBullhorn, FaCheckCircle, FaClock, FaDollarSign, FaList, FaPlayCircle, FaUserGraduate } from 'react-icons/fa';
+import { FaBook, FaBullhorn, FaCheckCircle, FaClock, FaList, FaPlayCircle, FaUserGraduate } from 'react-icons/fa';
 
 const LivePreview: FC = () => {
   const { courseInformation, curriculum, pricing } = useCreateCourseStore();
@@ -18,12 +19,13 @@ const LivePreview: FC = () => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-full max-w-md mx-auto overflow-hidden">
       {/* Course Image */}
-      <div className="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+      <div className="relative h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
         {courseInformation.coverImage ? (
-          <img 
+          <Image
             src={typeof courseInformation.coverImage === 'string' ? courseInformation.coverImage : (courseInformation.coverImage instanceof File ? URL.createObjectURL(courseInformation.coverImage) : '')}
             alt={courseInformation.title || 'Course Cover'}
-            className="w-full h-full object-cover"
+            layout="fill"
+            className="object-cover"
           />
         ) : (
           <FaPlayCircle className="text-5xl text-gray-400 dark:text-gray-500" />
@@ -43,7 +45,7 @@ const LivePreview: FC = () => {
 
         {/* Instructor Info (Placeholder) */}
         <div className="flex items-center gap-2 text-sm">
-          <img src="/assets/teacher.png" alt="Instructor" className="w-6 h-6 rounded-full" />
+          <Image src="/assets/teacher.png" alt="Instructor" width={24} height={24} className="rounded-full" />
           <span className="font-medium text-gray-700 dark:text-gray-300">Tên giảng viên</span>
         </div>
 

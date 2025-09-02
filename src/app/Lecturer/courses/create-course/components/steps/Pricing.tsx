@@ -1,49 +1,31 @@
 'use client';
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
 import { useTheme } from 'EmoEase/Provider/ThemeProvider';
-import { Button, ConfigProvider, DatePicker, Form, Input, InputNumber, Select, Switch, theme, message } from 'antd';
-import { FaArrowLeft, FaArrowRight, FaCheck, FaDollarSign, FaPercent, FaTicketAlt, FaBullhorn } from 'react-icons/fa';
+import { Button, ConfigProvider, DatePicker, Form, Input, InputNumber, Switch, theme, message } from 'antd';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import dayjs from 'dayjs';
 import { FadeInUp } from 'EmoEase/components/Animation/FadeInUp';
 
 const AUTO_SAVE_KEY = 'pricing_creation_draft';
-const AUTO_SAVE_DELAY = 2000;
 
-type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
+
 
 const Pricing: FC = () => {
     const { isDarkMode } = useTheme();
     const { pricing, updatePricing, setCurrentStep } = useCreateCourseStore();
     const form = Form.useFormInstance();
 
-    const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
-    const [lastSaved, setLastSaved] = useState<Date | null>(null);
-    const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+
     const isInitialLoadRef = useRef(true);
 
 
 
-    const saveToLocal = useCallback((values: any) => {
-        try {
-            const data = { ...values, timestamp: new Date().toISOString(), version: '1.0', formStep: 'pricing' };
-            localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(data));
-            setSaveStatus('saved');
-            setLastSaved(new Date());
-            setTimeout(() => setSaveStatus('idle'), 3000);
-        } catch {
-            setSaveStatus('error');
-            message.error('Không thể lưu dữ liệu tự động');
-            setTimeout(() => setSaveStatus('idle'), 5000);
-        }
-    }, []);
 
-    const debouncedSave = useCallback((values: any) => {
-        if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-        if (isInitialLoadRef.current) return;
-        setSaveStatus('saving');
-        saveTimeoutRef.current = setTimeout(() => saveToLocal(values), AUTO_SAVE_DELAY);
-    }, [saveToLocal]);
+
+
 
     useEffect(() => {
         try {
@@ -58,11 +40,11 @@ const Pricing: FC = () => {
                     localStorage.removeItem(AUTO_SAVE_KEY);
                     message.warning('Dữ liệu đã lưu đã quá 10 phút và đã bị xóa.');
                 } else {
-                    const { timestamp, version, formStep, ...data } = parsed;
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { timestamp, ...data } = parsed;
                     if (data.discountStartDate) data.discountStartDate = dayjs(data.discountStartDate);
                     if (data.discountEndDate) data.discountEndDate = dayjs(data.discountEndDate);
                     form.setFieldsValue(data);
-                    setLastSaved(new Date(parsed.timestamp));
                     message.success('Đã khôi phục dữ liệu đã lưu trước đó');
                 }
             } else {
@@ -82,12 +64,7 @@ const Pricing: FC = () => {
         } finally {
             setTimeout(() => { isInitialLoadRef.current = false; }, 100);
         }
-        return () => { if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current); };
     }, [form, pricing]);
-
-    const onValuesChange = useCallback(() => {
-        debouncedSave(form.getFieldsValue());
-    }, [debouncedSave, form]);
 
     const onBack = () => {
         const container = document.getElementById('create-course-content');
@@ -140,28 +117,6 @@ const Pricing: FC = () => {
         }
     };
 
-    const parseCurrency = (v?: string) => (v ? Number(v.replace(/\D/g, '')) : 0);
-
-    const header = useMemo(() => (
-        <div className="bg-gradient-to-r from-white to-amber-50 dark:from-gray-800 dark:to-yellow-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-md">
-            <div className="flex items-center gap-4 mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-amber-600 text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg">4</div>
-                <div>
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1">Giá khóa học</h2>
-                    <p className="text-gray-600 dark:text-gray-300 text-lg">Thiết lập giá và các ưu đãi thanh toán</p>
-                </div>
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-3 mb-3 overflow-hidden">
-                <div className="bg-gradient-to-r from-yellow-500 to-amber-600 h-3 rounded-full transition-all duration-500 shadow-sm" style={{ width: '80%' }}>
-                    <div className="h-full bg-white/20 animate-pulse"></div>
-                </div>
-            </div>
-            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400"><span>Bước 4 của 5</span><span>80% hoàn thành</span></div>
-        </div>
-    ), []);
-
-    const CONTROL_HEIGHT = 56;
-
     return (
         <ConfigProvider
             theme={{
@@ -194,7 +149,8 @@ const Pricing: FC = () => {
                                 min={0}
                                 addonAfter="VND"
                                 formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                parser={(v) => v!.replace(/\s?VND|,/g, '')}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                parser={(v) => Number(v!.replace(/\s?VND|,/g, '')) as any}
                                 placeholder="VD: 500,000"
                                 size="large"
                             />
@@ -209,7 +165,8 @@ const Pricing: FC = () => {
                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Tạo ưu đãi hấp dẫn để thu hút học viên.</p>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <Form.Item name="discountPrice" label="Giảm còn (VND)">
-                                <InputNumber className="w-full" min={0} addonAfter="VND" formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} parser={(v) => v!.replace(/\s?VND|,/g, '')} placeholder="VD: 299,000" size="large" />
+                                <InputNumber className="w-full" min={0} addonAfter="VND" formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                parser={(v) => Number(v!.replace(/\s?VND|,/g, '')) as any} placeholder="VD: 299,000" size="large" />
                             </Form.Item>
                             <Form.Item name="discountStartDate" label="Ngày bắt đầu">
                                 <DatePicker className="w-full" size="large" format="YYYY-MM-DD" />

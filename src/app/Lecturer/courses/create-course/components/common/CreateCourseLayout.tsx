@@ -2,11 +2,11 @@
 import { FadeInUp } from 'EmoEase/components/Animation/FadeInUp';
 import AccessibleStepper from '../ui/AccessibleStepper';
 import LivePreview from '../ui/LivePreview';
-import { Button, ConfigProvider, theme } from 'antd';
+import { ConfigProvider, theme } from 'antd';
 import { useTheme } from 'EmoEase/Provider/ThemeProvider';
 import { FC, ReactNode } from 'react';
 import ScrollToTopButton from 'EmoEase/components/Common/ScrollToTopButton';
-import { FaPaperPlane, FaSave } from 'react-icons/fa';
+
 
 interface CreateCourseLayoutProps {
     children: ReactNode;
@@ -23,8 +23,7 @@ const CreateCourseLayout: FC<CreateCourseLayoutProps> = ({ children }) => {
                     <div className="flex justify-between items-center mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Tạo khóa học</h1>
                         <div className="flex items-center gap-3">
-                            <Button type="default" icon={<FaSave />}>Lưu bản nháp</Button>
-                            <Button type="primary" icon={<FaPaperPlane />}>Gửi xét duyệt</Button>
+
                         </div>
                     </div>
 

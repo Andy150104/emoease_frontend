@@ -2,6 +2,7 @@
 import { FC, useState, useCallback, useRef } from 'react';
 import { Progress, Button, message } from 'antd';
 import { FaUpload, FaFile, FaVideo, FaImage, FaFilePdf, FaFileWord, FaFileExcel, FaFilePowerpoint, FaTrash, FaEye } from 'react-icons/fa';
+import Image from 'next/image';
 
 interface FileItem {
   uid: string;
@@ -62,19 +63,19 @@ const AdvancedFileUpload: FC<AdvancedFileUploadProps> = ({
   };
 
   // Validate file
-  const validateFile = (file: File) => {
+  const validateFile = useCallback((file: File) => {
     if (file.size > maxSize * 1024 * 1024) {
       message.error(`File "${file.name}" vượt quá giới hạn ${maxSize}MB`);
       return false;
     }
-    
+
     if (files.length >= maxCount) {
       message.error(`Chỉ được upload tối đa ${maxCount} file`);
       return false;
     }
 
     return true;
-  };
+  }, [files.length, maxCount, maxSize]);
 
   // Handle file selection
   const handleFileSelect = useCallback(async (selectedFiles: FileList | File[]) => {
@@ -96,8 +97,8 @@ const AdvancedFileUpload: FC<AdvancedFileUploadProps> = ({
         if (file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = (e) => {
-            setFiles(prev => prev.map(f => 
-              f.uid === fileItem.uid 
+            setFiles(prev => prev.map(f =>
+              f.uid === fileItem.uid
                 ? { ...f, preview: e.target?.result as string }
                 : f
             ));
@@ -124,7 +125,7 @@ const AdvancedFileUpload: FC<AdvancedFileUploadProps> = ({
         await onUpload(validFiles);
       } catch (error) {
         console.error('Upload failed:', error);
-        setFiles(prev => prev.map(f => 
+        setFiles(prev => prev.map(f =>
           validFiles.some(vf => vf.uid === f.uid)
             ? { ...f, status: 'error' }
             : f
@@ -141,14 +142,14 @@ const AdvancedFileUpload: FC<AdvancedFileUploadProps> = ({
       if (progress >= 100) {
         progress = 100;
         clearInterval(interval);
-        setFiles(prev => prev.map(f => 
-          f.uid === fileItem.uid 
+        setFiles(prev => prev.map(f =>
+          f.uid === fileItem.uid
             ? { ...f, status: 'done', progress: 100 }
             : f
         ));
       } else {
-        setFiles(prev => prev.map(f => 
-          f.uid === fileItem.uid 
+        setFiles(prev => prev.map(f =>
+          f.uid === fileItem.uid
             ? { ...f, progress }
             : f
         ));
@@ -176,7 +177,7 @@ const AdvancedFileUpload: FC<AdvancedFileUploadProps> = ({
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const droppedFiles = e.dataTransfer.files;
     if (droppedFiles.length > 0) {
       handleFileSelect(droppedFiles);
@@ -193,7 +194,7 @@ const AdvancedFileUpload: FC<AdvancedFileUploadProps> = ({
   // Render file item
   const renderFileItem = (file: FileItem) => {
     const IconComponent = getFileIcon(file.type);
-    
+
     return (
       <div
         key={file.uid}
@@ -202,10 +203,12 @@ const AdvancedFileUpload: FC<AdvancedFileUploadProps> = ({
         {/* File icon/preview */}
         <div className="flex-shrink-0">
           {file.preview ? (
-            <img
+            <Image
               src={file.preview}
               alt={file.name}
-              className="w-12 h-12 object-cover rounded-lg"
+              width={48}
+              height={48}
+              className="object-cover rounded-lg"
             />
           ) : (
             <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center">
@@ -224,7 +227,7 @@ const AdvancedFileUpload: FC<AdvancedFileUploadProps> = ({
               {formatFileSize(file.size)}
             </span>
           </div>
-          
+
           {/* Progress bar */}
           {file.status === 'uploading' && (
             <Progress
@@ -234,14 +237,14 @@ const AdvancedFileUpload: FC<AdvancedFileUploadProps> = ({
               showInfo={false}
             />
           )}
-          
+
           {file.status === 'done' && (
             <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
               <FaEye className="text-xs" />
               <span>Upload thành công</span>
             </div>
           )}
-          
+
           {file.status === 'error' && (
             <div className="text-xs text-red-600 dark:text-red-400">
               Upload thất bại
@@ -275,8 +278,8 @@ const AdvancedFileUpload: FC<AdvancedFileUploadProps> = ({
         className={`
           relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer
           transition-all duration-300 hover:border-blue-400
-          ${isDragging 
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+          ${isDragging
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
             : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800'
           }
         `}
@@ -289,18 +292,18 @@ const AdvancedFileUpload: FC<AdvancedFileUploadProps> = ({
           onChange={handleInputChange}
           className="hidden"
         />
-        
+
         <div className="space-y-4">
           <div className={`
             w-16 h-16 mx-auto rounded-full flex items-center justify-center
-            ${isDragging 
-              ? 'bg-blue-500 text-white' 
+            ${isDragging
+              ? 'bg-blue-500 text-white'
               : 'bg-gray-200 dark:bg-gray-700 text-gray-400'
             }
           `}>
             <FaUpload className="text-2xl" />
           </div>
-          
+
           <div>
             <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
               {uploadText}

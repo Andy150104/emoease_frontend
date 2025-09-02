@@ -2,11 +2,11 @@
 'use client';
 import { FC } from 'react';
 import { useCreateCourseStore } from 'EmoEase/stores/CreateCourse/CreateCourseStore';
-import { Button, Modal, message } from 'antd';
+import { Button, message } from 'antd';
 import { FaArrowLeft, FaPaperPlane } from 'react-icons/fa';
 
 const Publish: FC = () => {
-  const { courseInformation, curriculum, pricing, contentByModule, setCurrentStep, resetForm } = useCreateCourseStore();
+  const { courseInformation, curriculum, pricing, contentByModule, setCurrentStep } = useCreateCourseStore();
 
   const onBack = () => {
     const container = document.getElementById('create-course-content');

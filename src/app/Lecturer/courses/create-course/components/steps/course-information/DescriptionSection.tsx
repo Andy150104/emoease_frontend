@@ -26,10 +26,11 @@ const DescriptionSection: FC = () => {
         />
         <Form.Item
           name="detailedDescription"
-          label="Mô tả chi tiết"
           rules={[{ required: true, message: 'Vui lòng nhập mô tả chi tiết!' }, { max: 2000, message: 'Mô tả không được vượt quá 2000 ký tự!'}]}
         >
           <RichTextEditor
+            name="detailedDescription"
+            label="Mô tả chi tiết"
             placeholder="Mô tả chi tiết về nội dung, phương pháp giảng dạy, và lợi ích..."
             maxLength={2000}
             minHeight={150}

@@ -2,6 +2,7 @@
 import { useState, useCallback } from 'react';
 
 // Custom debounce function
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const debounce = <T extends (...args: any[]) => any>(
   func: T,
   delay: number
@@ -342,30 +343,30 @@ export const useRealTimeValidation = () => {
 
   // Debounced validation function
   const debouncedValidate = useCallback(
-    debounce((fieldName: string, value: any, validationType: string) => {
+    debounce((fieldName: string, value: string | number, validationType: string) => {
       let result: ValidationResult;
 
       switch (validationType) {
         case 'title':
-          result = validateTitle(value);
+          result = validateTitle(typeof value === 'string' ? value : '');
           break;
         case 'description':
-          result = validateDescription(value, 'short');
+          result = validateDescription(typeof value === 'string' ? value : '', 'short');
           break;
         case 'detailedDescription':
-          result = validateDescription(value, 'detailed');
+          result = validateDescription(typeof value === 'string' ? value : '', 'detailed');
           break;
         case 'learningObjectives':
-          result = validateLearningObjectives(value);
+          result = validateLearningObjectives(typeof value === 'string' ? value : '');
           break;
         case 'targetAudience':
-          result = validateTargetAudience(value);
+          result = validateTargetAudience(typeof value === 'string' ? value : '');
           break;
         case 'basePrice':
-          result = validatePrice(value, 'base');
+          result = validatePrice(typeof value === 'number' ? value : 0, 'base');
           break;
         case 'discountPrice':
-          result = validatePrice(value, 'discount');
+          result = validatePrice(typeof value === 'number' ? value : 0, 'discount');
           break;
         default:
           result = {
@@ -381,10 +382,11 @@ export const useRealTimeValidation = () => {
         [fieldName]: result
       }));
     }, 500),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [validateTitle, validateDescription, validateLearningObjectives, validateTargetAudience, validatePrice]
   );
 
-  const validateField = useCallback((fieldName: string, value: any, validationType: string) => {
+  const validateField = useCallback((fieldName: string, value: string | number, validationType: string) => {
     debouncedValidate(fieldName, value, validationType);
   }, [debouncedValidate]);
 

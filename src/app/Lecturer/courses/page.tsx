@@ -9,6 +9,8 @@ import { useCourseManagementStore } from 'EmoEase/stores/CourseManagement/Course
 import BaseControlTable from 'EmoEase/components/Table/BaseControlTable';
 import { Course } from 'EmoEase/types/course';
 
+type CourseWithKey = Course & { key: React.Key };
+
 const CourseManagementPage: React.FC = () => {
   const {
     courses,
@@ -25,7 +27,7 @@ const CourseManagementPage: React.FC = () => {
     deleteCourse(courseId);
   };
 
-  const columns: TableColumnsType<Course> = [
+  const columns: TableColumnsType<CourseWithKey> = [
     {
       title: 'Tên khóa học',
       dataIndex: 'title',
@@ -98,7 +100,7 @@ const CourseManagementPage: React.FC = () => {
         </Link>
       </div>
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-        <BaseControlTable<Course>
+        <BaseControlTable
           columns={columns}
           data={courses.map(c => ({...c, key: c.id}))}
           loading={isLoading}
