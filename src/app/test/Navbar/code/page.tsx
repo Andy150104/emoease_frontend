@@ -57,6 +57,8 @@ export default function CodePage() {
     setLoading(true);
     setErrMsg(null);
     message.open({ type: "loading", content: "Đang chạy code…", key: "run", duration: 0 });
+    console.log("Running code:", code);
+
 
     try {
       // Gửi đúng schema: { LanguageId?: number, SourceCode: string }
